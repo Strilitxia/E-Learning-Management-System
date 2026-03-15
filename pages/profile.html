@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Profile - ELP Platform</title>
+
+  <!-- Bootstrap 5.3 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+  
+  <link rel="stylesheet" href="css/style.css">
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+
+  <style>
+    body { background-color: #f5f7ff; font-family: 'Segoe UI', system-ui, sans-serif; }
+    .sidebar {
+      min-height: 100vh;
+      background: white;
+      border-right: 1px solid #e0e0e0;
+      position: fixed;
+      width: 240px;
+      top: 0; left: 0;
+      padding-top: 80px;
+      overflow-y: auto;
+    }
+    .sidebar .nav-link {
+      color: #495057;
+      padding: 0.9rem 1.5rem;
+      font-weight: 500;
+    }
+    .sidebar .nav-link:hover,
+    .sidebar .nav-link.active {
+      background-color: #e7f0ff;
+      color: #0d6efd;
+    }
+    .sidebar .nav-link i { width: 24px; text-align: center; margin-right: 12px; }
+    .main-content { margin-left: 240px; padding: 2rem 2.5rem; }
+    .top-navbar {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 1000;
+      background: white;
+      border-bottom: 1px solid #e0e0e0;
+      padding: 1rem 2.5rem;
+    }
+    .profile-avatar {
+      width: 140px;
+      height: 140px;
+      object-fit: cover;
+      border-radius: 50%;
+      border: 4px solid white;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+    .profile-card {
+      border: none;
+      border-radius: 12px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+      background: white;
+    }
+    .form-label { font-weight: 500; color: #444; }
+  </style>
+</head>
+<body>
+
+<!-- Top Navbar -->
+<nav class="top-navbar navbar navbar-expand-lg">
+  <div class="container-fluid">
+    <a class="navbar-brand fw-bold fs-4" href="dashboard.html">
+      ELP <span class="text-primary">Platform</span>
+    </a>
+    <div class="ms-auto d-flex align-items-center gap-4">
+      <div class="dropdown">
+        <a class="d-flex align-items-center text-decoration-none dropdown-toggle" href="#" data-bs-toggle="dropdown">
+          <div class="me-3 text-end">
+            <div id="userFullName" class="fw-medium">Loading...</div>
+            <small id="userRoleBadge" class="text-muted"></small>
+          </div>
+          <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center" style="width:42px;height:42px;">
+            <i class="fas fa-user"></i>
+          </div>
+        </a>
+        <ul class="dropdown-menu dropdown-menu-end">
+          <li><a class="dropdown-item active" href="profile.html"><i class="fas fa-user me-2"></i> Profile</a></li>
+          <li><hr class="dropdown-divider"></li>
+          <li><a class="dropdown-item text-danger" href="#" onclick="logout()"><i class="fas fa-sign-out-alt me-2"></i> Logout</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- Sidebar -->
+<div class="sidebar">
+  <div class="nav flex-column" id="sidebarMenu"></div>
+</div>
+
+<!-- Main Content -->
+<div class="main-content">
+
+  <h2 class="mb-4 fw-bold">My Profile</h2>
+
+  <div class="row g-4">
+
+    <!-- Left Column - Avatar & Quick Info -->
+    <div class="col-lg-4">
+      <div class="profile-card p-4 text-center">
+        <div class="mb-3 position-relative d-inline-block">
+          <img src="https://via.placeholder.com/140?text=You" alt="Profile Picture" class="profile-avatar" id="profileAvatar">
+          <label for="avatarInput" class="position-absolute bottom-0 end-0 bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width:38px;height:38px;cursor:pointer;">
+            <i class="fas fa-camera"></i>
+          </label>
+          <input type="file" id="avatarInput" accept="image/*" class="d-none">
+        </div>
+
+        <h4 class="mb-1" id="displayName">Asif Amin</h4>
+        <p class="text-muted mb-3" id="displayEmail">student@example.com</p>
+        <span class="badge bg-primary px-3 py-2 fs-6" id="displayRole">Student</span>
+
+        <hr class="my-4">
+
+        <div class="d-grid gap-2">
+          <button class="btn btn-outline-primary" onclick="document.getElementById('editProfileSection').scrollIntoView({behavior:'smooth'})">
+            <i class="fas fa-edit me-2"></i> Edit Profile
+          </button>
+        </div>
+      </div>
+
+      <!-- Joined Date & Last Active (simple) -->
+      <div class="profile-card p-4 mt-4 text-center">
+        <small class="text-muted">Member since</small>
+        <p class="fw-medium mb-1">March 2025</p>
+        <small class="text-muted">Last active</small>
+        <p class="fw-medium">Today</p>
+      </div>
+    </div>
+
+    <!-- Right Column - Edit Forms -->
+    <div class="col-lg-8">
+
+      <!-- Edit Profile Form -->
+      <div class="profile-card p-4 mb-4" id="editProfileSection">
+        <h5 class="mb-4 border-bottom pb-2">Edit Profile Information</h5>
+        <form id="profileForm">
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label for="firstName" class="form-label">First Name</label>
+              <input type="text" class="form-control" id="firstName" value="Asif" required>
+            </div>
+            <div class="col-md-6">
+              <label for="lastName" class="form-label">Last Name</label>
+              <input type="text" class="form-control" id="lastName" value="Amin" required>
+            </div>
+          </div>
+
+          <div class="mb-3 mt-3">
+            <label for="email" class="form-label">Email Address</label>
+            <input type="email" class="form-control" id="email" value="student@example.com" disabled>
+            <small class="text-muted">Email cannot be changed</small>
+          </div>
+
+          <div class="mb-3">
+            <label for="bio" class="form-label">Bio / About</label>
+            <textarea class="form-control" id="bio" rows="4" placeholder="Tell others about yourself... (optional)">Passionate about databases and full-stack development. Currently working on E-Learning Platform project.</textarea>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Preferred Language</label>
+            <select class="form-select">
+              <option>English</option>
+              <option>Bangla</option>
+              <option>Hindi</option>
+            </select>
+          </div>
+
+          <button type="button" class="btn btn-primary mt-2" onclick="saveProfile()">
+            <i class="fas fa-save me-2"></i> Save Changes
+          </button>
+        </form>
+      </div>
+
+      <!-- Change Password -->
+      <div class="profile-card p-4">
+        <h5 class="mb-4 border-bottom pb-2">Change Password</h5>
+        <form id="passwordForm">
+          <div class="mb-3">
+            <label for="currentPassword" class="form-label">Current Password</label>
+            <input type="password" class="form-control" id="currentPassword" required>
+          </div>
+          <div class="mb-3">
+            <label for="newPassword" class="form-label">New Password</label>
+            <input type="password" class="form-control" id="newPassword" required minlength="8">
+          </div>
+          <div class="mb-4">
+            <label for="confirmPassword" class="form-label">Confirm New Password</label>
+            <input type="password" class="form-control" id="confirmPassword" required>
+          </div>
+
+          <button type="button" class="btn btn-outline-primary" onclick="changePassword()">
+            <i class="fas fa-key me-2"></i> Update Password
+          </button>
+        </form>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ────────────────────────────────────────────────
+//  Role & UI logic (same as previous pages)
+// ────────────────────────────────────────────────
+
+const role = localStorage.getItem('userRole') || 'student';
+const name = localStorage.getItem('userName') || 'Asif Amin';
+const email = localStorage.getItem('userEmail') || 'student@example.com';
+
+document.getElementById('userFullName').textContent = name;
+document.getElementById('userRoleBadge').textContent = role.charAt(0).toUpperCase() + role.slice(1);
+document.getElementById('displayName').textContent = name;
+document.getElementById('displayEmail').textContent = email;
+document.getElementById('displayRole').textContent = role.charAt(0).toUpperCase() + role.slice(1);
+
+// Sidebar menu
+const menu = document.getElementById('sidebarMenu');
+let menuHTML = '';
+
+if (role === 'student') {
+  menuHTML = `
+    <a href="../dashboard.html" class="nav-link"><i class="fas fa-home"></i> Dashboard</a>
+    <a href="courses.html" class="nav-link"><i class="fas fa-book-open"></i> Courses</a>
+    <a href="enroll.html" class="nav-link"><i class="fas fa-search"></i> Browse Courses</a>
+    <a href="assessment.html" class="nav-link"><i class="fas fa-tasks"></i> Assessments</a>
+    <a href="profile.html" class="nav-link active"><i class="fas fa-user"></i> Profile</a>
+  `;
+} else if (role === 'instructor') {
+  menuHTML = `
+    <a href="../dashboard.html" class="nav-link"><i class="fas fa-home"></i> Dashboard</a>
+    <a href="courses.html" class="nav-link"><i class="fas fa-chalkboard-teacher"></i> My Courses</a>
+    <a href="content.html" class="nav-link"><i class="fas fa-upload"></i> Content</a>
+    <a href="assessment.html" class="nav-link"><i class="fas fa-check-double"></i> Results</a>
+    <a href="profile.html" class="nav-link active"><i class="fas fa-user"></i> Profile</a>
+  `;
+} else if (role === 'admin') {
+  menuHTML = `
+    <a href="../dashboard.html" class="nav-link"><i class="fas fa-home"></i> Dashboard</a>
+    <a href="admin.html" class="nav-link"><i class="fas fa-users-cog"></i> Manage Users</a>
+    <a href="admin.html#courses" class="nav-link"><i class="fas fa-book"></i> Courses</a>
+    <a href="profile.html" class="nav-link active"><i class="fas fa-user-shield"></i> Profile</a>
+  `;
+}
+
+menu.innerHTML = menuHTML;
+
+// ────────────────────────────────────────────────
+//  Profile picture preview
+// ────────────────────────────────────────────────
+
+document.getElementById('avatarInput').addEventListener('change', function(e) {
+  const file = e.target.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      document.getElementById('profileAvatar').src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  }
+});
+
+// ────────────────────────────────────────────────
+//  Demo save functions (replace with real API calls later)
+// ────────────────────────────────────────────────
+
+function saveProfile() {
+  const first = document.getElementById('firstName').value.trim();
+  const last = document.getElementById('lastName').value.trim();
+  
+  if (!first || !last) {
+    alert("First and Last name are required.");
+    return;
+  }
+
+  const fullName = first + " " + last;
+  localStorage.setItem('userName', fullName);
+  alert("Profile updated successfully!\n\n(In real app → PATCH /api/users/profile)");
+  location.reload(); // refresh displayed name
+}
+
+function changePassword() {
+  const newPass = document.getElementById('newPassword').value;
+  const confirm = document.getElementById('confirmPassword').value;
+
+  if (newPass.length < 8) {
+    alert("New password must be at least 8 characters.");
+    return;
+  }
+  if (newPass !== confirm) {
+    alert("Passwords do not match.");
+    return;
+  }
+
+  alert("Password would be updated!\n\n(In real app → POST /api/users/change-password)");
+  document.getElementById('passwordForm').reset();
+}
+
+function logout() {
+  localStorage.clear();
+  window.location.href = 'index.html';
+}
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

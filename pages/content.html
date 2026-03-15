@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Content Management - ELP Platform</title>
+
+  <!-- Bootstrap 5.3 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+  
+  <link rel="stylesheet" href="css/style.css">
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+
+  <style>
+    body { background-color: #f5f7ff; font-family: 'Segoe UI', system-ui, sans-serif; }
+    .sidebar {
+      min-height: 100vh;
+      background: white;
+      border-right: 1px solid #e0e0e0;
+      position: fixed;
+      width: 240px;
+      top: 0; left: 0;
+      padding-top: 80px;
+      overflow-y: auto;
+    }
+    .sidebar .nav-link {
+      color: #495057;
+      padding: 0.9rem 1.5rem;
+      font-weight: 500;
+    }
+    .sidebar .nav-link:hover,
+    .sidebar .nav-link.active {
+      background-color: #e7f0ff;
+      color: #0d6efd;
+    }
+    .sidebar .nav-link i { width: 24px; text-align: center; margin-right: 12px; }
+    .main-content { margin-left: 240px; padding: 2rem 2.5rem; }
+    .top-navbar {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 1000;
+      background: white;
+      border-bottom: 1px solid #e0e0e0;
+      padding: 1rem 2.5rem;
+    }
+    .module-item {
+      border-left: 4px solid #0d6efd;
+      background: #f8f9fa;
+      border-radius: 6px;
+    }
+    .content-type-badge {
+      font-size: 0.8rem;
+      padding: 0.35em 0.75em;
+    }
+  </style>
+</head>
+<body>
+
+<!-- Top Navbar -->
+<nav class="top-navbar navbar navbar-expand-lg">
+  <div class="container-fluid">
+    <a class="navbar-brand fw-bold fs-4" href="../dashboard.html">
+      ELP <span class="text-primary">Platform</span>
+    </a>
+    <div class="ms-auto d-flex align-items-center gap-4">
+      <div class="dropdown">
+        <a class="d-flex align-items-center text-decoration-none dropdown-toggle" href="#" data-bs-toggle="dropdown">
+          <div class="me-3 text-end">
+            <div id="userFullName" class="fw-medium">Loading...</div>
+            <small id="userRoleBadge" class="text-muted"></small>
+          </div>
+          <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center" style="width:42px;height:42px;">
+            <i class="fas fa-user"></i>
+          </div>
+        </a>
+        <ul class="dropdown-menu dropdown-menu-end">
+          <li><a class="dropdown-item" href="profile.html"><i class="fas fa-user me-2"></i> Profile</a></li>
+          <li><hr class="dropdown-divider"></li>
+          <li><a class="dropdown-item text-danger" href="#" onclick="logout()"><i class="fas fa-sign-out-alt me-2"></i> Logout</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- Sidebar -->
+<div class="sidebar">
+  <div class="nav flex-column" id="sidebarMenu"></div>
+</div>
+
+<!-- Main Content -->
+<div class="main-content">
+
+  <h2 class="mb-4 fw-bold">Content Management</h2>
+
+  <!-- Only instructors see this page properly -->
+  <div id="instructorContent" class="d-none">
+
+    <div class="row g-4 mb-5">
+      <!-- Course Selector -->
+      <div class="col-lg-4">
+        <div class="card shadow-sm">
+          <div class="card-header bg-white">
+            <h5 class="mb-0">Your Courses</h5>
+          </div>
+          <div class="list-group list-group-flush" id="courseList">
+            <!-- Filled by JS -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Modules & Content Area -->
+      <div class="col-lg-8">
+        <div class="card shadow-sm">
+          <div class="card-header bg-white d-flex justify-content-between align-items-center">
+            <h5 class="mb-0" id="selectedCourseTitle">Select a course to manage content</h5>
+            <button class="btn btn-sm btn-primary d-none" id="addModuleBtn" onclick="showAddModuleForm()">
+              <i class="fas fa-plus me-1"></i> Add Module
+            </button>
+          </div>
+
+          <div class="card-body" id="contentArea">
+            <div class="text-center py-5 text-muted" id="noCourseSelected">
+              <i class="fas fa-folder-open fa-3x mb-3"></i>
+              <p class="lead">Choose a course from the left to start managing modules and lessons</p>
+            </div>
+
+            <!-- Module list will appear here -->
+            <div id="modulesContainer" class="d-none"></div>
+
+            <!-- Add Module Form (hidden initially) -->
+            <div id="addModuleForm" class="d-none mt-4">
+              <div class="card bg-light border">
+                <div class="card-body">
+                  <h6 class="mb-3">New Module</h6>
+                  <div class="mb-3">
+                    <label for="moduleTitle" class="form-label">Module Title</label>
+                    <input type="text" class="form-control" id="moduleTitle" placeholder="e.g. Introduction to Databases" required>
+                  </div>
+                  <div class="mb-3">
+                    <label for="moduleOrder" class="form-label">Order / Position</label>
+                    <input type="number" class="form-control" id="moduleOrder" value="1" min="1">
+                  </div>
+                  <div class="d-flex gap-2">
+                    <button class="btn btn-primary" onclick="addModule()">Create Module</button>
+                    <button class="btn btn-outline-secondary" onclick="hideAddModuleForm()">Cancel</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Non-instructor message -->
+  <div id="accessDenied" class="alert alert-warning d-none">
+    <i class="fas fa-exclamation-triangle me-2"></i>
+    This page is available only for Instructors. You will be redirected to dashboard...
+  </div>
+
+</div>
+
+<script>
+// ────────────────────────────────────────────────
+//  Role & Access Control
+// ────────────────────────────────────────────────
+
+const role = localStorage.getItem('userRole') || 'student';
+const name = localStorage.getItem('userName') || 'User';
+
+document.getElementById('userFullName').textContent = name;
+document.getElementById('userRoleBadge').textContent = role.charAt(0).toUpperCase() + role.slice(1);
+
+if (role !== 'instructor') {
+  document.getElementById('accessDenied').classList.remove('d-none');
+  setTimeout(() => { window.location.href = '../dashboard.html'; }, 3000);
+} else {
+  document.getElementById('instructorContent').classList.remove('d-none');
+}
+
+// Sidebar for instructor
+document.getElementById('sidebarMenu').innerHTML = `
+  <a href="../dashboard.html" class="nav-link"><i class="fas fa-home"></i> Dashboard</a>
+  <a href="courses.html" class="nav-link"><i class="fas fa-chalkboard-teacher"></i> My Courses</a>
+  <a href="content.html" class="nav-link active"><i class="fas fa-upload"></i> Content Management</a>
+  <a href="assessment.html" class="nav-link"><i class="fas fa-check-double"></i> Student Results</a>
+  <a href="profile.html" class="nav-link"><i class="fas fa-user"></i> Profile</a>
+`;
+
+// ────────────────────────────────────────────────
+//  Sample data (later → fetch from backend)
+// ────────────────────────────────────────────────
+
+let instructorCourses = [
+  {
+    id: 1,
+    title: "Database Systems with MySQL",
+    modules: [
+      { id:101, title: "Introduction to Databases", order:1, contents: [
+        { type:"text", title:"What is a Database?", body:"A database is an organized collection of data..." },
+        { type:"video", title:"DBMS Overview Video", url:"https://www.youtube.com/embed/dQw4w9WgXcQ" }
+      ]},
+      { id:102, title: "Relational Model & ER Diagrams", order:2, contents: [] }
+    ]
+  },
+  {
+    id: 3,
+    title: "Full-Stack Web Development Bootcamp",
+    modules: [
+      { id:301, title: "HTML & CSS Fundamentals", order:1, contents: [] }
+    ]
+  }
+];
+
+let selectedCourseId = null;
+
+// ────────────────────────────────────────────────
+//  Render courses list
+// ────────────────────────────────────────────────
+
+function renderCourseList() {
+  const list = document.getElementById('courseList');
+  list.innerHTML = '';
+
+  instructorCourses.forEach(course => {
+    const item = document.createElement('a');
+    item.href = "#";
+    item.className = "list-group-item list-group-item-action d-flex justify-content-between align-items-center";
+    item.innerHTML = `
+      ${course.title}
+      <span class="badge bg-primary rounded-pill">${course.modules.length}</span>
+    `;
+    item.onclick = () => loadCourseContent(course.id);
+    list.appendChild(item);
+  });
+}
+
+// ────────────────────────────────────────────────
+//  Load selected course modules
+// ────────────────────────────────────────────────
+
+function loadCourseContent(courseId) {
+  selectedCourseId = courseId;
+  const course = instructorCourses.find(c => c.id === courseId);
+  if (!course) return;
+
+  document.getElementById('selectedCourseTitle').textContent = course.title;
+  document.getElementById('addModuleBtn').classList.remove('d-none');
+  document.getElementById('noCourseSelected').classList.add('d-none');
+  document.getElementById('modulesContainer').classList.remove('d-none');
+
+  const container = document.getElementById('modulesContainer');
+  container.innerHTML = '';
+
+  course.modules.forEach(module => {
+    const moduleDiv = document.createElement('div');
+    moduleDiv.className = 'module-item p-3 mb-3';
+    moduleDiv.innerHTML = `
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h6 class="mb-0">
+          <i class="fas fa-folder me-2 text-primary"></i>
+          ${module.title} <small class="text-muted">(Order: ${module.order})</small>
+        </h6>
+        <div>
+          <button class="btn btn-sm btn-outline-primary me-1" onclick="editModule(${module.id})"><i class="fas fa-edit"></i></button>
+          <button class="btn btn-sm btn-outline-danger" onclick="deleteModule(${module.id})"><i class="fas fa-trash"></i></button>
+        </div>
+      </div>
+
+      <div class="ms-4">
+        ${module.contents.map(content => `
+          <div class="d-flex align-items-center mb-2">
+            ${content.type === 'text' ? '<i class="fas fa-file-alt me-2 text-info"></i>' : ''}
+            ${content.type === 'video' ? '<i class="fas fa-video me-2 text-danger"></i>' : ''}
+            <span>${content.title}</span>
+            <span class="badge bg-secondary content-type-badge ms-2">${content.type}</span>
+          </div>
+        `).join('') || '<small class="text-muted">No content yet</small>'}
+      </div>
+
+      <button class="btn btn-sm btn-outline-success mt-2 ms-4" onclick="showAddContentForm(${module.id})">
+        <i class="fas fa-plus me-1"></i> Add Lesson / Content
+      </button>
+    `;
+    container.appendChild(moduleDiv);
+  });
+}
+
+// ────────────────────────────────────────────────
+//  Add / Edit Module (simple demo)
+// ────────────────────────────────────────────────
+
+function showAddModuleForm() {
+  document.getElementById('addModuleForm').classList.remove('d-none');
+  document.getElementById('addModuleBtn').classList.add('d-none');
+}
+
+function hideAddModuleForm() {
+  document.getElementById('addModuleForm').classList.add('d-none');
+  document.getElementById('addModuleBtn').classList.remove('d-none');
+  document.getElementById('moduleTitle').value = '';
+}
+
+function addModule() {
+  const title = document.getElementById('moduleTitle').value.trim();
+  if (!title) {
+    alert("Please enter module title");
+    return;
+  }
+
+  const course = instructorCourses.find(c => c.id === selectedCourseId);
+  if (course) {
+    const newId = Math.max(...course.modules.map(m => m.id), 0) + 1;
+    course.modules.push({
+      id: newId,
+      title,
+      order: course.modules.length + 1,
+      contents: []
+    });
+    renderCourseList();           // refresh left list count
+    loadCourseContent(selectedCourseId); // refresh right side
+    hideAddModuleForm();
+  }
+}
+
+// Placeholder actions (expand later)
+function editModule(moduleId) { alert(`Editing module #${moduleId} (implement form/modal later)`); }
+function deleteModule(moduleId) { 
+  if (confirm("Delete this module and all its content?")) {
+    alert(`Module #${moduleId} deleted (demo)`);
+    // remove from array & re-render
+  }
+}
+
+function showAddContentForm(moduleId) {
+  alert(`Add content to module #${moduleId}\nYou can later add: Text, Video URL, File, Quiz...`);
+  // You can create modal with tabs for different content types
+}
+
+renderCourseList();
+
+function logout() {
+  localStorage.clear();
+  window.location.href = 'index.html';
+}
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

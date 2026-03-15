@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Take Quiz - Database Systems Midterm | ELP Platform</title>
+
+  <!-- Bootstrap 5.3 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <!-- Your custom style -->
+  <!-- <link rel="stylesheet" href="css/style.css"> -->
+
+  <style>
+    .quiz-header {
+      background: linear-gradient(135deg, #0d6efd, #4d9aff);
+      color: white;
+      padding: 1.5rem;
+      border-radius: 10px 10px 0 0;
+    }
+    .question-card {
+      min-height: 280px;
+      border-radius: 10px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+    }
+    .option-label {
+      cursor: pointer;
+      padding: 1rem;
+      border-radius: 8px;
+      transition: all 0.2s;
+      border: 2px solid #dee2e6;
+      margin-bottom: 0.75rem;
+      display: block;
+    }
+    .option-label:hover {
+      background: #e7f1ff;
+      border-color: #0d6efd;
+    }
+    input[type="radio"]:checked + .option-label {
+      background: #d1e7ff;
+      border-color: #0d6efd;
+      font-weight: 500;
+    }
+    .timer {
+      font-size: 1.4rem;
+      font-weight: bold;
+      color: #dc3545;
+    }
+    .question-nav .btn {
+      min-width: 48px;
+    }
+    .progress {
+      height: 10px;
+    }
+  </style>
+</head>
+<body>
+
+<!-- Top Navbar (same as other pages) -->
+<nav class="top-navbar navbar navbar-expand-lg">
+  <div class="container-fluid">
+    <a class="navbar-brand fw-bold fs-4" href="../dashboard.html">
+      ELP <span class="text-primary">Platform</span>
+    </a>
+    <div class="ms-auto d-flex align-items-center gap-4">
+      <div class="dropdown">
+        <a class="d-flex align-items-center text-decoration-none dropdown-toggle" href="#" data-bs-toggle="dropdown">
+          <div class="me-3 text-end">
+            <div id="userFullName" class="fw-medium">Ifin</div>
+            <small id="userRoleBadge" class="text-muted">Student</small>
+          </div>
+          <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center" style="width:42px;height:42px;">
+            <i class="fas fa-user"></i>
+          </div>
+        </a>
+        <ul class="dropdown-menu dropdown-menu-end">
+          <li><a class="dropdown-item" href="profile.html"><i class="fas fa-user me-2"></i> Profile</a></li>
+          <li><hr class="dropdown-divider"></li>
+          <li><a class="dropdown-item text-danger" href="#" onclick="logout()"><i class="fas fa-sign-out-alt me-2"></i> Logout</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- Sidebar -->
+<div class="sidebar">
+  <div class="nav flex-column" id="sidebarMenu">
+    <a href="../dashboard.html" class="nav-link"><i class="fas fa-home"></i> Dashboard</a>
+    <a href="courses.html" class="nav-link"><i class="fas fa-book-open"></i> My Courses</a>
+    <a href="enroll.html" class="nav-link"><i class="fas fa-search"></i> Browse Courses</a>
+    <a href="assessment.html" class="nav-link active"><i class="fas fa-tasks"></i> Assessments</a>
+    <a href="profile.html" class="nav-link"><i class="fas fa-user"></i> Profile</a>
+  </div>
+</div>
+
+<!-- Main Content -->
+<div class="main-content">
+
+  <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+    <div>
+      <h2 class="mb-1 fw-bold">Midterm Quiz: Database Systems</h2>
+      <p class="text-muted mb-0">20 questions • 45 minutes • 2 attempts allowed</p>
+    </div>
+    <div class="text-end">
+      <div class="timer mb-1" id="timer">45:00</div>
+      <small class="text-muted">Time remaining</small>
+    </div>
+  </div>
+
+  <div class="progress mb-4">
+    <div class="progress-bar bg-primary" id="progressBar" role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
+  </div>
+
+  <div class="card question-card">
+    <div class="quiz-header">
+      <h5 class="mb-1" id="questionNumber">Question 1 of 20</h5>
+      <p class="mb-0" id="questionText">Which of the following is NOT a characteristic of a relational database?</p>
+    </div>
+
+    <div class="card-body pt-4">
+      <div class="options">
+        <label class="option-label">
+          <input type="radio" name="q1" value="a" class="form-check-input me-2">
+          Data is stored in tables
+        </label>
+        <label class="option-label">
+          <input type="radio" name="q1" value="b" class="form-check-input me-2">
+          Relationships are defined using foreign keys
+        </label>
+        <label class="option-label">
+          <input type="radio" name="q1" value="c" class="form-check-input me-2">
+          Supports only hierarchical data structures
+        </label>
+        <label class="option-label">
+          <input type="radio" name="q1" value="d" class="form-check-input me-2">
+          Uses SQL as the query language
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <!-- Navigation -->
+  <div class="d-flex justify-content-between mt-5 question-nav">
+    <button class="btn btn-outline-secondary" id="prevBtn" disabled>
+      <i class="fas fa-arrow-left me-2"></i> Previous
+    </button>
+
+    <div class="d-flex gap-2 flex-wrap justify-content-center" id="questionDots">
+      <!-- Dots generated by JS -->
+    </div>
+
+    <button class="btn btn-primary" id="nextBtn">
+      Next <i class="fas fa-arrow-right ms-2"></i>
+    </button>
+  </div>
+
+  <!-- Submit area (appears near the end) -->
+  <div class="text-center mt-5 d-none" id="submitArea">
+    <button class="btn btn-lg btn-success px-5 py-3" onclick="submitQuiz()">
+      <i class="fas fa-check-circle me-2"></i> Submit Quiz
+    </button>
+    <p class="text-muted mt-3">Make sure you have answered all questions before submitting</p>
+  </div>
+
+</div>
+
+<script>
+// ────────────────────────────────────────────────
+//  Quiz Data (demo – later load from backend)
+// ────────────────────────────────────────────────
+
+const quiz = {
+  id: 101,
+  title: "Midterm Quiz: Database Systems",
+  duration: 45 * 60, // seconds
+  questions: [
+    {
+      text: "Which of the following is NOT a characteristic of a relational database?",
+      options: [
+        "Data is stored in tables",
+        "Relationships are defined using foreign keys",
+        "Supports only hierarchical data structures",
+        "Uses SQL as the query language"
+      ],
+      correct: 2 // 0-based index
+    },
+    {
+      text: "What does ACID stand for in database transactions?",
+      options: [
+        "Atomicity, Consistency, Isolation, Durability",
+        "Availability, Concurrency, Integrity, Durability",
+        "Atomicity, Concurrency, Isolation, Durability",
+        "Accuracy, Consistency, Isolation, Durability"
+      ],
+      correct: 0
+    },
+    // Add 18 more questions in real project...
+    // For demo we use only 2–3
+    {
+      text: "Which SQL keyword is used to retrieve data?",
+      options: ["GET", "SELECT", "FETCH", "RETRIEVE"],
+      correct: 1
+    }
+    // ... you can add more here
+  ]
+};
+
+let currentQuestion = 0;
+let answers = new Array(quiz.questions.length).fill(null);
+let timeLeft = quiz.duration;
+let timerInterval;
+
+// ────────────────────────────────────────────────
+//  DOM Elements
+// ────────────────────────────────────────────────
+
+const questionNumberEl = document.getElementById('questionNumber');
+const questionTextEl   = document.getElementById('questionText');
+const optionsContainer = document.querySelector('.options');
+const prevBtn = document.getElementById('prevBtn');
+const nextBtn = document.getElementById('nextBtn');
+const progressBar = document.getElementById('progressBar');
+const timerEl = document.getElementById('timer');
+const submitArea = document.getElementById('submitArea');
+const questionDots = document.getElementById('questionDots');
+
+// ────────────────────────────────────────────────
+//  Timer
+// ────────────────────────────────────────────────
+
+function startTimer() {
+  timerInterval = setInterval(() => {
+    timeLeft--;
+    const minutes = Math.floor(timeLeft / 60);
+    const seconds = timeLeft % 60;
+    timerEl.textContent = `${minutes}:${seconds.toString().padStart(2,'0')}`;
+
+    if (timeLeft <= 300) timerEl.style.color = '#fd7e14'; // orange last 5 min
+    if (timeLeft <= 60)  timerEl.style.color = '#dc3545'; // red last minute
+
+    if (timeLeft <= 0) {
+      clearInterval(timerInterval);
+      alert("Time's up! Quiz will be auto-submitted.");
+      submitQuiz(true);
+    }
+  }, 1000);
+}
+
+// ────────────────────────────────────────────────
+//  Render current question
+// ────────────────────────────────────────────────
+
+function renderQuestion() {
+  const q = quiz.questions[currentQuestion];
+
+  questionNumberEl.textContent = `Question ${currentQuestion + 1} of ${quiz.questions.length}`;
+  questionTextEl.textContent = q.text;
+
+  optionsContainer.innerHTML = '';
+  q.options.forEach((opt, i) => {
+    const label = document.createElement('label');
+    label.className = 'option-label';
+    label.innerHTML = `
+      <input type="radio" name="q${currentQuestion}" value="${i}" class="form-check-input me-2" ${answers[currentQuestion] === i ? 'checked' : ''}>
+      ${opt}
+    `;
+    optionsContainer.appendChild(label);
+  });
+
+  // Navigation buttons
+  prevBtn.disabled = currentQuestion === 0;
+  nextBtn.textContent = currentQuestion === quiz.questions.length - 1 ? "Finish" : "Next";
+  nextBtn.className = currentQuestion === quiz.questions.length - 1 
+    ? "btn btn-success" 
+    : "btn btn-primary";
+
+  // Show submit area near end
+  submitArea.classList.toggle('d-none', currentQuestion < quiz.questions.length - 2);
+
+  // Update progress
+  const progress = ((currentQuestion + 1) / quiz.questions.length) * 100;
+  progressBar.style.width = `${progress}%`;
+  progressBar.setAttribute('aria-valuenow', Math.round(progress));
+  progressBar.textContent = `${Math.round(progress)}%`;
+
+  // Highlight answered questions in dots
+  updateDots();
+}
+
+// ────────────────────────────────────────────────
+//  Question dots / jump navigation
+// ────────────────────────────────────────────────
+
+function updateDots() {
+  questionDots.innerHTML = '';
+  quiz.questions.forEach((_, i) => {
+    const dot = document.createElement('button');
+    dot.className = `btn btn-sm rounded-circle mx-1 ${i === currentQuestion ? 'btn-primary' : answers[i] !== null ? 'btn-success' : 'btn-outline-secondary'}`;
+    dot.style.width = '32px';
+    dot.style.height = '32px';
+    dot.textContent = i + 1;
+    dot.onclick = () => {
+      currentQuestion = i;
+      renderQuestion();
+    };
+    questionDots.appendChild(dot);
+  });
+}
+
+// ────────────────────────────────────────────────
+//  Navigation
+// ────────────────────────────────────────────────
+
+prevBtn.onclick = () => {
+  if (currentQuestion > 0) {
+    currentQuestion--;
+    renderQuestion();
+  }
+};
+
+nextBtn.onclick = () => {
+  // Save current answer
+  const selected = document.querySelector(`input[name="q${currentQuestion}"]:checked`);
+  answers[currentQuestion] = selected ? parseInt(selected.value) : null;
+
+  if (currentQuestion < quiz.questions.length - 1) {
+    currentQuestion++;
+    renderQuestion();
+  } else {
+    submitQuiz();
+  }
+};
+
+// ────────────────────────────────────────────────
+//  Submit
+// ────────────────────────────────────────────────
+
+function submitQuiz(auto = false) {
+  if (!auto && !confirm("Are you sure you want to submit the quiz?")) return;
+
+  clearInterval(timerInterval);
+
+  // In real app → POST answers to backend
+  let score = 0;
+  quiz.questions.forEach((q, i) => {
+    if (answers[i] === q.correct) score++;
+  });
+
+  const percentage = Math.round((score / quiz.questions.length) * 100);
+
+  alert(`Quiz submitted!\n\nYour score: ${score}/${quiz.questions.length} (${percentage}%)\n\n(In real app → results saved & shown on assessment page)`);
+
+  // Redirect to results / assessment page
+  setTimeout(() => {
+    window.location.href = 'assessment.html';
+  }, 1500);
+}
+
+// ────────────────────────────────────────────────
+//  Init
+// ────────────────────────────────────────────────
+
+renderQuestion();
+startTimer();
+
+function logout() {
+  localStorage.clear();
+  window.location.href = 'index.html';
+}
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

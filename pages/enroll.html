@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Enroll in Courses - ELP Platform</title>
+
+  <!-- Bootstrap 5.3 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+  
+  <link rel="stylesheet" href="css/style.css">
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+
+  <style>
+    body { background-color: #f5f7ff; font-family: 'Segoe UI', system-ui, sans-serif; }
+    .sidebar {
+      min-height: 100vh;
+      background: white;
+      border-right: 1px solid #e0e0e0;
+      position: fixed;
+      width: 240px;
+      top: 0; left: 0;
+      padding-top: 80px;
+      overflow-y: auto;
+    }
+    .sidebar .nav-link {
+      color: #495057;
+      padding: 0.9rem 1.5rem;
+      font-weight: 500;
+    }
+    .sidebar .nav-link:hover,
+    .sidebar .nav-link.active {
+      background-color: #e7f0ff;
+      color: #0d6efd;
+    }
+    .sidebar .nav-link i { width: 24px; text-align: center; margin-right: 12px; }
+    .main-content { margin-left: 240px; padding: 2rem 2.5rem; }
+    .top-navbar {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 1000;
+      background: white;
+      border-bottom: 1px solid #e0e0e0;
+      padding: 1rem 2.5rem;
+    }
+    .course-card {
+      border: none;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+      transition: all 0.25s ease;
+      background: white;
+    }
+    .course-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 12px 32px rgba(0,0,0,0.12);
+    }
+    .course-thumbnail {
+      height: 180px;
+      background-size: cover;
+      background-position: center;
+    }
+    .enrolled-badge {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      font-size: 0.85rem;
+      padding: 0.5em 1em;
+    }
+    .btn-enroll {
+      font-weight: 500;
+    }
+  </style>
+</head>
+<body>
+
+<!-- Top Navbar -->
+<nav class="top-navbar navbar navbar-expand-lg">
+  <div class="container-fluid">
+    <a class="navbar-brand fw-bold fs-4" href="../dashboard.html">
+      ELP <span class="text-primary">Platform</span>
+    </a>
+    <div class="ms-auto d-flex align-items-center gap-4">
+      <div class="dropdown">
+        <a class="d-flex align-items-center text-decoration-none dropdown-toggle" href="#" data-bs-toggle="dropdown">
+          <div class="me-3 text-end">
+            <div id="userFullName" class="fw-medium">Loading...</div>
+            <small id="userRoleBadge" class="text-muted"></small>
+          </div>
+          <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center" style="width:42px;height:42px;">
+            <i class="fas fa-user"></i>
+          </div>
+        </a>
+        <ul class="dropdown-menu dropdown-menu-end">
+          <li><a class="dropdown-item" href="profile.html"><i class="fas fa-user me-2"></i> Profile</a></li>
+          <li><hr class="dropdown-divider"></li>
+          <li><a class="dropdown-item text-danger" href="#" onclick="logout()"><i class="fas fa-sign-out-alt me-2"></i> Logout</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- Sidebar -->
+<div class="sidebar">
+  <div class="nav flex-column" id="sidebarMenu"></div>
+</div>
+
+<!-- Main Content -->
+<div class="main-content">
+
+  <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+    <h2 class="mb-0 fw-bold">Browse & Enroll in Courses</h2>
+    <small class="text-muted">Discover new learning opportunities</small>
+  </div>
+
+  <!-- Filters & Search -->
+  <div class="row g-3 mb-5">
+    <div class="col-md-5">
+      <div class="input-group">
+        <span class="input-group-text bg-white border-end-0"><i class="fas fa-search text-muted"></i></span>
+        <input type="text" id="searchInput" class="form-control border-start-0" placeholder="Search by title, instructor or keyword...">
+      </div>
+    </div>
+    <div class="col-md-4">
+      <select id="categoryFilter" class="form-select">
+        <option value="">All Categories</option>
+        <option value="Database">Database</option>
+        <option value="Programming">Programming</option>
+        <option value="Web Development">Web Development</option>
+        <option value="Data Science">Data Science</option>
+        <option value="Others">Others</option>
+      </select>
+    </div>
+    <div class="col-md-3">
+      <select id="sortFilter" class="form-select">
+        <option value="newest">Newest First</option>
+        <option value="popular">Most Popular</option>
+        <option value="title">Title A–Z</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Course Grid -->
+  <div class="row g-4" id="courseGrid">
+    <!-- Courses populated by JavaScript -->
+  </div>
+
+  <!-- No results message -->
+  <div id="noResults" class="text-center py-5 d-none">
+    <i class="fas fa-search fa-3x text-muted mb-3"></i>
+    <h5>No courses found matching your criteria</h5>
+    <p class="text-muted">Try adjusting your search or filters</p>
+  </div>
+
+</div>
+
+<script>
+// ────────────────────────────────────────────────
+//  Role check + UI setup (only students should see this page)
+// ────────────────────────────────────────────────
+
+const role = localStorage.getItem('userRole') || 'student';
+
+if (role !== 'student') {
+  alert("This page is only available for students.");
+  window.location.href = '../dashboard.html';
+}
+
+const name = localStorage.getItem('userName') || 'Student';
+document.getElementById('userFullName').textContent = name;
+document.getElementById('userRoleBadge').textContent = 'Student';
+
+// Sidebar for student
+document.getElementById('sidebarMenu').innerHTML = `
+  <a href="../dashboard.html" class="nav-link"><i class="fas fa-home"></i> Dashboard</a>
+  <a href="courses.html" class="nav-link"><i class="fas fa-book-open"></i> My Courses</a>
+  <a href="enroll.html" class="nav-link active"><i class="fas fa-search"></i> Browse & Enroll</a>
+  <a href="assessment.html" class="nav-link"><i class="fas fa-tasks"></i> Assessments</a>
+  <a href="profile.html" class="nav-link"><i class="fas fa-user"></i> Profile</a>
+`;
+
+// ────────────────────────────────────────────────
+//  Sample course data (later → fetch from /api/courses)
+// ────────────────────────────────────────────────
+
+let allCourses = [
+  { id:1, title:"Database Systems with MySQL", category:"Database", instructor:"Prof. Rahman", level:"Intermediate", thumbnail:"https://images.unsplash.com/photo-1517430816045-df4b7de11d1d?w=800", description:"Learn relational databases, normalization, SQL queries, indexing and performance tuning.", enrolled:false, enrolledDate:null, progress:0 },
+  { id:2, title:"Modern JavaScript & ES6+", category:"Programming", instructor:"Sadia Akter", level:"Beginner", thumbnail:"https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=800", description:"Master modern JavaScript, async/await, modules, destructuring, promises and more.", enrolled:true, enrolledDate:"2025-02-10", progress:42 },
+  { id:3, title:"Full-Stack Web Development Bootcamp", category:"Web Development", instructor:"Asif Amin", level:"Intermediate", thumbnail:"https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=800", description:"HTML, CSS, JavaScript, React, Node.js, Express, MongoDB & deployment.", enrolled:false, progress:0 },
+  { id:4, title:"Python for Data Science & Machine Learning", category:"Data Science", instructor:"Dr. Karim", level:"Beginner", thumbnail:"https://images.unsplash.com/photo-1551288049-b1f4d7b0d6e8?w=800", description:"NumPy, Pandas, Matplotlib, Scikit-learn, basic ML models.", enrolled:false, progress:0 },
+  { id:5, title:"Advanced SQL & Database Optimization", category:"Database", instructor:"Prof. Rahman", level:"Advanced", thumbnail:"https://images.unsplash.com/photo-1518770660439-4636190af475?w=800", description:"Joins, subqueries, window functions, query optimization, indexing strategies.", enrolled:true, enrolledDate:"2025-01-15", progress:78 }
+];
+
+// ────────────────────────────────────────────────
+//  Render function
+// ────────────────────────────────────────────────
+
+function renderCourses(courses) {
+  const grid = document.getElementById('courseGrid');
+  const noResults = document.getElementById('noResults');
+  grid.innerHTML = '';
+
+  if (courses.length === 0) {
+    noResults.classList.remove('d-none');
+    return;
+  }
+
+  noResults.classList.add('d-none');
+
+  courses.forEach(course => {
+    const col = document.createElement('div');
+    col.className = 'col-lg-4 col-md-6';
+
+    const isEnrolled = course.enrolled;
+
+    col.innerHTML = `
+      <div class="course-card position-relative">
+        <div class="course-thumbnail" style="background-image: url('${course.thumbnail}')"></div>
+        ${isEnrolled ? `<span class="badge bg-success enrolled-badge">Enrolled</span>` : ''}
+        
+        <div class="card-body">
+          <h5 class="card-title mb-2">${course.title}</h5>
+          <p class="text-muted small mb-1">By ${course.instructor} • ${course.level}</p>
+          <p class="card-text text-secondary mb-3" style="font-size:0.95rem;">
+            ${course.description.substring(0, 110)}${course.description.length > 110 ? '...' : ''}
+          </p>
+
+          ${isEnrolled ? `
+            <div class="mb-3">
+              <div class="progress" style="height:8px;">
+                <div class="progress-bar bg-success" role="progressbar" style="width: ${course.progress}%" aria-valuenow="${course.progress}" aria-valuemin="0" aria-valuemax="100"></div>
+              </div>
+              <small class="text-muted mt-1 d-block">${course.progress}% complete • Started ${course.enrolledDate}</small>
+            </div>
+            <a href="courses.html" class="btn btn-outline-primary btn-sm w-100">Continue Learning</a>
+          ` : `
+            <button class="btn btn-primary btn-enroll w-100" onclick="enrollCourse(${course.id})">
+              <i class="fas fa-plus-circle me-2"></i> Enroll Now
+            </button>
+          `}
+        </div>
+      </div>
+    `;
+    grid.appendChild(col);
+  });
+}
+
+// ────────────────────────────────────────────────
+//  Filtering & Search logic
+// ────────────────────────────────────────────────
+
+function filterAndRender() {
+  let filtered = [...allCourses];
+
+  // Search
+  const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
+  if (searchTerm) {
+    filtered = filtered.filter(c => 
+      c.title.toLowerCase().includes(searchTerm) ||
+      c.instructor.toLowerCase().includes(searchTerm) ||
+      c.description.toLowerCase().includes(searchTerm)
+    );
+  }
+
+  // Category
+  const category = document.getElementById('categoryFilter').value;
+  if (category) {
+    filtered = filtered.filter(c => c.category === category);
+  }
+
+  // Sort (simple demo – you can expand later)
+  const sort = document.getElementById('sortFilter').value;
+  if (sort === 'title') {
+    filtered.sort((a,b) => a.title.localeCompare(b.title));
+  } else if (sort === 'popular') {
+    // fake popularity – in real app use enrollment count
+    filtered.sort((a,b) => (b.enrolled ? 1 : 0) - (a.enrolled ? 1 : 0));
+  }
+
+  renderCourses(filtered);
+}
+
+// Event listeners
+document.getElementById('searchInput').addEventListener('input', filterAndRender);
+document.getElementById('categoryFilter').addEventListener('change', filterAndRender);
+document.getElementById('sortFilter').addEventListener('change', filterAndRender);
+
+// Initial render
+filterAndRender();
+
+// ────────────────────────────────────────────────
+//  Enroll action (demo)
+// ────────────────────────────────────────────────
+
+function enrollCourse(courseId) {
+  if (confirm("Do you want to enroll in this course?")) {
+    // In real app → POST /api/enrollments { courseId }
+    alert(`Enrollment request sent for course #${courseId}\n\nYou will see it in "My Courses" shortly.`);
+    
+    // Simulate enrollment for demo
+    const course = allCourses.find(c => c.id === courseId);
+    if (course) {
+      course.enrolled = true;
+      course.enrolledDate = new Date().toISOString().split('T')[0];
+      course.progress = 0;
+      filterAndRender();
+    }
+  }
+}
+
+function logout() {
+  localStorage.clear();
+  window.location.href = 'index.html';
+}
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

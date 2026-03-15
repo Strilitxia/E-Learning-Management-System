@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Assessments - ELP Platform</title>
+
+  <!-- Bootstrap 5.3 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+  
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+
+  <style>
+    body { background-color: #f5f7ff; font-family: 'Segoe UI', system-ui, sans-serif; }
+    .sidebar {
+      min-height: 100vh;
+      background: white;
+      border-right: 1px solid #e0e0e0;
+      position: fixed;
+      width: 240px;
+      top: 0; left: 0;
+      padding-top: 80px;
+      overflow-y: auto;
+    }
+    .sidebar .nav-link {
+      color: #495057;
+      padding: 0.9rem 1.5rem;
+      font-weight: 500;
+    }
+    .sidebar .nav-link:hover,
+    .sidebar .nav-link.active {
+      background-color: #e7f0ff;
+      color: #0d6efd;
+    }
+    .sidebar .nav-link i { width: 24px; text-align: center; margin-right: 12px; }
+    .main-content { margin-left: 240px; padding: 2rem 2.5rem; }
+    .top-navbar {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 1000;
+      background: white;
+      border-bottom: 1px solid #e0e0e0;
+      padding: 1rem 2.5rem;
+    }
+    .quiz-card { border-radius: 10px; box-shadow: 0 3px 12px rgba(0,0,0,0.08); }
+    .score-badge { font-size: 1.1rem; padding: 0.5em 1em; }
+  </style>
+</head>
+<body>
+
+<!-- Top Navbar -->
+<nav class="top-navbar navbar navbar-expand-lg">
+  <div class="container-fluid">
+    <a class="navbar-brand fw-bold fs-4" href="../dashboard.html">
+      ELP <span class="text-primary">Platform</span>
+    </a>
+    <div class="ms-auto d-flex align-items-center gap-4">
+      <div class="dropdown">
+        <a class="d-flex align-items-center text-decoration-none dropdown-toggle" href="#" data-bs-toggle="dropdown">
+          <div class="me-3 text-end">
+            <div id="userFullName" class="fw-medium">Loading...</div>
+            <small id="userRoleBadge" class="text-muted"></small>
+          </div>
+          <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center" style="width:42px;height:42px;">
+            <i class="fas fa-user"></i>
+          </div>
+        </a>
+        <ul class="dropdown-menu dropdown-menu-end">
+          <li><a class="dropdown-item" href="profile.html"><i class="fas fa-user me-2"></i> Profile</a></li>
+          <li><hr class="dropdown-divider"></li>
+          <li><a class="dropdown-item text-danger" href="#" onclick="logout()"><i class="fas fa-sign-out-alt me-2"></i> Logout</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- Sidebar -->
+<div class="sidebar">
+  <div class="nav flex-column" id="sidebarMenu"></div>
+</div>
+
+<!-- Main Content -->
+<div class="main-content">
+
+  <h2 class="mb-4 fw-bold">Assessments & Performance</h2>
+
+  <!-- Student View -->
+  <div id="studentView" class="d-none">
+    <h5 class="mb-3">Your Pending / Available Assessments</h5>
+    <div class="list-group mb-5" id="studentPendingQuizzes"></div>
+
+    <h5 class="mb-3 mt-5">Completed Assessments</h5>
+    <div class="table-responsive">
+      <table class="table table-hover align-middle">
+        <thead class="table-light">
+          <tr>
+            <th>Course</th>
+            <th>Assessment</th>
+            <th>Date Taken</th>
+            <th>Score</th>
+            <th>Status</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="studentPastResults"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Instructor View -->
+  <div id="instructorView" class="d-none">
+    <div class="card shadow-sm">
+      <div class="card-header bg-white d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">Manage Assessments</h5>
+        <button class="btn btn-primary btn-sm" onclick="alert('Create new quiz form would open here')">
+          <i class="fas fa-plus me-1"></i> Create New Assessment
+        </button>
+      </div>
+      <div class="card-body">
+        <div class="list-group" id="instructorAssessmentsList"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Admin View (simple) -->
+  <div id="adminView" class="d-none">
+    <div class="alert alert-info">
+      <i class="fas fa-info-circle me-2"></i>
+      System-wide assessment overview (Admin)
+    </div>
+    <div class="row g-4">
+      <div class="col-md-4">
+        <div class="card text-center border-primary">
+          <div class="card-body">
+            <h5>Total Assessments</h5>
+            <h3 class="text-primary">47</h3>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card text-center border-success">
+          <div class="card-body">
+            <h5>Average Completion Rate</h5>
+            <h3 class="text-success">64%</h3>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card text-center border-warning">
+          <div class="card-body">
+            <h5>Pending Manual Grading</h5>
+            <h3 class="text-warning">9</h3>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ────────────────────────────────────────────────
+//  Role-based rendering
+// ────────────────────────────────────────────────
+
+const role = localStorage.getItem('userRole') || 'student';
+const name = localStorage.getItem('userName') || 'User';
+
+document.getElementById('userFullName').textContent = name;
+document.getElementById('userRoleBadge').textContent = role.charAt(0).toUpperCase() + role.slice(1);
+
+let sidebarHTML = '';
+let activeView = '';
+
+if (role === 'student') {
+  sidebarHTML = `
+    <a href="../dashboard.html" class="nav-link"><i class="fas fa-home"></i> Dashboard</a>
+    <a href="courses.html" class="nav-link"><i class="fas fa-book-open"></i> My Courses</a>
+    <a href="enroll.html" class="nav-link"><i class="fas fa-search"></i> Browse Courses</a>
+    <a href="assessment.html" class="nav-link active"><i class="fas fa-tasks"></i> Assessments</a>
+    <a href="profile.html" class="nav-link"><i class="fas fa-user"></i> Profile</a>
+  `;
+  activeView = 'studentView';
+} else if (role === 'instructor') {
+  sidebarHTML = `
+    <a href="../dashboard.html" class="nav-link"><i class="fas fa-home"></i> Dashboard</a>
+    <a href="courses.html" class="nav-link"><i class="fas fa-chalkboard-teacher"></i> My Courses</a>
+    <a href="content.html" class="nav-link"><i class="fas fa-upload"></i> Content</a>
+    <a href="assessment.html" class="nav-link active"><i class="fas fa-check-double"></i> Assessments</a>
+    <a href="profile.html" class="nav-link"><i class="fas fa-user"></i> Profile</a>
+  `;
+  activeView = 'instructorView';
+} else if (role === 'admin') {
+  sidebarHTML = `
+    <a href="../dashboard.html" class="nav-link"><i class="fas fa-home"></i> Dashboard</a>
+    <a href="admin.html" class="nav-link"><i class="fas fa-users-cog"></i> Users</a>
+    <a href="admin.html#courses" class="nav-link"><i class="fas fa-book"></i> Courses</a>
+    <a href="assessment.html" class="nav-link active"><i class="fas fa-tasks"></i> Assessments</a>
+    <a href="profile.html" class="nav-link"><i class="fas fa-user-shield"></i> Profile</a>
+  `;
+  activeView = 'adminView';
+}
+
+document.getElementById('sidebarMenu').innerHTML = sidebarHTML;
+document.getElementById(activeView).classList.remove('d-none');
+
+// ────────────────────────────────────────────────
+//  Student – Demo assessments data
+// ────────────────────────────────────────────────
+
+const studentAssessments = [
+  {
+    quizId: 101,
+    course: "Database Systems with MySQL",
+    title: "Midterm Quiz",
+    dueDate: "2026-03-20",
+    status: "pending",
+    questionsCount: 20,
+    timeLimit: 45
+  },
+  {
+    quizId: 102,
+    course: "Modern JavaScript & ES6+",
+    title: "Final Test",
+    dueDate: "2026-03-28",
+    status: "pending",
+    questionsCount: 25,
+    timeLimit: 60
+  },
+  {
+    quizId: 201,
+    course: "Database Systems with MySQL",
+    title: "Quiz 1: ER Modeling",
+    dateTaken: "2026-02-28",
+    score: 92,
+    maxScore: 100,
+    status: "completed"
+  },
+  {
+    quizId: 202,
+    course: "Full-Stack Web Development",
+    title: "Midterm Exam",
+    dateTaken: "2026-02-10",
+    score: 68,
+    maxScore: 100,
+    status: "completed"
+  }
+];
+
+
+// Render pending quizzes (with links to take-quiz.html)
+function renderPendingQuizzes() {
+  const container = document.getElementById('studentPendingQuizzes');
+  container.innerHTML = '';
+
+  const pending = studentAssessments.filter(a => a.status === 'pending');
+
+  if (pending.length === 0) {
+    container.innerHTML = '<p class="text-muted text-center py-4">No pending assessments at the moment.</p>';
+    return;
+  }
+
+  pending.forEach(quiz => {
+    const item = document.createElement('div');
+    item.className = 'list-group-item';
+    item.innerHTML = `
+      <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+        <div>
+          <h6 class="mb-1">${quiz.title}</h6>
+          <p class="mb-1 text-muted">${quiz.course}</p>
+          <small class="text-danger">Due: ${quiz.dueDate}</small>
+        </div>
+        <div class="text-end">
+          <small class="d-block mb-2">${quiz.questionsCount} questions • ${quiz.timeLimit} min</small>
+          <a href="take-quiz.html?quizId=${quiz.quizId}" class="btn btn-primary btn-sm">
+            <i class="fas fa-play me-1"></i> Start Quiz
+          </a>
+        </div>
+      </div>
+    `;
+    container.appendChild(item);
+  });
+}
+
+// Render completed assessments
+function renderCompletedResults() {
+  const tbody = document.getElementById('studentPastResults');
+  tbody.innerHTML = '';
+
+  const completed = studentAssessments.filter(a => a.status === 'completed');
+
+  completed.forEach(res => {
+    const percentage = Math.round((res.score / res.maxScore) * 100);
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${res.course}</td>
+      <td>${res.title}</td>
+      <td>${res.dateTaken}</td>
+      <td>
+        <span class="badge ${percentage >= 80 ? 'bg-success' : percentage >= 60 ? 'bg-warning' : 'bg-danger'} score-badge">
+          ${res.score}/${res.maxScore} (${percentage}%)
+        </span>
+      </td>
+      <td><span class="badge bg-success">Completed</span></td>
+      <td>
+        <button class="btn btn-sm btn-outline-secondary">View Details</button>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+// ────────────────────────────────────────────────
+//  Instructor – simple demo (unchanged)
+// ────────────────────────────────────────────────
+
+if (role === 'instructor') {
+  document.getElementById('instructorAssessmentsList').innerHTML = `
+    <a href="#" class="list-group-item list-group-item-action">
+      <div class="d-flex justify-content-between align-items-center">
+        <div>
+          <h6 class="mb-1">Quiz 1: Database Concepts</h6>
+          <small>Course: Database Systems with MySQL • 45 students submitted</small>
+        </div>
+        <div>
+          <span class="badge bg-warning me-2">8 pending review</span>
+          <button class="btn btn-sm btn-outline-primary">View Submissions</button>
+        </div>
+      </div>
+    </a>
+    <a href="#" class="list-group-item list-group-item-action">
+      <div class="d-flex justify-content-between align-items-center">
+        <div>
+          <h6 class="mb-1">Midterm Exam</h6>
+          <small>Course: Full-Stack Web Development • 32 students</small>
+        </div>
+        <div>
+          <span class="badge bg-success me-2">All graded</span>
+          <button class="btn btn-sm btn-outline-primary">View Results</button>
+        </div>
+      </div>
+    </a>
+  `;
+}
+
+// ────────────────────────────────────────────────
+//  Init – call render functions for student
+// ────────────────────────────────────────────────
+
+if (role === 'student') {
+  renderPendingQuizzes();
+  renderCompletedResults();
+}
+
+function logout() {
+  localStorage.clear();
+  window.location.href = 'index.html';
+}
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
