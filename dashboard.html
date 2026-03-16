@@ -6,83 +6,121 @@
   <title>ELP Dashboard - E-Learning Platform</title>
 
   <!-- Bootstrap 5.3 -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   
   <!-- Font Awesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
 
-  <!-- Chart.js (for progress & stats) -->
+  <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <style>
+    /* --- BASE LAYOUT --- */
     body {
-      background-color: #f5f7ff;
+      background-color: #f4f7fe;
       font-family: 'Segoe UI', system-ui, sans-serif;
+    }
+    .top-navbar {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 1000;
+      background: white;
+      border-bottom: 1px solid #e2e8f0;
+      padding: 0.8rem 2.5rem;
     }
     .sidebar {
       min-height: 100vh;
       background: white;
-      border-right: 1px solid #e0e0e0;
+      border-right: 1px solid #e2e8f0;
       position: fixed;
-      width: 240px;
-      top: 0;
-      left: 0;
-      padding-top: 80px;
+      width: 250px;
+      top: 0; left: 0;
+      padding-top: 85px;
       overflow-y: auto;
+      z-index: 900;
+      transition: transform 0.3s ease;
     }
     .sidebar .nav-link {
-      color: #495057;
-      padding: 0.9rem 1.5rem;
-      border-radius: 0;
+      color: #64748b;
+      padding: 0.85rem 1.5rem;
       font-weight: 500;
+      border-left: 3px solid transparent;
+      margin-bottom: 0.2rem;
     }
     .sidebar .nav-link:hover,
     .sidebar .nav-link.active {
-      background-color: #e7f0ff;
+      background-color: #f8fafc;
       color: #0d6efd;
+      border-left: 3px solid #0d6efd;
     }
     .sidebar .nav-link i {
-      width: 24px;
-      text-align: center;
-      margin-right: 12px;
+      width: 24px; text-align: center; margin-right: 12px;
     }
     .main-content {
-      margin-left: 240px;
-      padding: 2rem 2.5rem;
+      margin-left: 250px;
+      padding: 6rem 2.5rem 2rem 2.5rem;
     }
-    .top-navbar {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      z-index: 1000;
-      background: white;
-      border-bottom: 1px solid #e0e0e0;
-      padding: 1rem 2.5rem;
-    }
-    .stat-card {
-      border-radius: 12px;
-      border: none;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-      transition: transform 0.2s;
-    }
-    .stat-card:hover {
-      transform: translateY(-4px);
-    }
-    .stat-icon {
-      font-size: 2.1rem;
-      opacity: 0.9;
-    }
+
+    /* --- MOBILE RESPONSIVENESS --- */
     @media (max-width: 992px) {
       .sidebar {
-        width: 100%;
-        height: auto;
-        position: relative;
-        padding-top: 1rem;
+        transform: translateX(-100%);
+        z-index: 1040;
       }
+      .sidebar.show { transform: translateX(0); }
       .main-content {
-        margin-left: 0;
+        margin-left: 0 !important;
+        padding: 6rem 1rem 2rem 1rem;
       }
+      .top-navbar { padding: 0.8rem 1rem; }
+    }
+
+    /* --- UI ELEMENTS --- */
+    .stat-card {
+      border: none;
+      border-radius: 16px;
+      padding: 1.5rem;
+      color: white;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      transition: transform 0.2s ease-in-out;
+    }
+    .stat-card:hover { transform: translateY(-5px); }
+    .stat-card .icon-box {
+      width: 48px; height: 48px;
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.5rem;
+      background: rgba(255,255,255,0.2);
+    }
+    .bg-gradient-primary { background: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%); }
+    .bg-gradient-success { background: linear-gradient(135deg, #10b981 0%, #059669 100%); }
+    .bg-gradient-warning { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); }
+    .bg-gradient-danger  { background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); }
+    .bg-gradient-info    { background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%); }
+
+    .card-custom {
+      border: none;
+      border-radius: 16px;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+      background: white;
+    }
+    
+    /* Timeline styling */
+    .timeline {
+      border-left: 2px solid #e2e8f0;
+      padding-left: 1.5rem;
+      margin-left: 0.5rem;
+      position: relative;
+    }
+    .timeline-item { position: relative; margin-bottom: 1.5rem; }
+    .timeline-item::before {
+      content: '';
+      position: absolute;
+      left: -1.85rem; top: 0.25rem;
+      width: 12px; height: 12px;
+      border-radius: 50%;
+      background: #0d6efd;
+      border: 2px solid white;
     }
   </style>
 </head>
@@ -91,26 +129,46 @@
 <!-- Top Navbar -->
 <nav class="top-navbar navbar navbar-expand-lg">
   <div class="container-fluid">
+    <button class="btn btn-light d-lg-none me-3 border-0" onclick="document.querySelector('.sidebar').classList.toggle('show')">
+      <i class="fas fa-bars"></i>
+    </button>
+
     <a class="navbar-brand fw-bold fs-4" href="#">
       ELP <span class="text-primary">Platform</span>
     </a>
 
-    <div class="ms-auto d-flex align-items-center gap-4">
+    <div class="ms-auto d-flex align-items-center gap-3">
+      <!-- Notification Bell -->
+      <div class="dropdown">
+        <button class="btn btn-light rounded-circle position-relative" data-bs-toggle="dropdown" style="width: 42px; height: 42px;">
+          <i class="far fa-bell"></i>
+          <span class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle"></span>
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end shadow-sm p-2" style="width: 300px;">
+          <li><h6 class="dropdown-header text-dark fw-bold">Notifications</h6></li>
+          <li><a class="dropdown-item py-2 border-bottom" href="#"><small class="text-muted d-block">2 hrs ago</small>New course matching your interests</a></li>
+          <li><a class="dropdown-item py-2" href="#"><small class="text-muted d-block">1 day ago</small>Your assignment was graded</a></li>
+          <li><hr class="dropdown-divider"></li>
+          <li><a class="dropdown-item text-center text-primary fw-medium" href="#">View all</a></li>
+        </ul>
+      </div>
+
+      <!-- User Profile Dropdown -->
       <div class="dropdown">
         <a class="d-flex align-items-center text-decoration-none dropdown-toggle" href="#" data-bs-toggle="dropdown">
-          <div class="me-3 text-end">
-            <div id="userFullName" class="fw-medium">Loading...</div>
-            <small id="userRoleBadge" class="text-muted"></small>
+          <div class="me-3 text-end d-none d-sm-block">
+            <div id="userFullName" class="fw-bold text-dark mb-0 lh-1">Loading...</div>
+            <small id="userRoleBadge" class="text-muted" style="font-size: 0.8rem;"></small>
           </div>
-          <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center" style="width:42px; height:42px;">
+          <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center shadow-sm" style="width:42px; height:42px;">
             <i class="fas fa-user"></i>
           </div>
         </a>
-        <ul class="dropdown-menu dropdown-menu-end">
-          <li><a class="dropdown-item" href="pages/profile.html"><i class="fas fa-user me-2"></i> Profile</a></li>
-          <li><a class="dropdown-item" href="settings.html"><i class="fas fa-cog me-2"></i> Settings</a></li>
+        <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+          <li><a class="dropdown-item py-2" href="pages/profile.html"><i class="fas fa-user-circle me-2 text-muted"></i> My Profile</a></li>
+          <li><a class="dropdown-item py-2" href="settings.html"><i class="fas fa-cog me-2 text-muted"></i> Settings</a></li>
           <li><hr class="dropdown-divider"></li>
-          <li><a class="dropdown-item text-danger" href="#" onclick="logout()"><i class="fas fa-sign-out-alt me-2"></i> Logout</a></li>
+          <li><a class="dropdown-item py-2 text-danger" href="#" onclick="logout()"><i class="fas fa-sign-out-alt me-2"></i> Logout</a></li>
         </ul>
       </div>
     </div>
@@ -118,224 +176,409 @@
 </nav>
 
 <!-- Sidebar -->
-<div class="sidebar">
+<div class="sidebar shadow-sm">
   <div class="nav flex-column" id="sidebarMenu">
-    <!-- Content will be filled by JavaScript based on role -->
+    <!-- Populated by JS -->
   </div>
 </div>
 
 <!-- Main Content -->
 <div class="main-content">
 
-  <h2 class="mb-1 fw-bold">Welcome back, <span id="userGreetingName">User</span>!</h2>
-  <p class="text-muted mb-5" id="roleWelcomeText">Here's what's happening in your learning space today.</p>
+  <!-- Dynamic Greeting Header -->
+  <div class="d-flex justify-content-between align-items-end mb-4 flex-wrap gap-3">
+    <div>
+      <h2 class="fw-bold text-dark mb-1"><span id="timeGreeting">Good day</span>, <span id="userGreetingName" class="text-primary">User</span>! 👋</h2>
+      <p class="text-muted mb-0" id="roleWelcomeText">Here is what is happening in your learning space today.</p>
+    </div>
+    <div class="text-end d-none d-md-block">
+      <div class="bg-white px-4 py-2 rounded-pill shadow-sm text-muted fw-medium border">
+        <i class="far fa-calendar-alt me-2 text-primary"></i> <span id="currentDate"></span>
+      </div>
+    </div>
+  </div>
 
-  <!-- Role-based dashboard content -->
+  <!-- ==========================================
+       STUDENT DASHBOARD
+       ========================================== -->
   <div id="studentDashboard" class="d-none">
-    <div class="row g-4">
-      <div class="col-lg-4 col-md-6">
-        <div class="card stat-card bg-primary text-white">
-          <div class="card-body">
-            <div class="d-flex justify-content-between align-items-center">
-              <div>
-                <h6 class="card-title mb-0 opacity-75">Enrolled Courses</h6>
-                <h3 class="mb-0 mt-1" id="enrolledCount">8</h3>
-              </div>
-              <i class="fas fa-book stat-icon"></i>
+    
+    <!-- Top Stat Cards -->
+    <div class="row g-4 mb-4">
+      <div class="col-xl-3 col-sm-6">
+        <div class="stat-card bg-gradient-primary">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <p class="mb-1 opacity-75 fw-medium">Enrolled Courses</p>
+              <h2 class="mb-0 fw-bold">4</h2>
             </div>
+            <div class="icon-box"><i class="fas fa-book-open"></i></div>
+          </div>
+        </div>
+      </div>
+      <div class="col-xl-3 col-sm-6">
+        <div class="stat-card bg-gradient-success">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <p class="mb-1 opacity-75 fw-medium">Completed</p>
+              <h2 class="mb-0 fw-bold">2</h2>
+            </div>
+            <div class="icon-box"><i class="fas fa-check-circle"></i></div>
+          </div>
+        </div>
+      </div>
+      <div class="col-xl-3 col-sm-6">
+        <div class="stat-card bg-gradient-info">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <p class="mb-1 opacity-75 fw-medium">Certificates</p>
+              <h2 class="mb-0 fw-bold">2</h2>
+            </div>
+            <div class="icon-box"><i class="fas fa-award"></i></div>
+          </div>
+        </div>
+      </div>
+      <div class="col-xl-3 col-sm-6">
+        <div class="stat-card bg-gradient-warning">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <p class="mb-1 opacity-75 fw-medium">Learning Streak</p>
+              <h2 class="mb-0 fw-bold">5 Days <i class="fas fa-fire fs-5 text-white"></i></h2>
+            </div>
+            <div class="icon-box"><i class="fas fa-bolt"></i></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Action Row (Continue Learning & Deadlines) -->
+    <div class="row g-4 mb-4">
+      <!-- Continue Learning -->
+      <div class="col-lg-7">
+        <div class="card card-custom h-100 p-4">
+          <div class="d-flex justify-content-between align-items-center mb-4">
+            <h5 class="fw-bold mb-0">Continue Learning</h5>
+            <a href="pages/courses.html" class="text-decoration-none small fw-medium">View all courses</a>
+          </div>
+          <div class="d-flex align-items-center gap-4 bg-light p-3 rounded-4 border">
+            <img src="https://images.unsplash.com/photo-1517430816045-df4b7de11d1d?w=150" alt="Course" class="rounded-3" style="width: 100px; height: 80px; object-fit: cover;">
+            <div class="flex-grow-1">
+              <h6 class="fw-bold mb-1">Database Systems with MySQL</h6>
+              <p class="text-muted small mb-2">Module 4: Joins & Subqueries</p>
+              <div class="d-flex align-items-center gap-3">
+                <div class="progress flex-grow-1" style="height: 8px;">
+                  <div class="progress-bar bg-primary" style="width: 65%"></div>
+                </div>
+                <span class="small fw-bold">65%</span>
+              </div>
+            </div>
+            <button class="btn btn-primary rounded-pill px-4">Resume</button>
           </div>
         </div>
       </div>
 
-      <div class="col-lg-4 col-md-6">
-        <div class="card stat-card bg-success text-white">
-          <div class="card-body">
-            <div class="d-flex justify-content-between align-items-center">
-              <div>
-                <h6 class="card-title mb-0 opacity-75">Overall Progress</h6>
-                <h3 class="mb-0 mt-1"><span id="overallProgress">68</span>%</h3>
-              </div>
-              <i class="fas fa-chart-line stat-icon"></i>
+      <!-- Upcoming Deadlines -->
+      <div class="col-lg-5">
+        <div class="card card-custom h-100 p-4">
+          <h5 class="fw-bold mb-4">Upcoming Deadlines</h5>
+          <div class="timeline">
+            <div class="timeline-item">
+              <h6 class="fw-bold mb-0">Database Midterm Quiz</h6>
+              <small class="text-danger fw-medium"><i class="far fa-clock me-1"></i> Due Today, 11:59 PM</small>
             </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="col-lg-4 col-md-6">
-        <div class="card stat-card bg-info text-white">
-          <div class="card-body">
-            <div class="d-flex justify-content-between align-items-center">
-              <div>
-                <h6 class="card-title mb-0 opacity-75">Certificates</h6>
-                <h3 class="mb-0 mt-1">2</h3>
-              </div>
-              <i class="fas fa-award stat-icon"></i>
+            <div class="timeline-item">
+              <h6 class="fw-bold mb-0">React Capstone Project</h6>
+              <small class="text-warning fw-medium text-dark"><i class="far fa-calendar-alt me-1"></i> Due in 3 Days</small>
+            </div>
+            <div class="timeline-item">
+              <h6 class="fw-bold mb-0">Read: JS Promises Chapter</h6>
+              <small class="text-muted"><i class="far fa-calendar-alt me-1"></i> Due Next Week</small>
             </div>
           </div>
         </div>
       </div>
     </div>
 
-    <div class="row mt-5">
-      <div class="col-12">
-        <div class="card shadow-sm">
-          <div class="card-header bg-white">
-            <h5 class="mb-0">Your Learning Progress</h5>
-          </div>
-          <div class="card-body">
-            <canvas id="progressChart" height="140"></canvas>
-          </div>
+    <!-- Charts Row -->
+    <div class="row g-4">
+      <div class="col-lg-8">
+        <div class="card card-custom p-4">
+          <h5 class="fw-bold mb-4">Study Activity (Last 7 Days)</h5>
+          <canvas id="studyActivityChart" height="100"></canvas>
+        </div>
+      </div>
+      <div class="col-lg-4">
+        <div class="card card-custom p-4">
+          <h5 class="fw-bold mb-4">Skills Progress</h5>
+          <canvas id="skillsChart" height="230"></canvas>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Instructor dashboard placeholder -->
+  <!-- ==========================================
+       INSTRUCTOR DASHBOARD
+       ========================================== -->
   <div id="instructorDashboard" class="d-none">
-    <div class="row g-4">
-      <div class="col-lg-4 col-md-6">
-        <div class="card stat-card bg-primary text-white">
-          <div class="card-body">
-            <h6 class="card-title opacity-75 mb-0">Active Courses</h6>
-            <h3 class="mb-0 mt-1">5</h3>
-          </div>
+    
+    <div class="row g-4 mb-4">
+      <div class="col-xl-3 col-sm-6">
+        <div class="stat-card bg-gradient-primary">
+          <p class="mb-1 opacity-75 fw-medium">Active Courses</p>
+          <h2 class="mb-0 fw-bold">5</h2>
         </div>
       </div>
-      <div class="col-lg-4 col-md-6">
-        <div class="card stat-card bg-success text-white">
-          <div class="card-body">
-            <h6 class="card-title opacity-75 mb-0">Total Students</h6>
-            <h3 class="mb-0 mt-1">142</h3>
-          </div>
+      <div class="col-xl-3 col-sm-6">
+        <div class="stat-card bg-gradient-success">
+          <p class="mb-1 opacity-75 fw-medium">Total Students</p>
+          <h2 class="mb-0 fw-bold">1,248</h2>
         </div>
       </div>
-      <div class="col-lg-4 col-md-6">
-        <div class="card stat-card bg-warning text-white">
-          <div class="card-body">
-            <h6 class="card-title opacity-75 mb-0">Pending Reviews</h6>
-            <h3 class="mb-0 mt-1">7</h3>
-          </div>
+      <div class="col-xl-3 col-sm-6">
+        <div class="stat-card bg-gradient-info">
+          <p class="mb-1 opacity-75 fw-medium">Avg. Course Rating</p>
+          <h2 class="mb-0 fw-bold">4.8 <i class="fas fa-star text-warning fs-5"></i></h2>
+        </div>
+      </div>
+      <div class="col-xl-3 col-sm-6">
+        <div class="stat-card bg-gradient-warning">
+          <p class="mb-1 opacity-75 fw-medium">Pending Assignments</p>
+          <h2 class="mb-0 fw-bold">24</h2>
         </div>
       </div>
     </div>
 
-    <div class="alert alert-info mt-4">
-      <i class="fas fa-lightbulb me-2"></i>
-      <strong>Quick actions:</strong> Create new course • Upload content • Check student submissions
+    <div class="row g-4 mb-4">
+      <div class="col-lg-8">
+        <div class="card card-custom p-4 h-100">
+          <h5 class="fw-bold mb-4">Student Enrollments (This Month)</h5>
+          <canvas id="enrollmentTrendChart" height="120"></canvas>
+        </div>
+      </div>
+      <div class="col-lg-4">
+        <div class="card card-custom p-4 h-100">
+          <h5 class="fw-bold mb-4">Action Items</h5>
+          <div class="list-group list-group-flush border-top border-bottom mb-3">
+            <a href="#" class="list-group-item list-group-item-action py-3 d-flex justify-content-between align-items-center px-0">
+              <div>
+                <i class="fas fa-edit text-primary me-2"></i> Grade Midterms
+                <small class="d-block text-muted">Web Dev Bootcamp</small>
+              </div>
+              <span class="badge bg-danger rounded-pill">12</span>
+            </a>
+            <a href="#" class="list-group-item list-group-item-action py-3 d-flex justify-content-between align-items-center px-0">
+              <div>
+                <i class="fas fa-comments text-success me-2"></i> Unread Q&A
+                <small class="d-block text-muted">Python Basics</small>
+              </div>
+              <span class="badge bg-warning text-dark rounded-pill">5</span>
+            </a>
+          </div>
+          <button class="btn btn-outline-primary w-100"><i class="fas fa-plus me-2"></i> Create New Content</button>
+        </div>
+      </div>
     </div>
   </div>
 
-  <!-- Admin dashboard placeholder -->
+  <!-- ==========================================
+       ADMIN DASHBOARD
+       ========================================== -->
   <div id="adminDashboard" class="d-none">
+    
+    <div class="row g-4 mb-4">
+      <div class="col-xl-3 col-sm-6">
+        <div class="stat-card bg-gradient-primary">
+          <p class="mb-1 opacity-75 fw-medium">Total Users</p>
+          <h2 class="mb-0 fw-bold">3,452</h2>
+          <small><i class="fas fa-arrow-up"></i> 12% this month</small>
+        </div>
+      </div>
+      <div class="col-xl-3 col-sm-6">
+        <div class="stat-card bg-gradient-success">
+          <p class="mb-1 opacity-75 fw-medium">Active Courses</p>
+          <h2 class="mb-0 fw-bold">128</h2>
+          <small><i class="fas fa-check"></i> 4 added today</small>
+        </div>
+      </div>
+      <div class="col-xl-3 col-sm-6">
+        <div class="stat-card bg-gradient-warning">
+          <p class="mb-1 opacity-75 fw-medium">Pending Approvals</p>
+          <h2 class="mb-0 fw-bold">7</h2>
+          <small><i class="fas fa-clock"></i> Requires action</small>
+        </div>
+      </div>
+      <div class="col-xl-3 col-sm-6">
+        <div class="stat-card bg-gradient-danger">
+          <p class="mb-1 opacity-75 fw-medium">Reported Issues</p>
+          <h2 class="mb-0 fw-bold">2</h2>
+          <small><i class="fas fa-exclamation-triangle"></i> System alerts</small>
+        </div>
+      </div>
+    </div>
+
     <div class="row g-4">
-      <div class="col-lg-3 col-md-6">
-        <div class="card stat-card bg-primary text-white">
-          <div class="card-body">
-            <h6 class="opacity-75 mb-0">Total Users</h6>
-            <h3 class="mb-0 mt-1">1,248</h3>
-          </div>
+      <div class="col-lg-8">
+        <div class="card card-custom p-4 h-100">
+          <h5 class="fw-bold mb-4">Platform Growth (Users vs Courses)</h5>
+          <canvas id="adminGrowthChart" height="120"></canvas>
         </div>
       </div>
-      <div class="col-lg-3 col-md-6">
-        <div class="card stat-card bg-success text-white">
-          <div class="card-body">
-            <h6 class="opacity-75 mb-0">Active Courses</h6>
-            <h3 class="mb-0 mt-1">47</h3>
-          </div>
-        </div>
-      </div>
-      <div class="col-lg-3 col-md-6">
-        <div class="card stat-card bg-info text-white">
-          <div class="card-body">
-            <h6 class="opacity-75 mb-0">Enrollments Today</h6>
-            <h3 class="mb-0 mt-1">89</h3>
-          </div>
-        </div>
-      </div>
-      <div class="col-lg-3 col-md-6">
-        <div class="card stat-card bg-warning text-white">
-          <div class="card-body">
-            <h6 class="opacity-75 mb-0">Pending Approvals</h6>
-            <h3 class="mb-0 mt-1">4</h3>
+      <div class="col-lg-4">
+        <div class="card card-custom p-4 h-100">
+          <h5 class="fw-bold mb-4">System Activity Log</h5>
+          <div class="timeline">
+            <div class="timeline-item">
+              <small class="text-muted">10 mins ago</small>
+              <h6 class="fw-medium mb-0">New Instructor signed up</h6>
+            </div>
+            <div class="timeline-item">
+              <small class="text-muted">1 hour ago</small>
+              <h6 class="fw-medium mb-0">Course "Advanced React" approved</h6>
+            </div>
+            <div class="timeline-item">
+              <small class="text-muted">3 hours ago</small>
+              <h6 class="fw-medium mb-0">System backup completed successfully</h6>
+            </div>
+            <div class="timeline-item">
+              <small class="text-muted">Yesterday</small>
+              <h6 class="fw-medium mb-0 text-danger">Failed login attempt spike resolved</h6>
+            </div>
           </div>
         </div>
       </div>
     </div>
+
   </div>
 
 </div>
 
 <script>
 // ────────────────────────────────────────────────
-//  Role-based logic + fake data (replace with real API later)
+//  Initialization & Dynamic Setup
 // ────────────────────────────────────────────────
 
+// 1. Get User Data
 const role = localStorage.getItem('userRole') || 'student';
-const name = localStorage.getItem('userName') || 'Learner';
+const name = localStorage.getItem('userName') || 'Guest Learner';
 
 document.getElementById('userFullName').textContent = name;
 document.getElementById('userGreetingName').textContent = name.split(' ')[0];
 document.getElementById('userRoleBadge').textContent = role.charAt(0).toUpperCase() + role.slice(1);
 
-// Fill sidebar based on role
+// 2. Dynamic Time Greeting & Date
+const hour = new Date().getHours();
+let greeting = "Good evening";
+if (hour < 12) greeting = "Good morning";
+else if (hour < 18) greeting = "Good afternoon";
+document.getElementById('timeGreeting').textContent = greeting;
+
+const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+document.getElementById('currentDate').textContent = new Date().toLocaleDateString('en-US', options);
+
+// 3. Populate Sidebar Menu
 const menu = document.getElementById('sidebarMenu');
-
-let menuHTML = '';
-
 if (role === 'student') {
-  menuHTML = `
-    <a href="dashboard.html" class="nav-link active"><i class="fas fa-home"></i> Dashboard</a>
-    <a href="pages/courses.html" class="nav-link"><i class="fas fa-book-open"></i> My Courses</a>
-    <a href="pages/enroll.html" class="nav-link"><i class="fas fa-search"></i> Browse Courses</a>
-    <a href="pages/assessment.html" class="nav-link"><i class="fas fa-tasks"></i> Assessments</a>
+  menu.innerHTML = `
+    <a href="dashboard.html" class="nav-link active"><i class="fas fa-th-large"></i> Dashboard</a>
+    <a href="pages/courses.html" class="nav-link"><i class="fas fa-book"></i> My Courses</a>
+    <a href="pages/enroll.html" class="nav-link"><i class="fas fa-compass"></i> Explore</a>
+    <a href="pages/assessment.html" class="nav-link"><i class="fas fa-pen-square"></i> Assessments</a>
     <a href="pages/profile.html" class="nav-link"><i class="fas fa-user"></i> Profile</a>
   `;
   document.getElementById('studentDashboard').classList.remove('d-none');
-} 
-else if (role === 'instructor') {
-  menuHTML = `
-    <a href="dashboard.html" class="nav-link active"><i class="fas fa-home"></i> Dashboard</a>
-    <a href="pages/courses.html" class="nav-link"><i class="fas fa-chalkboard-teacher"></i> My Courses</a>
-    <a href="pages/content.html" class="nav-link"><i class="fas fa-upload"></i> Upload Content</a>
-    <a href="pages/assessment.html" class="nav-link"><i class="fas fa-check-double"></i> Student Results</a>
+} else if (role === 'instructor') {
+  menu.innerHTML = `
+    <a href="dashboard.html" class="nav-link active"><i class="fas fa-th-large"></i> Dashboard</a>
+    <a href="pages/courses.html" class="nav-link"><i class="fas fa-chalkboard-teacher"></i> Course Manager</a>
+    <a href="pages/content.html" class="nav-link"><i class="fas fa-upload"></i> Content Library</a>
+    <a href="pages/assessment.html" class="nav-link"><i class="fas fa-chart-line"></i> Student Results</a>
     <a href="pages/profile.html" class="nav-link"><i class="fas fa-user"></i> Profile</a>
   `;
   document.getElementById('instructorDashboard').classList.remove('d-none');
-} 
-else if (role === 'admin') {
-  menuHTML = `
-    <a href="dashboard.html" class="nav-link active"><i class="fas fa-home"></i> Dashboard</a>
-    <a href="admin.html" class="nav-link"><i class="fas fa-users-cog"></i> Manage Users</a>
-    <a href="admin.html#courses" class="nav-link"><i class="fas fa-book"></i> Course Moderation</a>
-    <a href="admin.html#analytics" class="nav-link"><i class="fas fa-chart-bar"></i> Analytics</a>
+  document.getElementById('roleWelcomeText').textContent = "Here is an overview of your teaching performance.";
+} else if (role === 'admin') {
+  menu.innerHTML = `
+    <a href="dashboard.html" class="nav-link active"><i class="fas fa-th-large"></i> Dashboard</a>
+    <a href="pages/admin.html" class="nav-link"><i class="fas fa-users-cog"></i> User Management</a>
+    <a href="pages/admin.html#courses" class="nav-link"><i class="fas fa-shield-alt"></i> Moderation</a>
     <a href="pages/profile.html" class="nav-link"><i class="fas fa-user-shield"></i> Admin Profile</a>
   `;
   document.getElementById('adminDashboard').classList.remove('d-none');
+  document.getElementById('roleWelcomeText').textContent = "Platform oversight and system health metrics.";
 }
 
-menu.innerHTML = menuHTML;
+// ────────────────────────────────────────────────
+//  Chart.js Renderings (Role Specific)
+// ────────────────────────────────────────────────
+Chart.defaults.font.family = "'Segoe UI', system-ui, sans-serif";
+Chart.defaults.color = "#64748b";
 
-// Simple demo progress chart (for students)
 if (role === 'student') {
-  const ctx = document.getElementById('progressChart').getContext('2d');
-  new Chart(ctx, {
-    type: 'bar',
+  // Line Chart: Study Activity
+  new Chart(document.getElementById('studyActivityChart').getContext('2d'), {
+    type: 'line',
     data: {
-      labels: ['HTML', 'CSS', 'JS', 'React', 'Node', 'SQL'],
+      labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
       datasets: [{
-        label: 'Progress (%)',
-        data: [92, 85, 68, 45, 30, 12],
-        backgroundColor: 'rgba(13, 110, 253, 0.65)',
-        borderColor: 'rgba(13, 110, 253, 0.9)',
-        borderWidth: 1
+        label: 'Hours Studied',
+        data: [1.5, 2, 0.5, 3, 2.5, 4, 1],
+        borderColor: '#3b82f6',
+        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+        borderWidth: 3,
+        fill: true,
+        tension: 0.4
       }]
     },
-    options: {
-      scales: {
-        y: { beginAtZero: true, max: 100 }
-      },
-      plugins: { legend: { display: false } }
-    }
+    options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
+  });
+
+  // Radar Chart: Skills Progress
+  new Chart(document.getElementById('skillsChart').getContext('2d'), {
+    type: 'radar',
+    data: {
+      labels: ['HTML/CSS', 'JavaScript', 'React', 'Databases', 'Python', 'UI/UX'],
+      datasets: [{
+        label: 'Skill Level',
+        data: [90, 75, 60, 85, 40, 70],
+        backgroundColor: 'rgba(16, 185, 129, 0.2)',
+        borderColor: '#10b981',
+        pointBackgroundColor: '#10b981',
+        borderWidth: 2
+      }]
+    },
+    options: { responsive: true, plugins: { legend: { display: false } }, scales: { r: { angleLines: { color: '#e2e8f0' }, grid: { color: '#e2e8f0' }, suggestedMin: 0, suggestedMax: 100 } } }
+  });
+}
+
+if (role === 'instructor') {
+  // Bar Chart: Enrollment Trend
+  new Chart(document.getElementById('enrollmentTrendChart').getContext('2d'), {
+    type: 'bar',
+    data: {
+      labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
+      datasets: [{
+        label: 'New Enrollments',
+        data: [120, 190, 150, 210],
+        backgroundColor: '#6366f1',
+        borderRadius: 6
+      }]
+    },
+    options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
+  });
+}
+
+if (role === 'admin') {
+  // Multi-Line Chart: Platform Growth
+  new Chart(document.getElementById('adminGrowthChart').getContext('2d'), {
+    type: 'line',
+    data: {
+      labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+      datasets: [
+        { label: 'New Users', data: [400, 550, 600, 800, 950, 1200], borderColor: '#3b82f6', tension: 0.3 },
+        { label: 'New Courses', data: [15, 25, 20, 45, 30, 60], borderColor: '#f59e0b', tension: 0.3 }
+      ]
+    },
+    options: { responsive: true }
   });
 }
 
