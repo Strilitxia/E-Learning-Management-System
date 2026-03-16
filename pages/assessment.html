@@ -3,48 +3,68 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Assessments - ELP Platform</title>
+  <title>Assessments & Performance - ELP Platform</title>
 
   <!-- Bootstrap 5.3 -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-  
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <!-- Font Awesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <style>
-    body { background-color: #f5f7ff; font-family: 'Segoe UI', system-ui, sans-serif; }
+    /* --- BASE LAYOUT --- */
+    body { background-color: #f4f7fe; font-family: 'Segoe UI', system-ui, sans-serif; }
+    .top-navbar {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+      background: white; border-bottom: 1px solid #e2e8f0; padding: 0.8rem 2.5rem;
+    }
     .sidebar {
-      min-height: 100vh;
-      background: white;
-      border-right: 1px solid #e0e0e0;
-      position: fixed;
-      width: 240px;
-      top: 0; left: 0;
-      padding-top: 80px;
-      overflow-y: auto;
+      min-height: 100vh; background: white; border-right: 1px solid #e2e8f0;
+      position: fixed; width: 250px; top: 0; left: 0; padding-top: 85px;
+      overflow-y: auto; z-index: 900; transition: transform 0.3s ease;
     }
     .sidebar .nav-link {
-      color: #495057;
-      padding: 0.9rem 1.5rem;
-      font-weight: 500;
+      color: #64748b; padding: 0.85rem 1.5rem; font-weight: 500;
+      border-left: 3px solid transparent; margin-bottom: 0.2rem;
     }
-    .sidebar .nav-link:hover,
-    .sidebar .nav-link.active {
-      background-color: #e7f0ff;
-      color: #0d6efd;
+    .sidebar .nav-link:hover, .sidebar .nav-link.active {
+      background-color: #f8fafc; color: #0d6efd; border-left: 3px solid #0d6efd;
     }
     .sidebar .nav-link i { width: 24px; text-align: center; margin-right: 12px; }
-    .main-content { margin-left: 240px; padding: 2rem 2.5rem; }
-    .top-navbar {
-      position: fixed;
-      top: 0; left: 0; right: 0;
-      z-index: 1000;
-      background: white;
-      border-bottom: 1px solid #e0e0e0;
-      padding: 1rem 2.5rem;
+    .main-content { margin-left: 250px; padding: 6rem 2.5rem 2rem 2.5rem; }
+
+    /* --- MOBILE RESPONSIVENESS --- */
+    @media (max-width: 992px) {
+      .sidebar { transform: translateX(-100%); z-index: 1040; }
+      .sidebar.show { transform: translateX(0); }
+      .main-content { margin-left: 0 !important; padding: 6rem 1rem 2rem 1rem; }
+      .top-navbar { padding: 0.8rem 1rem; }
     }
-    .quiz-card { border-radius: 10px; box-shadow: 0 3px 12px rgba(0,0,0,0.08); }
-    .score-badge { font-size: 1.1rem; padding: 0.5em 1em; }
+
+    /* --- UI ELEMENTS --- */
+    .card-custom {
+      border: none; border-radius: 16px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); background: white;
+    }
+    .stat-card {
+      border: none; border-radius: 16px; padding: 1.5rem; color: white;
+      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); transition: transform 0.2s ease-in-out;
+    }
+    .stat-card:hover { transform: translateY(-5px); }
+    .stat-card .icon-box {
+      width: 48px; height: 48px; border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.5rem; background: rgba(255,255,255,0.2);
+    }
+    
+    .bg-gradient-primary { background: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%); }
+    .bg-gradient-success { background: linear-gradient(135deg, #10b981 0%, #059669 100%); }
+    .bg-gradient-warning { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); }
+    
+    .score-badge { font-size: 0.9rem; padding: 0.5em 1em; font-weight: 600; }
+    .task-item { border-left: 4px solid #0d6efd; background: #f8fafc; transition: all 0.2s; }
+    .task-item:hover { background: #f1f5f9; transform: translateX(4px); }
+    .task-item.urgent { border-left-color: #ef4444; }
   </style>
 </head>
 <body>
@@ -52,24 +72,27 @@
 <!-- Top Navbar -->
 <nav class="top-navbar navbar navbar-expand-lg">
   <div class="container-fluid">
+    <button class="btn btn-light d-lg-none me-3 border-0" onclick="document.querySelector('.sidebar').classList.toggle('show')">
+      <i class="fas fa-bars"></i>
+    </button>
     <a class="navbar-brand fw-bold fs-4" href="../dashboard.html">
       ELP <span class="text-primary">Platform</span>
     </a>
-    <div class="ms-auto d-flex align-items-center gap-4">
+    <div class="ms-auto d-flex align-items-center gap-3">
       <div class="dropdown">
         <a class="d-flex align-items-center text-decoration-none dropdown-toggle" href="#" data-bs-toggle="dropdown">
-          <div class="me-3 text-end">
-            <div id="userFullName" class="fw-medium">Loading...</div>
-            <small id="userRoleBadge" class="text-muted"></small>
+          <div class="me-3 text-end d-none d-sm-block">
+            <div id="userFullName" class="fw-bold text-dark mb-0 lh-1">Loading...</div>
+            <small id="userRoleBadge" class="text-muted" style="font-size: 0.8rem;"></small>
           </div>
-          <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center" style="width:42px;height:42px;">
+          <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center shadow-sm" style="width:42px; height:42px;">
             <i class="fas fa-user"></i>
           </div>
         </a>
-        <ul class="dropdown-menu dropdown-menu-end">
-          <li><a class="dropdown-item" href="profile.html"><i class="fas fa-user me-2"></i> Profile</a></li>
+        <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+          <li><a class="dropdown-item py-2" href="profile.html"><i class="fas fa-user-circle me-2 text-muted"></i> Profile</a></li>
           <li><hr class="dropdown-divider"></li>
-          <li><a class="dropdown-item text-danger" href="#" onclick="logout()"><i class="fas fa-sign-out-alt me-2"></i> Logout</a></li>
+          <li><a class="dropdown-item py-2 text-danger" href="#" onclick="logout()"><i class="fas fa-sign-out-alt me-2"></i> Logout</a></li>
         </ul>
       </div>
     </div>
@@ -77,82 +100,219 @@
 </nav>
 
 <!-- Sidebar -->
-<div class="sidebar">
+<div class="sidebar shadow-sm">
   <div class="nav flex-column" id="sidebarMenu"></div>
 </div>
 
 <!-- Main Content -->
 <div class="main-content">
 
-  <h2 class="mb-4 fw-bold">Assessments & Performance</h2>
+  <div class="mb-4">
+    <h2 class="fw-bold text-dark mb-1">Assessments & Performance</h2>
+    <p class="text-muted" id="pageSubtitle">Track your progress and evaluate outcomes.</p>
+  </div>
 
-  <!-- Student View -->
+  <!-- ==========================================
+       STUDENT VIEW
+       ========================================== -->
   <div id="studentView" class="d-none">
-    <h5 class="mb-3">Your Pending / Available Assessments</h5>
-    <div class="list-group mb-5" id="studentPendingQuizzes"></div>
+    
+    <!-- Student Stats -->
+    <div class="row g-4 mb-4">
+      <div class="col-md-4">
+        <div class="stat-card bg-gradient-primary">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <p class="mb-1 opacity-75 fw-medium">Average Score</p>
+              <h2 class="mb-0 fw-bold">84%</h2>
+            </div>
+            <div class="icon-box"><i class="fas fa-chart-line"></i></div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="stat-card bg-gradient-success">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <p class="mb-1 opacity-75 fw-medium">Completed Quizzes</p>
+              <h2 class="mb-0 fw-bold">12</h2>
+            </div>
+            <div class="icon-box"><i class="fas fa-check-double"></i></div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="stat-card bg-gradient-warning">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <p class="mb-1 opacity-75 fw-medium">Pending Tasks</p>
+              <h2 class="mb-0 fw-bold">2</h2>
+            </div>
+            <div class="icon-box"><i class="fas fa-clock"></i></div>
+          </div>
+        </div>
+      </div>
+    </div>
 
-    <h5 class="mb-3 mt-5">Completed Assessments</h5>
-    <div class="table-responsive">
-      <table class="table table-hover align-middle">
-        <thead class="table-light">
-          <tr>
-            <th>Course</th>
-            <th>Assessment</th>
-            <th>Date Taken</th>
-            <th>Score</th>
-            <th>Status</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody id="studentPastResults"></tbody>
-      </table>
+    <div class="row g-4 mb-4">
+      <!-- Performance Trend Chart -->
+      <div class="col-lg-7">
+        <div class="card card-custom p-4 h-100">
+          <h5 class="fw-bold mb-3">Performance Trend</h5>
+          
+          <!-- Dynamic Feedback Container -->
+          <div id="performanceFeedback"></div>
+
+          <canvas id="studentPerformanceChart" height="120"></canvas>
+        </div>
+      </div>
+
+      <!-- Pending Assessments -->
+      <div class="col-lg-5">
+        <div class="card card-custom p-4 h-100">
+          <h5 class="fw-bold mb-4">To-Do List</h5>
+          <div class="d-flex flex-column gap-3" id="studentPendingQuizzes">
+            <!-- Populated via JS -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Completed Assessments Table -->
+    <div class="card card-custom p-4">
+      <h5 class="fw-bold mb-4">Assessment History</h5>
+      <div class="table-responsive">
+        <table class="table table-hover align-middle">
+          <thead class="table-light text-muted">
+            <tr>
+              <th class="fw-medium">Course</th>
+              <th class="fw-medium">Assessment Title</th>
+              <th class="fw-medium">Date Taken</th>
+              <th class="fw-medium">Score</th>
+              <th class="fw-medium">Action</th>
+            </tr>
+          </thead>
+          <tbody id="studentPastResults">
+            <!-- Populated via JS -->
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
 
-  <!-- Instructor View -->
+  <!-- ==========================================
+       INSTRUCTOR VIEW
+       ========================================== -->
   <div id="instructorView" class="d-none">
-    <div class="card shadow-sm">
-      <div class="card-header bg-white d-flex justify-content-between align-items-center">
-        <h5 class="mb-0">Manage Assessments</h5>
-        <button class="btn btn-primary btn-sm" onclick="alert('Create new quiz form would open here')">
-          <i class="fas fa-plus me-1"></i> Create New Assessment
-        </button>
+    
+    <div class="row g-4 mb-4">
+      <div class="col-md-4">
+        <div class="stat-card bg-gradient-primary">
+          <p class="mb-1 opacity-75 fw-medium">Active Assessments</p>
+          <h2 class="mb-0 fw-bold">8</h2>
+        </div>
       </div>
-      <div class="card-body">
-        <div class="list-group" id="instructorAssessmentsList"></div>
+      <div class="col-md-4">
+        <div class="stat-card bg-gradient-warning">
+          <p class="mb-1 opacity-75 fw-medium">Needs Grading</p>
+          <h2 class="mb-0 fw-bold">14</h2>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="stat-card bg-gradient-success">
+          <p class="mb-1 opacity-75 fw-medium">Avg Class Score</p>
+          <h2 class="mb-0 fw-bold">78%</h2>
+        </div>
       </div>
     </div>
+
+    <div class="row g-4 mb-4">
+      <!-- Grade Distribution -->
+      <div class="col-lg-5">
+        <div class="card card-custom p-4 h-100">
+          <h5 class="fw-bold mb-4">Grade Distribution</h5>
+          <canvas id="gradeDistributionChart" height="200"></canvas>
+        </div>
+      </div>
+
+      <!-- Quick Actions / Grading Queue -->
+      <div class="col-lg-7">
+        <div class="card card-custom p-4 h-100">
+          <div class="d-flex justify-content-between align-items-center mb-4">
+            <h5 class="fw-bold mb-0">Needs Attention</h5>
+            <button class="btn btn-primary btn-sm px-3 rounded-pill"><i class="fas fa-plus me-1"></i> New Quiz</button>
+          </div>
+          <div class="list-group list-group-flush border-top border-bottom">
+            <div class="list-group-item px-0 py-3 d-flex justify-content-between align-items-center">
+              <div>
+                <h6 class="mb-1 fw-bold">Capstone Project Submissions</h6>
+                <small class="text-muted">Web Dev Bootcamp</small>
+              </div>
+              <button class="btn btn-outline-warning text-dark btn-sm fw-medium rounded-pill">Grade 12 items</button>
+            </div>
+            <div class="list-group-item px-0 py-3 d-flex justify-content-between align-items-center">
+              <div>
+                <h6 class="mb-1 fw-bold">Midterm Short Answers</h6>
+                <small class="text-muted">Database Systems</small>
+              </div>
+              <button class="btn btn-outline-warning text-dark btn-sm fw-medium rounded-pill">Grade 2 items</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Instructor Assessment Table -->
+    <div class="card card-custom p-4">
+      <h5 class="fw-bold mb-4">Manage Assessments</h5>
+      <div class="table-responsive">
+        <table class="table table-hover align-middle">
+          <thead class="table-light text-muted">
+            <tr>
+              <th class="fw-medium">Title & Course</th>
+              <th class="fw-medium">Status</th>
+              <th class="fw-medium">Submissions</th>
+              <th class="fw-medium">Avg Score</th>
+              <th class="fw-medium text-end">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="instructorAssessmentsList">
+            <!-- Populated via JS -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
   </div>
 
-  <!-- Admin View (simple) -->
+  <!-- ==========================================
+       ADMIN VIEW
+       ========================================== -->
   <div id="adminView" class="d-none">
-    <div class="alert alert-info">
-      <i class="fas fa-info-circle me-2"></i>
-      System-wide assessment overview (Admin)
+    <div class="alert alert-info border-0 shadow-sm d-flex align-items-center mb-4">
+      <i class="fas fa-info-circle fa-2x me-3 text-info"></i>
+      <div>
+        <h6 class="fw-bold mb-1">System-wide Assessment Overview</h6>
+        <p class="mb-0 small">Monitoring platform academic metrics and assessment integrity.</p>
+      </div>
     </div>
     <div class="row g-4">
       <div class="col-md-4">
-        <div class="card text-center border-primary">
-          <div class="card-body">
-            <h5>Total Assessments</h5>
-            <h3 class="text-primary">47</h3>
-          </div>
+        <div class="card card-custom p-4 text-center border-bottom border-primary border-4">
+          <h6 class="text-muted fw-bold">Total Assessments</h6>
+          <h2 class="text-primary fw-bold mb-0">1,247</h2>
         </div>
       </div>
       <div class="col-md-4">
-        <div class="card text-center border-success">
-          <div class="card-body">
-            <h5>Average Completion Rate</h5>
-            <h3 class="text-success">64%</h3>
-          </div>
+        <div class="card card-custom p-4 text-center border-bottom border-success border-4">
+          <h6 class="text-muted fw-bold">Global Avg Score</h6>
+          <h2 class="text-success fw-bold mb-0">72%</h2>
         </div>
       </div>
       <div class="col-md-4">
-        <div class="card text-center border-warning">
-          <div class="card-body">
-            <h5>Pending Manual Grading</h5>
-            <h3 class="text-warning">9</h3>
-          </div>
+        <div class="card card-custom p-4 text-center border-bottom border-warning border-4">
+          <h6 class="text-muted fw-bold">Flagged for Review</h6>
+          <h2 class="text-warning fw-bold mb-0">9</h2>
         </div>
       </div>
     </div>
@@ -162,201 +322,202 @@
 
 <script>
 // ────────────────────────────────────────────────
-//  Role-based rendering
+// Role & UI Setup
 // ────────────────────────────────────────────────
-
 const role = localStorage.getItem('userRole') || 'student';
 const name = localStorage.getItem('userName') || 'User';
 
 document.getElementById('userFullName').textContent = name;
 document.getElementById('userRoleBadge').textContent = role.charAt(0).toUpperCase() + role.slice(1);
 
-let sidebarHTML = '';
+const menu = document.getElementById('sidebarMenu');
 let activeView = '';
 
 if (role === 'student') {
-  sidebarHTML = `
-    <a href="../dashboard.html" class="nav-link"><i class="fas fa-home"></i> Dashboard</a>
-    <a href="courses.html" class="nav-link"><i class="fas fa-book-open"></i> My Courses</a>
-    <a href="enroll.html" class="nav-link"><i class="fas fa-search"></i> Browse Courses</a>
-    <a href="assessment.html" class="nav-link active"><i class="fas fa-tasks"></i> Assessments</a>
+  menu.innerHTML = `
+    <a href="../dashboard.html" class="nav-link"><i class="fas fa-th-large"></i> Dashboard</a>
+    <a href="courses.html" class="nav-link"><i class="fas fa-book"></i> My Courses</a>
+    <a href="enroll.html" class="nav-link"><i class="fas fa-compass"></i> Explore</a>
+    <a href="assessment.html" class="nav-link active"><i class="fas fa-pen-square"></i> Assessments</a>
     <a href="profile.html" class="nav-link"><i class="fas fa-user"></i> Profile</a>
   `;
   activeView = 'studentView';
 } else if (role === 'instructor') {
-  sidebarHTML = `
-    <a href="../dashboard.html" class="nav-link"><i class="fas fa-home"></i> Dashboard</a>
-    <a href="courses.html" class="nav-link"><i class="fas fa-chalkboard-teacher"></i> My Courses</a>
-    <a href="content.html" class="nav-link"><i class="fas fa-upload"></i> Content</a>
-    <a href="assessment.html" class="nav-link active"><i class="fas fa-check-double"></i> Assessments</a>
+  menu.innerHTML = `
+    <a href="../dashboard.html" class="nav-link"><i class="fas fa-th-large"></i> Dashboard</a>
+    <a href="courses.html" class="nav-link"><i class="fas fa-chalkboard-teacher"></i> Assigned Courses</a>
+    <a href="content.html" class="nav-link"><i class="fas fa-upload"></i> Content Library</a>
+    <a href="assessment.html" class="nav-link active"><i class="fas fa-chart-line"></i> Assessments</a>
     <a href="profile.html" class="nav-link"><i class="fas fa-user"></i> Profile</a>
   `;
   activeView = 'instructorView';
+  document.getElementById('pageSubtitle').textContent = "Manage class quizzes and grade student submissions.";
 } else if (role === 'admin') {
-  sidebarHTML = `
-    <a href="../dashboard.html" class="nav-link"><i class="fas fa-home"></i> Dashboard</a>
-    <a href="admin.html" class="nav-link"><i class="fas fa-users-cog"></i> Users</a>
-    <a href="admin.html#courses" class="nav-link"><i class="fas fa-book"></i> Courses</a>
-    <a href="assessment.html" class="nav-link active"><i class="fas fa-tasks"></i> Assessments</a>
-    <a href="profile.html" class="nav-link"><i class="fas fa-user-shield"></i> Profile</a>
+  menu.innerHTML = `
+    <a href="../dashboard.html" class="nav-link"><i class="fas fa-th-large"></i> Dashboard</a>
+    <a href="admin.html" class="nav-link"><i class="fas fa-users-cog"></i> Manage Users</a>
+    <a href="admin.html#courses" class="nav-link"><i class="fas fa-shield-alt"></i> Moderation</a>
+    <a href="assessment.html" class="nav-link active"><i class="fas fa-pen-square"></i> Platform Analytics</a>
+    <a href="profile.html" class="nav-link"><i class="fas fa-user-shield"></i> Admin Profile</a>
   `;
   activeView = 'adminView';
 }
 
-document.getElementById('sidebarMenu').innerHTML = sidebarHTML;
 document.getElementById(activeView).classList.remove('d-none');
 
 // ────────────────────────────────────────────────
-//  Student – Demo assessments data
+// Student Data & Render
 // ────────────────────────────────────────────────
-
 const studentAssessments = [
-  {
-    quizId: 101,
-    course: "Database Systems with MySQL",
-    title: "Midterm Quiz",
-    dueDate: "2026-03-20",
-    status: "pending",
-    questionsCount: 20,
-    timeLimit: 45
-  },
-  {
-    quizId: 102,
-    course: "Modern JavaScript & ES6+",
-    title: "Final Test",
-    dueDate: "2026-03-28",
-    status: "pending",
-    questionsCount: 25,
-    timeLimit: 60
-  },
-  {
-    quizId: 201,
-    course: "Database Systems with MySQL",
-    title: "Quiz 1: ER Modeling",
-    dateTaken: "2026-02-28",
-    score: 92,
-    maxScore: 100,
-    status: "completed"
-  },
-  {
-    quizId: 202,
-    course: "Full-Stack Web Development",
-    title: "Midterm Exam",
-    dateTaken: "2026-02-10",
-    score: 68,
-    maxScore: 100,
-    status: "completed"
-  }
+  { id: 101, course: "Database Systems with MySQL", title: "Midterm Quiz", dueDate: "2 Days", status: "pending", timeLimit: 45, urgent: true },
+  { id: 102, course: "Modern JavaScript", title: "Promises Assignment", dueDate: "5 Days", status: "pending", timeLimit: 60, urgent: false },
+  { id: 201, course: "Database Systems with MySQL", title: "Quiz 1: ER Modeling", dateTaken: "2025-02-28", score: 92, maxScore: 100, status: "completed" },
+  { id: 202, course: "Full-Stack Web Dev", title: "HTML/CSS Basics", dateTaken: "2025-02-15", score: 100, maxScore: 100, status: "completed" },
+  { id: 203, course: "Full-Stack Web Dev", title: "Midterm Exam", dateTaken: "2025-02-10", score: 68, maxScore: 100, status: "completed" }
 ];
 
-
-// Render pending quizzes (with links to take-quiz.html)
-function renderPendingQuizzes() {
-  const container = document.getElementById('studentPendingQuizzes');
-  container.innerHTML = '';
-
+if (role === 'student') {
+  // 1. Render Pending
+  const pendingContainer = document.getElementById('studentPendingQuizzes');
   const pending = studentAssessments.filter(a => a.status === 'pending');
-
-  if (pending.length === 0) {
-    container.innerHTML = '<p class="text-muted text-center py-4">No pending assessments at the moment.</p>';
-    return;
+  
+  if(pending.length === 0) pendingContainer.innerHTML = '<p class="text-muted">No pending tasks. Great job!</p>';
+  else {
+    pending.forEach(quiz => {
+      pendingContainer.innerHTML += `
+        <div class="task-item p-3 rounded-3 shadow-sm ${quiz.urgent ? 'urgent' : ''} d-flex justify-content-between align-items-center flex-wrap gap-2">
+          <div>
+            <h6 class="mb-1 fw-bold text-dark">${quiz.title}</h6>
+            <p class="mb-1 text-muted small">${quiz.course} • ${quiz.timeLimit} min</p>
+            <span class="badge ${quiz.urgent ? 'bg-danger-subtle text-danger' : 'bg-secondary-subtle text-secondary'}">Due in ${quiz.dueDate}</span>
+          </div>
+          <a href="take-quiz.html?quizId=${quiz.id}" class="btn btn-sm btn-primary rounded-pill px-3 fw-medium">Start</a>
+        </div>
+      `;
+    });
   }
 
-  pending.forEach(quiz => {
-    const item = document.createElement('div');
-    item.className = 'list-group-item';
-    item.innerHTML = `
-      <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
-        <div>
-          <h6 class="mb-1">${quiz.title}</h6>
-          <p class="mb-1 text-muted">${quiz.course}</p>
-          <small class="text-danger">Due: ${quiz.dueDate}</small>
-        </div>
-        <div class="text-end">
-          <small class="d-block mb-2">${quiz.questionsCount} questions • ${quiz.timeLimit} min</small>
-          <a href="take-quiz.html?quizId=${quiz.quizId}" class="btn btn-primary btn-sm">
-            <i class="fas fa-play me-1"></i> Start Quiz
-          </a>
-        </div>
-      </div>
-    `;
-    container.appendChild(item);
-  });
-}
-
-// Render completed assessments
-function renderCompletedResults() {
-  const tbody = document.getElementById('studentPastResults');
-  tbody.innerHTML = '';
-
+  // 2. Render Completed History
+  const historyTbody = document.getElementById('studentPastResults');
   const completed = studentAssessments.filter(a => a.status === 'completed');
-
   completed.forEach(res => {
     const percentage = Math.round((res.score / res.maxScore) * 100);
-    const tr = document.createElement('tr');
-    tr.innerHTML = `
-      <td>${res.course}</td>
-      <td>${res.title}</td>
-      <td>${res.dateTaken}</td>
-      <td>
-        <span class="badge ${percentage >= 80 ? 'bg-success' : percentage >= 60 ? 'bg-warning' : 'bg-danger'} score-badge">
-          ${res.score}/${res.maxScore} (${percentage}%)
-        </span>
-      </td>
-      <td><span class="badge bg-success">Completed</span></td>
-      <td>
-        <button class="btn btn-sm btn-outline-secondary">View Details</button>
-      </td>
+    const badgeColor = percentage >= 80 ? 'bg-success' : percentage >= 60 ? 'bg-warning text-dark' : 'bg-danger';
+    
+    historyTbody.innerHTML += `
+      <tr>
+        <td class="fw-medium text-dark">${res.course}</td>
+        <td>${res.title}</td>
+        <td>${res.dateTaken}</td>
+        <td><span class="badge ${badgeColor} score-badge rounded-pill">${percentage}%</span></td>
+        <td><button class="btn btn-sm btn-outline-primary rounded-pill px-3">Review</button></td>
+      </tr>
     `;
-    tbody.appendChild(tr);
+  });
+
+  // 3. Dynamic Performance Feedback Logic
+  // Using an array of the last 5 test scores
+  const trendData = [92, 100, 68, 85, 84]; 
+  const latest = trendData[trendData.length - 1]; // 84
+  const previous = trendData[trendData.length - 2]; // 85
+
+  let feedbackText = "";
+  let alertClass = "";
+  let icon = "";
+
+  if (latest < previous - 5 && latest < 75) {
+    feedbackText = "Be careful, your marks are falling. Consider reviewing recent course materials!";
+    alertClass = "alert-danger text-danger bg-danger-subtle";
+    icon = "fa-exclamation-triangle";
+  } else if (latest >= 85) {
+    feedbackText = "You are doing great! Keep up the excellent work.";
+    alertClass = "alert-success text-success bg-success-subtle";
+    icon = "fa-star";
+  } else if (latest > previous) {
+    feedbackText = "Good job, your scores are improving. Keep the momentum going!";
+    alertClass = "alert-primary text-primary bg-primary-subtle";
+    icon = "fa-arrow-trend-up";
+  } else {
+    feedbackText = "Your performance is steady. Keep practicing to reach the next level!";
+    alertClass = "alert-info text-info bg-info-subtle";
+    icon = "fa-info-circle";
+  }
+
+  // Inject feedback into DOM
+  document.getElementById('performanceFeedback').innerHTML = `
+    <div class="alert ${alertClass} border-0 d-flex align-items-center py-2 px-3 mb-4 rounded-3 shadow-sm">
+      <i class="fas ${icon} me-2 fs-5"></i>
+      <span class="fw-medium mb-0">${feedbackText}</span>
+    </div>
+  `;
+
+  // 4. Render Chart
+  new Chart(document.getElementById('studentPerformanceChart').getContext('2d'), {
+    type: 'line',
+    data: {
+      labels: ['Quiz 1', 'HTML Basics', 'Midterm', 'Quiz 2', 'Current'],
+      datasets: [{
+        label: 'Score %',
+        data: trendData, // using the variable mapped to the feedback
+        borderColor: '#3b82f6', backgroundColor: 'rgba(59, 130, 246, 0.1)', borderWidth: 3, fill: true, tension: 0.3
+      }]
+    },
+    options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { min: 0, max: 100 } } }
   });
 }
 
 // ────────────────────────────────────────────────
-//  Instructor – simple demo (unchanged)
+// Instructor Data & Render
 // ────────────────────────────────────────────────
-
 if (role === 'instructor') {
-  document.getElementById('instructorAssessmentsList').innerHTML = `
-    <a href="#" class="list-group-item list-group-item-action">
-      <div class="d-flex justify-content-between align-items-center">
-        <div>
-          <h6 class="mb-1">Quiz 1: Database Concepts</h6>
-          <small>Course: Database Systems with MySQL • 45 students submitted</small>
-        </div>
-        <div>
-          <span class="badge bg-warning me-2">8 pending review</span>
-          <button class="btn btn-sm btn-outline-primary">View Submissions</button>
-        </div>
-      </div>
-    </a>
-    <a href="#" class="list-group-item list-group-item-action">
-      <div class="d-flex justify-content-between align-items-center">
-        <div>
-          <h6 class="mb-1">Midterm Exam</h6>
-          <small>Course: Full-Stack Web Development • 32 students</small>
-        </div>
-        <div>
-          <span class="badge bg-success me-2">All graded</span>
-          <button class="btn btn-sm btn-outline-primary">View Results</button>
-        </div>
-      </div>
-    </a>
+  const table = document.getElementById('instructorAssessmentsList');
+  table.innerHTML = `
+    <tr>
+      <td>
+        <h6 class="mb-0 fw-bold">Quiz 1: Database Concepts</h6>
+        <small class="text-muted">Database Systems with MySQL</small>
+      </td>
+      <td><span class="badge bg-success-subtle text-success rounded-pill px-3">Active</span></td>
+      <td><span class="fw-medium">45 / 50</span> submitted</td>
+      <td><span class="badge bg-primary score-badge rounded-pill">82%</span></td>
+      <td class="text-end">
+        <button class="btn btn-sm btn-light text-primary me-2"><i class="fas fa-edit"></i></button>
+        <button class="btn btn-sm btn-outline-primary rounded-pill px-3">Analytics</button>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <h6 class="mb-0 fw-bold">Midterm Exam</h6>
+        <small class="text-muted">Full-Stack Web Development</small>
+      </td>
+      <td><span class="badge bg-secondary-subtle text-secondary rounded-pill px-3">Closed</span></td>
+      <td><span class="fw-medium">32 / 32</span> submitted</td>
+      <td><span class="badge bg-warning text-dark score-badge rounded-pill">68%</span></td>
+      <td class="text-end">
+        <button class="btn btn-sm btn-light text-primary me-2"><i class="fas fa-edit"></i></button>
+        <button class="btn btn-sm btn-outline-primary rounded-pill px-3">Analytics</button>
+      </td>
+    </tr>
   `;
-}
 
-// ────────────────────────────────────────────────
-//  Init – call render functions for student
-// ────────────────────────────────────────────────
-
-if (role === 'student') {
-  renderPendingQuizzes();
-  renderCompletedResults();
+  // Chart
+  new Chart(document.getElementById('gradeDistributionChart').getContext('2d'), {
+    type: 'doughnut',
+    data: {
+      labels: ['A (90-100)', 'B (80-89)', 'C (70-79)', 'D/F (<70)'],
+      datasets: [{
+        data: [25, 40, 20, 15],
+        backgroundColor: ['#10b981', '#3b82f6', '#f59e0b', '#ef4444'],
+        borderWidth: 0
+      }]
+    },
+    options: { responsive: true, cutout: '70%', plugins: { legend: { position: 'bottom' } } }
+  });
 }
 
 function logout() {
   localStorage.clear();
-  window.location.href = 'index.html';
+  window.location.href = '../index.html';
 }
 </script>
 

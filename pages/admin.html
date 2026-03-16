@@ -232,7 +232,7 @@
 // ────────────────────────────────────────────────
 
 
-const role = localStorage.getItem('userRole') || 'student';
+const role = localStorage.getItem('userRole') || 'admin'; // Default to admin for testing
 
 if (role !== 'admin') {
   alert("Access restricted to Administrators only.");

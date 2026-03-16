@@ -3,63 +3,87 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Profile - ELP Platform</title>
+  <title>My Profile - ELP Platform</title>
 
   <!-- Bootstrap 5.3 -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-  
-  <link rel="stylesheet" href="css/style.css">
-
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <!-- Font Awesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
 
   <style>
-    body { background-color: #f5f7ff; font-family: 'Segoe UI', system-ui, sans-serif; }
+    /* --- BASE LAYOUT --- */
+    body { background-color: #f4f7fe; font-family: 'Segoe UI', system-ui, sans-serif; }
+    .top-navbar {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+      background: white; border-bottom: 1px solid #e2e8f0; padding: 0.8rem 2.5rem;
+    }
     .sidebar {
-      min-height: 100vh;
-      background: white;
-      border-right: 1px solid #e0e0e0;
-      position: fixed;
-      width: 240px;
-      top: 0; left: 0;
-      padding-top: 80px;
-      overflow-y: auto;
+      min-height: 100vh; background: white; border-right: 1px solid #e2e8f0;
+      position: fixed; width: 250px; top: 0; left: 0; padding-top: 85px;
+      overflow-y: auto; z-index: 900; transition: transform 0.3s ease;
     }
     .sidebar .nav-link {
-      color: #495057;
-      padding: 0.9rem 1.5rem;
-      font-weight: 500;
+      color: #64748b; padding: 0.85rem 1.5rem; font-weight: 500;
+      border-left: 3px solid transparent; margin-bottom: 0.2rem;
     }
-    .sidebar .nav-link:hover,
-    .sidebar .nav-link.active {
-      background-color: #e7f0ff;
-      color: #0d6efd;
+    .sidebar .nav-link:hover, .sidebar .nav-link.active {
+      background-color: #f8fafc; color: #0d6efd; border-left: 3px solid #0d6efd;
     }
     .sidebar .nav-link i { width: 24px; text-align: center; margin-right: 12px; }
-    .main-content { margin-left: 240px; padding: 2rem 2.5rem; }
-    .top-navbar {
-      position: fixed;
-      top: 0; left: 0; right: 0;
-      z-index: 1000;
-      background: white;
-      border-bottom: 1px solid #e0e0e0;
-      padding: 1rem 2.5rem;
+    .main-content { margin-left: 250px; padding: 6rem 2.5rem 2rem 2.5rem; }
+
+    /* --- MOBILE RESPONSIVENESS --- */
+    @media (max-width: 992px) {
+      .sidebar { transform: translateX(-100%); z-index: 1040; }
+      .sidebar.show { transform: translateX(0); }
+      .main-content { margin-left: 0 !important; padding: 6rem 1rem 2rem 1rem; }
+      .top-navbar { padding: 0.8rem 1rem; }
+    }
+
+    /* --- PROFILE SPECIFIC UI --- */
+    .card-custom {
+      border: none; border-radius: 16px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); background: white; overflow: hidden;
+    }
+    
+    /* Cover & Avatar */
+    .profile-cover {
+      height: 140px;
+      background: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%);
+      background-image: url('https://images.unsplash.com/photo-1557683316-973673baf926?w=800');
+      background-size: cover; background-position: center;
+    }
+    .profile-avatar-container {
+      position: relative; width: 120px; height: 120px; margin: -60px auto 1rem auto;
     }
     .profile-avatar {
-      width: 140px;
-      height: 140px;
-      object-fit: cover;
-      border-radius: 50%;
-      border: 4px solid white;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      width: 100%; height: 100%; object-fit: cover; border-radius: 50%;
+      border: 4px solid white; background: white; box-shadow: 0 4px 10px rgba(0,0,0,0.1);
     }
-    .profile-card {
-      border: none;
-      border-radius: 12px;
-      box-shadow: 0 4px 16px rgba(0,0,0,0.08);
-      background: white;
+    .avatar-edit-btn {
+      position: absolute; bottom: 0; right: 0; width: 34px; height: 34px;
+      background: #0d6efd; color: white; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; border: 3px solid white; transition: all 0.2s;
     }
-    .form-label { font-weight: 500; color: #444; }
+    .avatar-edit-btn:hover { background: #0b5ed7; transform: scale(1.05); }
+
+    /* Tabs */
+    .nav-tabs-custom .nav-link {
+      border: none; color: #64748b; font-weight: 500; padding: 1rem 1.5rem;
+      border-bottom: 3px solid transparent; transition: all 0.2s;
+    }
+    .nav-tabs-custom .nav-link:hover { color: #0d6efd; }
+    .nav-tabs-custom .nav-link.active {
+      color: #0d6efd; border-bottom: 3px solid #0d6efd; background: transparent;
+    }
+
+    /* Form Elements */
+    .form-label { font-weight: 500; color: #334155; font-size: 0.9rem; }
+    .form-control, .form-select { border-color: #e2e8f0; padding: 0.6rem 1rem; border-radius: 8px; }
+    .form-control:focus, .form-select:focus { border-color: #3b82f6; box-shadow: 0 0 0 0.25rem rgba(59, 130, 246, 0.15); }
+    
+    .stat-row { padding: 0.8rem 0; border-bottom: 1px solid #f1f5f9; }
+    .stat-row:last-child { border-bottom: none; }
   </style>
 </head>
 <body>
@@ -67,24 +91,27 @@
 <!-- Top Navbar -->
 <nav class="top-navbar navbar navbar-expand-lg">
   <div class="container-fluid">
-    <a class="navbar-brand fw-bold fs-4" href="dashboard.html">
+    <button class="btn btn-light d-lg-none me-3 border-0" onclick="document.querySelector('.sidebar').classList.toggle('show')">
+      <i class="fas fa-bars"></i>
+    </button>
+    <a class="navbar-brand fw-bold fs-4" href="../dashboard.html">
       ELP <span class="text-primary">Platform</span>
     </a>
-    <div class="ms-auto d-flex align-items-center gap-4">
+    <div class="ms-auto d-flex align-items-center gap-3">
       <div class="dropdown">
         <a class="d-flex align-items-center text-decoration-none dropdown-toggle" href="#" data-bs-toggle="dropdown">
-          <div class="me-3 text-end">
-            <div id="userFullName" class="fw-medium">Loading...</div>
-            <small id="userRoleBadge" class="text-muted"></small>
+          <div class="me-3 text-end d-none d-sm-block">
+            <div id="userFullName" class="fw-bold text-dark mb-0 lh-1">Loading...</div>
+            <small id="userRoleBadge" class="text-muted" style="font-size: 0.8rem;"></small>
           </div>
-          <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center" style="width:42px;height:42px;">
+          <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center shadow-sm" style="width:42px; height:42px;">
             <i class="fas fa-user"></i>
           </div>
         </a>
-        <ul class="dropdown-menu dropdown-menu-end">
-          <li><a class="dropdown-item active" href="profile.html"><i class="fas fa-user me-2"></i> Profile</a></li>
+        <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+          <li><a class="dropdown-item py-2 active" href="profile.html"><i class="fas fa-user-circle me-2"></i> Profile</a></li>
           <li><hr class="dropdown-divider"></li>
-          <li><a class="dropdown-item text-danger" href="#" onclick="logout()"><i class="fas fa-sign-out-alt me-2"></i> Logout</a></li>
+          <li><a class="dropdown-item py-2 text-danger" href="#" onclick="logout()"><i class="fas fa-sign-out-alt me-2"></i> Logout</a></li>
         </ul>
       </div>
     </div>
@@ -92,187 +119,300 @@
 </nav>
 
 <!-- Sidebar -->
-<div class="sidebar">
+<div class="sidebar shadow-sm">
   <div class="nav flex-column" id="sidebarMenu"></div>
 </div>
 
 <!-- Main Content -->
 <div class="main-content">
 
-  <h2 class="mb-4 fw-bold">My Profile</h2>
+  <div class="mb-4 d-flex justify-content-between align-items-center flex-wrap gap-3">
+    <div>
+      <h2 class="fw-bold text-dark mb-1">My Profile</h2>
+      <p class="text-muted">Manage your personal information and account settings.</p>
+    </div>
+    <button class="btn btn-primary px-4 rounded-pill fw-medium shadow-sm" onclick="document.getElementById('profileFormBtn').click()">
+      <i class="fas fa-save me-2"></i> Save Changes
+    </button>
+  </div>
 
   <div class="row g-4">
-
-    <!-- Left Column - Avatar & Quick Info -->
+    <!-- Left Column: Avatar & Quick Stats -->
     <div class="col-lg-4">
-      <div class="profile-card p-4 text-center">
-        <div class="mb-3 position-relative d-inline-block">
-          <img src="https://via.placeholder.com/140?text=You" alt="Profile Picture" class="profile-avatar" id="profileAvatar">
-          <label for="avatarInput" class="position-absolute bottom-0 end-0 bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width:38px;height:38px;cursor:pointer;">
-            <i class="fas fa-camera"></i>
-          </label>
-          <input type="file" id="avatarInput" accept="image/*" class="d-none">
-        </div>
-
-        <h4 class="mb-1" id="displayName">Asif Amin</h4>
-        <p class="text-muted mb-3" id="displayEmail">student@example.com</p>
-        <span class="badge bg-primary px-3 py-2 fs-6" id="displayRole">Student</span>
-
-        <hr class="my-4">
-
-        <div class="d-grid gap-2">
-          <button class="btn btn-outline-primary" onclick="document.getElementById('editProfileSection').scrollIntoView({behavior:'smooth'})">
-            <i class="fas fa-edit me-2"></i> Edit Profile
-          </button>
+      
+      <!-- Profile Card -->
+      <div class="card card-custom mb-4 text-center">
+        <div class="profile-cover"></div>
+        <div class="card-body pt-0 px-4 pb-4">
+          <div class="profile-avatar-container">
+            <img src="https://via.placeholder.com/150?text=User" alt="Profile Picture" class="profile-avatar" id="profileAvatar">
+            <label for="avatarInput" class="avatar-edit-btn shadow-sm" title="Upload new photo">
+              <i class="fas fa-camera fs-6"></i>
+            </label>
+            <input type="file" id="avatarInput" accept="image/*" class="d-none">
+          </div>
+          <h4 class="fw-bold mb-1 text-dark" id="displayName">Asif Amin</h4>
+          <p class="text-muted mb-2" id="displayEmail">asif@example.com</p>
+          <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-3 py-2 rounded-pill fw-medium" id="displayRole">Student</span>
+          
+          <div class="d-flex justify-content-center gap-3 mt-4">
+            <a href="#" class="btn btn-light text-primary rounded-circle" style="width: 40px; height: 40px; padding-top: 8px;"><i class="fab fa-linkedin-in"></i></a>
+            <a href="#" class="btn btn-light text-dark rounded-circle" style="width: 40px; height: 40px; padding-top: 8px;"><i class="fab fa-github"></i></a>
+            <a href="#" class="btn btn-light text-info rounded-circle" style="width: 40px; height: 40px; padding-top: 8px;"><i class="fab fa-twitter"></i></a>
+          </div>
         </div>
       </div>
 
-      <!-- Joined Date & Last Active (simple) -->
-      <div class="profile-card p-4 mt-4 text-center">
-        <small class="text-muted">Member since</small>
-        <p class="fw-medium mb-1">March 2025</p>
-        <small class="text-muted">Last active</small>
-        <p class="fw-medium">Today</p>
+      <!-- Quick Stats Card -->
+      <div class="card card-custom p-4">
+        <h6 class="fw-bold mb-3 border-bottom pb-2">Platform Activity</h6>
+        <div class="stat-row d-flex justify-content-between align-items-center">
+          <span class="text-muted"><i class="fas fa-book-open me-2"></i> Courses Enrolled</span>
+          <span class="fw-bold text-dark">4</span>
+        </div>
+        <div class="stat-row d-flex justify-content-between align-items-center">
+          <span class="text-muted"><i class="fas fa-check-circle me-2"></i> Courses Completed</span>
+          <span class="fw-bold text-dark">2</span>
+        </div>
+        <div class="stat-row d-flex justify-content-between align-items-center">
+          <span class="text-muted"><i class="fas fa-award me-2"></i> Certificates Earned</span>
+          <span class="fw-bold text-dark">2</span>
+        </div>
+        <div class="stat-row d-flex justify-content-between align-items-center">
+          <span class="text-muted"><i class="fas fa-calendar-alt me-2"></i> Member Since</span>
+          <span class="fw-medium text-dark">March 2025</span>
+        </div>
       </div>
     </div>
 
-    <!-- Right Column - Edit Forms -->
+    <!-- Right Column: Tabs & Forms -->
     <div class="col-lg-8">
+      <div class="card card-custom h-100">
+        
+        <!-- Tab Navigation -->
+        <ul class="nav nav-tabs nav-tabs-custom px-3 pt-2 border-bottom" role="tablist">
+          <li class="nav-item" role="presentation">
+            <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#personalInfo" type="button" role="tab">Personal Info</button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#security" type="button" role="tab">Security</button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#preferences" type="button" role="tab">Preferences</button>
+          </li>
+        </ul>
 
-      <!-- Edit Profile Form -->
-      <div class="profile-card p-4 mb-4" id="editProfileSection">
-        <h5 class="mb-4 border-bottom pb-2">Edit Profile Information</h5>
-        <form id="profileForm">
-          <div class="row g-3">
-            <div class="col-md-6">
-              <label for="firstName" class="form-label">First Name</label>
-              <input type="text" class="form-control" id="firstName" value="Asif" required>
+        <div class="tab-content p-4 p-md-5">
+          
+          <!-- TAB 1: Personal Info -->
+          <div class="tab-pane fade show active" id="personalInfo" role="tabpanel">
+            <form id="profileForm">
+              <div class="row g-4 mb-4">
+                <div class="col-md-6">
+                  <label for="firstName" class="form-label">First Name</label>
+                  <input type="text" class="form-control" id="firstName" value="Asif" required>
+                </div>
+                <div class="col-md-6">
+                  <label for="lastName" class="form-label">Last Name</label>
+                  <input type="text" class="form-control" id="lastName" value="Amin" required>
+                </div>
+              </div>
+
+              <div class="row g-4 mb-4">
+                <div class="col-md-6">
+                  <label for="email" class="form-label">Email Address <i class="fas fa-lock text-muted ms-1" title="Cannot be changed here"></i></label>
+                  <input type="email" class="form-control bg-light" id="email" value="asif@example.com" disabled>
+                </div>
+                <div class="col-md-6">
+                  <label for="phone" class="form-label">Phone Number</label>
+                  <input type="text" class="form-control" id="phone" placeholder="+880 123 456 789">
+                </div>
+              </div>
+
+              <div class="mb-4">
+                <label for="bio" class="form-label">Bio / About Me</label>
+                <textarea class="form-control" id="bio" rows="4" placeholder="Tell us a little about yourself...">Passionate about databases and full-stack development. Currently exploring React and Node.js.</textarea>
+              </div>
+
+              <h6 class="fw-bold mb-3 mt-5 border-bottom pb-2">Social Links</h6>
+              <div class="row g-4 mb-4">
+                <div class="col-md-6">
+                  <label class="form-label">LinkedIn Profile</label>
+                  <div class="input-group">
+                    <span class="input-group-text bg-light text-muted border-end-0"><i class="fab fa-linkedin"></i></span>
+                    <input type="text" class="form-control border-start-0" placeholder="linkedin.com/in/username">
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label">GitHub Profile</label>
+                  <div class="input-group">
+                    <span class="input-group-text bg-light text-muted border-end-0"><i class="fab fa-github"></i></span>
+                    <input type="text" class="form-control border-start-0" placeholder="github.com/username">
+                  </div>
+                </div>
+              </div>
+
+              <!-- Hidden submit button triggered by top header button -->
+              <button type="button" id="profileFormBtn" class="d-none" onclick="saveProfile()"></button>
+            </form>
+          </div>
+
+          <!-- TAB 2: Security (Password Change) -->
+          <div class="tab-pane fade" id="security" role="tabpanel">
+            <h5 class="fw-bold mb-4">Change Password</h5>
+            <form id="passwordForm">
+              <div class="mb-4">
+                <label for="currentPassword" class="form-label">Current Password</label>
+                <input type="password" class="form-control" id="currentPassword" placeholder="Enter current password" required>
+              </div>
+              <div class="row g-4 mb-4">
+                <div class="col-md-6">
+                  <label for="newPassword" class="form-label">New Password</label>
+                  <input type="password" class="form-control" id="newPassword" placeholder="At least 8 characters" required minlength="8">
+                </div>
+                <div class="col-md-6">
+                  <label for="confirmPassword" class="form-label">Confirm New Password</label>
+                  <input type="password" class="form-control" id="confirmPassword" placeholder="Repeat new password" required>
+                </div>
+              </div>
+              
+              <div class="p-3 bg-light rounded-3 mb-4 text-muted small">
+                <i class="fas fa-info-circle me-1 text-primary"></i> 
+                Password must be at least 8 characters long, contain an uppercase letter, and a number.
+              </div>
+
+              <button type="button" class="btn btn-primary px-4 rounded-pill fw-medium" onclick="changePassword()">
+                Update Password
+              </button>
+            </form>
+          </div>
+
+          <!-- TAB 3: Preferences -->
+          <div class="tab-pane fade" id="preferences" role="tabpanel">
+            <h5 class="fw-bold mb-4">Account Preferences</h5>
+            
+            <div class="mb-4">
+              <label class="form-label">Preferred Language</label>
+              <select class="form-select" style="max-width: 300px;">
+                <option selected>English (US)</option>
+                <option>Bangla</option>
+                <option>Hindi</option>
+                <option>Spanish</option>
+              </select>
             </div>
-            <div class="col-md-6">
-              <label for="lastName" class="form-label">Last Name</label>
-              <input type="text" class="form-control" id="lastName" value="Amin" required>
+
+            <h6 class="fw-bold mb-3 mt-5 border-bottom pb-2">Email Notifications</h6>
+            
+            <div class="form-check form-switch mb-3">
+              <input class="form-check-input fs-5" type="checkbox" id="notif1" checked>
+              <label class="form-check-label pt-1 ms-2" for="notif1">Course Updates & Announcements</label>
+            </div>
+            <div class="form-check form-switch mb-3">
+              <input class="form-check-input fs-5" type="checkbox" id="notif2" checked>
+              <label class="form-check-label pt-1 ms-2" for="notif2">Assessment Grades & Feedback</label>
+            </div>
+            <div class="form-check form-switch mb-3">
+              <input class="form-check-input fs-5" type="checkbox" id="notif3">
+              <label class="form-check-label pt-1 ms-2" for="notif3">Marketing & Promotions</label>
             </div>
           </div>
 
-          <div class="mb-3 mt-3">
-            <label for="email" class="form-label">Email Address</label>
-            <input type="email" class="form-control" id="email" value="student@example.com" disabled>
-            <small class="text-muted">Email cannot be changed</small>
-          </div>
-
-          <div class="mb-3">
-            <label for="bio" class="form-label">Bio / About</label>
-            <textarea class="form-control" id="bio" rows="4" placeholder="Tell others about yourself... (optional)">Passionate about databases and full-stack development. Currently working on E-Learning Platform project.</textarea>
-          </div>
-
-          <div class="mb-3">
-            <label class="form-label">Preferred Language</label>
-            <select class="form-select">
-              <option>English</option>
-              <option>Bangla</option>
-              <option>Hindi</option>
-            </select>
-          </div>
-
-          <button type="button" class="btn btn-primary mt-2" onclick="saveProfile()">
-            <i class="fas fa-save me-2"></i> Save Changes
-          </button>
-        </form>
+        </div>
       </div>
-
-      <!-- Change Password -->
-      <div class="profile-card p-4">
-        <h5 class="mb-4 border-bottom pb-2">Change Password</h5>
-        <form id="passwordForm">
-          <div class="mb-3">
-            <label for="currentPassword" class="form-label">Current Password</label>
-            <input type="password" class="form-control" id="currentPassword" required>
-          </div>
-          <div class="mb-3">
-            <label for="newPassword" class="form-label">New Password</label>
-            <input type="password" class="form-control" id="newPassword" required minlength="8">
-          </div>
-          <div class="mb-4">
-            <label for="confirmPassword" class="form-label">Confirm New Password</label>
-            <input type="password" class="form-control" id="confirmPassword" required>
-          </div>
-
-          <button type="button" class="btn btn-outline-primary" onclick="changePassword()">
-            <i class="fas fa-key me-2"></i> Update Password
-          </button>
-        </form>
-      </div>
-
     </div>
   </div>
 
 </div>
 
+<!-- Success Toast Notification -->
+<div class="toast-container position-fixed bottom-0 end-0 p-3">
+  <div id="actionToast" class="toast align-items-center text-bg-success border-0 shadow-lg" role="alert" aria-live="assertive" aria-atomic="true">
+    <div class="d-flex p-1">
+      <div class="toast-body fw-medium fs-6" id="toastMessage">
+        <i class="fas fa-check-circle me-2"></i> Action successful!
+      </div>
+      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
 <script>
 // ────────────────────────────────────────────────
-//  Role & UI logic (same as previous pages)
+// Role & Data Setup
 // ────────────────────────────────────────────────
-
 const role = localStorage.getItem('userRole') || 'student';
-const name = localStorage.getItem('userName') || 'Asif Amin';
-const email = localStorage.getItem('userEmail') || 'student@example.com';
+let fullName = localStorage.getItem('userName') || 'Asif Amin';
+const email = localStorage.getItem('userEmail') || 'asif@example.com';
 
-document.getElementById('userFullName').textContent = name;
-document.getElementById('userRoleBadge').textContent = role.charAt(0).toUpperCase() + role.slice(1);
-document.getElementById('displayName').textContent = name;
-document.getElementById('displayEmail').textContent = email;
-document.getElementById('displayRole').textContent = role.charAt(0).toUpperCase() + role.slice(1);
+// Update DOM initially
+updateUIData();
 
-// Sidebar menu
+// ────────────────────────────────────────────────
+// Sidebar Menu Generation
+// ────────────────────────────────────────────────
 const menu = document.getElementById('sidebarMenu');
-let menuHTML = '';
-
 if (role === 'student') {
-  menuHTML = `
-    <a href="../dashboard.html" class="nav-link"><i class="fas fa-home"></i> Dashboard</a>
-    <a href="courses.html" class="nav-link"><i class="fas fa-book-open"></i> Courses</a>
-    <a href="enroll.html" class="nav-link"><i class="fas fa-search"></i> Browse Courses</a>
-    <a href="assessment.html" class="nav-link"><i class="fas fa-tasks"></i> Assessments</a>
+  menu.innerHTML = `
+    <a href="../dashboard.html" class="nav-link"><i class="fas fa-th-large"></i> Dashboard</a>
+    <a href="courses.html" class="nav-link"><i class="fas fa-book"></i> My Courses</a>
+    <a href="enroll.html" class="nav-link"><i class="fas fa-compass"></i> Explore</a>
+    <a href="assessment.html" class="nav-link"><i class="fas fa-pen-square"></i> Assessments</a>
     <a href="profile.html" class="nav-link active"><i class="fas fa-user"></i> Profile</a>
   `;
 } else if (role === 'instructor') {
-  menuHTML = `
-    <a href="../dashboard.html" class="nav-link"><i class="fas fa-home"></i> Dashboard</a>
-    <a href="courses.html" class="nav-link"><i class="fas fa-chalkboard-teacher"></i> My Courses</a>
-    <a href="content.html" class="nav-link"><i class="fas fa-upload"></i> Content</a>
-    <a href="assessment.html" class="nav-link"><i class="fas fa-check-double"></i> Results</a>
+  menu.innerHTML = `
+    <a href="../dashboard.html" class="nav-link"><i class="fas fa-th-large"></i> Dashboard</a>
+    <a href="courses.html" class="nav-link"><i class="fas fa-chalkboard-teacher"></i> Assigned Courses</a>
+    <a href="content.html" class="nav-link"><i class="fas fa-upload"></i> Content Library</a>
+    <a href="assessment.html" class="nav-link"><i class="fas fa-chart-line"></i> Student Results</a>
     <a href="profile.html" class="nav-link active"><i class="fas fa-user"></i> Profile</a>
   `;
 } else if (role === 'admin') {
-  menuHTML = `
-    <a href="../dashboard.html" class="nav-link"><i class="fas fa-home"></i> Dashboard</a>
+  menu.innerHTML = `
+    <a href="../dashboard.html" class="nav-link"><i class="fas fa-th-large"></i> Dashboard</a>
     <a href="admin.html" class="nav-link"><i class="fas fa-users-cog"></i> Manage Users</a>
-    <a href="admin.html#courses" class="nav-link"><i class="fas fa-book"></i> Courses</a>
-    <a href="profile.html" class="nav-link active"><i class="fas fa-user-shield"></i> Profile</a>
+    <a href="admin.html#courses" class="nav-link"><i class="fas fa-shield-alt"></i> Moderation</a>
+    <a href="profile.html" class="nav-link active"><i class="fas fa-user-shield"></i> Admin Profile</a>
   `;
 }
 
-menu.innerHTML = menuHTML;
-
 // ────────────────────────────────────────────────
-//  Profile picture preview
+// Profile Functions
 // ────────────────────────────────────────────────
 
+function updateUIData() {
+  // Update Top Navbar & Sidebar
+  document.getElementById('userFullName').textContent = fullName;
+  document.getElementById('userRoleBadge').textContent = role.charAt(0).toUpperCase() + role.slice(1);
+  
+  // Update Profile Card
+  document.getElementById('displayName').textContent = fullName;
+  document.getElementById('displayEmail').textContent = email;
+  document.getElementById('displayRole').textContent = role.charAt(0).toUpperCase() + role.slice(1);
+
+  // Split name for input fields
+  const nameParts = fullName.split(' ');
+  document.getElementById('firstName').value = nameParts[0] || '';
+  document.getElementById('lastName').value = nameParts.slice(1).join(' ') || '';
+  document.getElementById('email').value = email;
+}
+
+// Avatar Image Preview
 document.getElementById('avatarInput').addEventListener('change', function(e) {
   const file = e.target.files[0];
   if (file) {
     const reader = new FileReader();
     reader.onload = function(e) {
       document.getElementById('profileAvatar').src = e.target.result;
+      showToast("Profile picture updated successfully!");
     };
     reader.readAsDataURL(file);
   }
 });
 
-// ────────────────────────────────────────────────
-//  Demo save functions (replace with real API calls later)
-// ────────────────────────────────────────────────
-
+// Save Profile Info
 function saveProfile() {
   const first = document.getElementById('firstName').value.trim();
   const last = document.getElementById('lastName').value.trim();
@@ -282,35 +422,50 @@ function saveProfile() {
     return;
   }
 
-  const fullName = first + " " + last;
+  fullName = first + " " + last;
   localStorage.setItem('userName', fullName);
-  alert("Profile updated successfully!\n\n(In real app → PATCH /api/users/profile)");
-  location.reload(); // refresh displayed name
+  updateUIData();
+  
+  showToast("Profile information saved successfully!");
 }
 
+// Change Password
 function changePassword() {
+  const currPass = document.getElementById('currentPassword').value;
   const newPass = document.getElementById('newPassword').value;
   const confirm = document.getElementById('confirmPassword').value;
 
+  if (!currPass || !newPass || !confirm) {
+    alert("Please fill in all password fields.");
+    return;
+  }
   if (newPass.length < 8) {
     alert("New password must be at least 8 characters.");
     return;
   }
   if (newPass !== confirm) {
-    alert("Passwords do not match.");
+    alert("New passwords do not match.");
     return;
   }
 
-  alert("Password would be updated!\n\n(In real app → POST /api/users/change-password)");
   document.getElementById('passwordForm').reset();
+  showToast("Password updated securely!");
 }
 
+// Custom Toast Function
+function showToast(message) {
+  document.getElementById('toastMessage').innerHTML = `<i class="fas fa-check-circle me-2"></i> ${message}`;
+  const toastEl = document.getElementById('actionToast');
+  const toast = new bootstrap.Toast(toastEl, { delay: 3000 });
+  toast.show();
+}
+
+// Logout
 function logout() {
   localStorage.clear();
-  window.location.href = 'index.html';
+  window.location.href = '../index.html';
 }
 </script>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

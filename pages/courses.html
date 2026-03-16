@@ -3,76 +3,71 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Courses - ELP Platform</title>
+  <title>My Courses - ELP Platform</title>
 
   <!-- Bootstrap 5.3 -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-  
-  <link rel="stylesheet" href="css/style.css">
-
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <!-- Font Awesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
 
   <style>
-    body { background-color: #f5f7ff; font-family: 'Segoe UI', system-ui, sans-serif; }
+    /* --- BASE LAYOUT (Matched with other pages) --- */
+    body { background-color: #f4f7fe; font-family: 'Segoe UI', system-ui, sans-serif; }
+    .top-navbar {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+      background: white; border-bottom: 1px solid #e2e8f0; padding: 0.8rem 2.5rem;
+    }
     .sidebar {
-      min-height: 100vh;
-      background: white;
-      border-right: 1px solid #e0e0e0;
-      position: fixed;
-      width: 240px;
-      top: 0; left: 0;
-      padding-top: 80px;
-      overflow-y: auto;
+      min-height: 100vh; background: white; border-right: 1px solid #e2e8f0;
+      position: fixed; width: 250px; top: 0; left: 0; padding-top: 85px;
+      overflow-y: auto; z-index: 900; transition: transform 0.3s ease;
     }
     .sidebar .nav-link {
-      color: #495057;
-      padding: 0.9rem 1.5rem;
-      font-weight: 500;
+      color: #64748b; padding: 0.85rem 1.5rem; font-weight: 500;
+      border-left: 3px solid transparent; margin-bottom: 0.2rem;
     }
-    .sidebar .nav-link:hover,
-    .sidebar .nav-link.active {
-      background-color: #e7f0ff;
-      color: #0d6efd;
+    .sidebar .nav-link:hover, .sidebar .nav-link.active {
+      background-color: #f8fafc; color: #0d6efd; border-left: 3px solid #0d6efd;
     }
     .sidebar .nav-link i { width: 24px; text-align: center; margin-right: 12px; }
-    .main-content { margin-left: 240px; padding: 2rem 2.5rem; }
-    .top-navbar {
-      position: fixed;
-      top: 0; left: 0; right: 0;
-      z-index: 1000;
-      background: white;
-      border-bottom: 1px solid #e0e0e0;
-      padding: 1rem 2.5rem;
+    .main-content { margin-left: 250px; padding: 6rem 2.5rem 2rem 2.5rem; }
+
+    /* --- MOBILE RESPONSIVENESS --- */
+    @media (max-width: 992px) {
+      .sidebar { transform: translateX(-100%); z-index: 1040; }
+      .sidebar.show { transform: translateX(0); }
+      .main-content { margin-left: 0 !important; padding: 6rem 1rem 2rem 1rem; }
+      .top-navbar { padding: 0.8rem 1rem; }
     }
+
+    /* --- COURSE CARD UI --- */
     .course-card {
       border: none;
-      border-radius: 12px;
+      border-radius: 16px;
       overflow: hidden;
-      box-shadow: 0 4px 16px rgba(0,0,0,0.08);
-      transition: all 0.25s ease;
+      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+      transition: all 0.3s ease;
       background: white;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
     }
     .course-card:hover {
       transform: translateY(-6px);
-      box-shadow: 0 12px 32px rgba(0,0,0,0.12);
+      box-shadow: 0 12px 20px -3px rgba(0,0,0,0.1);
     }
     .course-thumbnail {
       height: 160px;
       background-size: cover;
       background-position: center;
     }
-    .badge-enrolled {
-      position: absolute;
-      top: 12px;
-      right: 12px;
-      font-size: 0.8rem;
-      padding: 0.45em 0.9em;
+    .card-body {
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1;
+      padding: 1.5rem;
     }
-    .create-course-btn {
-      font-size: 1.1rem;
-      padding: 0.75rem 1.8rem;
-    }
+    .mt-auto { margin-top: auto; }
   </style>
 </head>
 <body>
@@ -80,24 +75,28 @@
 <!-- Top Navbar -->
 <nav class="top-navbar navbar navbar-expand-lg">
   <div class="container-fluid">
-    <a class="navbar-brand fw-bold fs-4" href="dashboard.html">
+    <button class="btn btn-light d-lg-none me-3 border-0" onclick="document.querySelector('.sidebar').classList.toggle('show')">
+      <i class="fas fa-bars"></i>
+    </button>
+    <a class="navbar-brand fw-bold fs-4" href="../dashboard.html">
       ELP <span class="text-primary">Platform</span>
     </a>
-    <div class="ms-auto d-flex align-items-center gap-4">
+    <div class="ms-auto d-flex align-items-center gap-3">
+      <!-- Profile Dropdown -->
       <div class="dropdown">
         <a class="d-flex align-items-center text-decoration-none dropdown-toggle" href="#" data-bs-toggle="dropdown">
-          <div class="me-3 text-end">
-            <div id="userFullName" class="fw-medium">Loading...</div>
-            <small id="userRoleBadge" class="text-muted"></small>
+          <div class="me-3 text-end d-none d-sm-block">
+            <div id="userFullName" class="fw-bold text-dark mb-0 lh-1">Loading...</div>
+            <small id="userRoleBadge" class="text-muted" style="font-size: 0.8rem;"></small>
           </div>
-          <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center" style="width:42px;height:42px;">
+          <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center shadow-sm" style="width:42px; height:42px;">
             <i class="fas fa-user"></i>
           </div>
         </a>
-        <ul class="dropdown-menu dropdown-menu-end">
-          <li><a class="dropdown-item" href="profile.html"><i class="fas fa-user me-2"></i> Profile</a></li>
+        <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+          <li><a class="dropdown-item py-2" href="profile.html"><i class="fas fa-user-circle me-2 text-muted"></i> Profile</a></li>
           <li><hr class="dropdown-divider"></li>
-          <li><a class="dropdown-item text-danger" href="#" onclick="logout()"><i class="fas fa-sign-out-alt me-2"></i> Logout</a></li>
+          <li><a class="dropdown-item py-2 text-danger" href="#" onclick="logout()"><i class="fas fa-sign-out-alt me-2"></i> Logout</a></li>
         </ul>
       </div>
     </div>
@@ -105,46 +104,29 @@
 </nav>
 
 <!-- Sidebar -->
-<div class="sidebar">
-  <div class="nav flex-column" id="sidebarMenu"></div>
+<div class="sidebar shadow-sm">
+  <div class="nav flex-column" id="sidebarMenu">
+    <!-- Populated by JS -->
+  </div>
 </div>
 
 <!-- Main Content -->
 <div class="main-content">
 
   <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
-    <h2 class="mb-0 fw-bold">Courses</h2>
-
-    <!-- Instructor-only: Create Course button -->
-    <button id="createCourseBtn" class="btn btn-primary create-course-btn d-none" data-bs-toggle="modal" data-bs-target="#createCourseModal">
-      <i class="fas fa-plus me-2"></i> Create New Course
-    </button>
+    <div>
+      <h2 class="mb-1 fw-bold text-dark" id="pageTitle">My Courses</h2>
+      <p class="text-muted mb-0" id="pageSubtitle">Continue your learning journey</p>
+    </div>
   </div>
 
-  <!-- Search & Filter (visible to students mostly) -->
-  <div class="row mb-4" id="studentFilters" style="display:none;">
-    <div class="col-md-6">
-      <div class="input-group">
-        <span class="input-group-text"><i class="fas fa-search"></i></span>
-        <input type="text" id="searchInput" class="form-control" placeholder="Search courses...">
+  <!-- Search (Only searches within their enrolled/assigned courses) -->
+  <div class="row mb-4">
+    <div class="col-md-6 col-lg-4">
+      <div class="input-group shadow-sm rounded-3 overflow-hidden">
+        <span class="input-group-text bg-white border-0"><i class="fas fa-search text-muted"></i></span>
+        <input type="text" id="searchInput" class="form-control border-0 bg-white shadow-none" placeholder="Search my courses...">
       </div>
-    </div>
-    <div class="col-md-3">
-      <select class="form-select">
-        <option selected>Category: All</option>
-        <option>Programming</option>
-        <option>Database</option>
-        <option>Web Development</option>
-        <option>Data Science</option>
-        <option>Others</option>
-      </select>
-    </div>
-    <div class="col-md-3">
-      <select class="form-select">
-        <option selected>Sort by: Newest</option>
-        <option>Most Popular</option>
-        <option>Price: Low to High</option>
-      </select>
     </div>
   </div>
 
@@ -153,156 +135,159 @@
     <!-- Courses will be inserted here by JavaScript -->
   </div>
 
-</div>
-
-<!-- ────────────────────────────────────────────────
-     CREATE COURSE MODAL (Instructor only)
-───────────────────────────────────────────────── -->
-<div class="modal fade" id="createCourseModal" tabindex="-1" aria-labelledby="createCourseModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-lg">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="createCourseModalLabel">Create New Course</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <form id="createCourseForm">
-          <div class="mb-3">
-            <label for="courseTitle" class="form-label fw-medium">Course Title <span class="text-danger">*</span></label>
-            <input type="text" class="form-control" id="courseTitle" required placeholder="e.g. Database Systems with MySQL">
-          </div>
-
-          <div class="mb-3">
-            <label for="courseDescription" class="form-label fw-medium">Description <span class="text-danger">*</span></label>
-            <textarea class="form-control" id="courseDescription" rows="4" required placeholder="Brief overview of what students will learn..."></textarea>
-          </div>
-
-          <div class="row g-3">
-            <div class="col-md-6">
-              <label for="courseCategory" class="form-label fw-medium">Category</label>
-              <select class="form-select" id="courseCategory">
-                <option>Programming</option>
-                <option>Database</option>
-                <option>Web Development</option>
-                <option>Data Science</option>
-                <option>Others</option>
-              </select>
-            </div>
-            <div class="col-md-6">
-              <label for="courseLevel" class="form-label fw-medium">Level</label>
-              <select class="form-select" id="courseLevel">
-                <option>Beginner</option>
-                <option>Intermediate</option>
-                <option>Advanced</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="mt-4">
-            <label class="form-label fw-medium">Course Thumbnail</label>
-            <input type="file" class="form-control" accept="image/*" id="courseThumbnail">
-          </div>
-        </form>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary" onclick="createCourse()">Create Course</button>
-      </div>
+  <!-- Empty State (Hidden by default) -->
+  <div id="emptyState" class="text-center py-5 d-none">
+    <div class="mb-4">
+      <i class="fas fa-folder-open fa-4x text-muted opacity-50"></i>
     </div>
+    <h4 class="fw-bold text-dark">No courses found</h4>
+    <p class="text-muted" id="emptyStateMsg">You are not enrolled in any courses yet.</p>
+    <a href="enroll.html" class="btn btn-primary px-4 py-2 mt-2 rounded-pill fw-medium" id="browseBtn">
+      <i class="fas fa-compass me-2"></i> Browse Courses
+    </a>
   </div>
+
 </div>
 
 <script>
 // ────────────────────────────────────────────────
-//  Role & UI logic
+//  Role & UI Logic Setup
 // ────────────────────────────────────────────────
-
 const role = localStorage.getItem('userRole') || 'student';
-const name = localStorage.getItem('userName') || 'User';
+const name = localStorage.getItem('userName') || 'Asif Amin';
 
 document.getElementById('userFullName').textContent = name;
 document.getElementById('userRoleBadge').textContent = role.charAt(0).toUpperCase() + role.slice(1);
 
-// Sidebar
+// Configure UI based on role
 const menu = document.getElementById('sidebarMenu');
-let menuHTML = '';
+const pageTitle = document.getElementById('pageTitle');
+const pageSubtitle = document.getElementById('pageSubtitle');
+const browseBtn = document.getElementById('browseBtn');
+const emptyStateMsg = document.getElementById('emptyStateMsg');
 
 if (role === 'student') {
-  menuHTML = `
-    <a href="../dashboard.html" class="nav-link"><i class="fas fa-home"></i> Dashboard</a>
-    <a href="courses.html" class="nav-link active"><i class="fas fa-book-open"></i> Courses</a>
-    <a href="enroll.html" class="nav-link"><i class="fas fa-search"></i> Browse & Enroll</a>
-    <a href="assessment.html" class="nav-link"><i class="fas fa-tasks"></i> Assessments</a>
+  menu.innerHTML = `
+    <a href="../dashboard.html" class="nav-link"><i class="fas fa-th-large"></i> Dashboard</a>
+    <a href="courses.html" class="nav-link active"><i class="fas fa-book"></i> My Courses</a>
+    <a href="enroll.html" class="nav-link"><i class="fas fa-compass"></i> Explore</a>
+    <a href="assessment.html" class="nav-link"><i class="fas fa-pen-square"></i> Assessments</a>
     <a href="profile.html" class="nav-link"><i class="fas fa-user"></i> Profile</a>
   `;
-  document.getElementById('studentFilters').style.display = 'flex';
 } else if (role === 'instructor') {
-  menuHTML = `
-    <a href="../dashboard.html" class="nav-link"><i class="fas fa-home"></i> Dashboard</a>
-    <a href="courses.html" class="nav-link active"><i class="fas fa-chalkboard-teacher"></i> My Courses</a>
-    <a href="content.html" class="nav-link"><i class="fas fa-upload"></i> Content Management</a>
-    <a href="assessment.html" class="nav-link"><i class="fas fa-check-double"></i> Student Results</a>
+  menu.innerHTML = `
+    <a href="../dashboard.html" class="nav-link"><i class="fas fa-th-large"></i> Dashboard</a>
+    <a href="courses.html" class="nav-link active"><i class="fas fa-chalkboard-teacher"></i> Assigned Courses</a>
+    <a href="content.html" class="nav-link"><i class="fas fa-upload"></i> Content Library</a>
+    <a href="assessment.html" class="nav-link"><i class="fas fa-chart-line"></i> Assessments</a>
     <a href="profile.html" class="nav-link"><i class="fas fa-user"></i> Profile</a>
   `;
-  document.getElementById('createCourseBtn').classList.remove('d-none');
+  pageTitle.textContent = "Assigned Courses";
+  pageSubtitle.textContent = "Courses assigned to you by the Committee";
+  browseBtn.classList.add('d-none'); // Instructors don't browse to enroll
+  emptyStateMsg.textContent = "You have not been assigned any courses yet.";
 } else if (role === 'admin') {
-  menuHTML = `
-    <a href="../dashboard.html" class="nav-link"><i class="fas fa-home"></i> Dashboard</a>
-    <a href="admin.html" class="nav-link"><i class="fas fa-users-cog"></i> Users</a>
-    <a href="admin.html#courses" class="nav-link active"><i class="fas fa-book"></i> Courses</a>
-    <a href="admin.html#analytics" class="nav-link"><i class="fas fa-chart-bar"></i> Analytics</a>
+  menu.innerHTML = `
+    <a href="../dashboard.html" class="nav-link"><i class="fas fa-th-large"></i> Dashboard</a>
+    <a href="admin.html" class="nav-link"><i class="fas fa-users-cog"></i> Manage Users</a>
+    <a href="admin.html#courses" class="nav-link active"><i class="fas fa-shield-alt"></i> Moderation</a>
+    <a href="assessment.html" class="nav-link"><i class="fas fa-pen-square"></i> Platform Analytics</a>
+    <a href="profile.html" class="nav-link"><i class="fas fa-user-shield"></i> Admin Profile</a>
   `;
+  pageTitle.textContent = "All Courses (Moderation View)";
+  pageSubtitle.textContent = "Overview of all platform courses";
 }
 
-menu.innerHTML = menuHTML;
-
 // ────────────────────────────────────────────────
-//  Fake course data (replace with API fetch later)
+//  Data & Filtering Logic
 // ────────────────────────────────────────────────
-
-const sampleCourses = [
-  { id:1, title:"Database Systems with MySQL", category:"Database", level:"Intermediate", instructor:"Prof. Rahman", thumbnail:"https://images.unsplash.com/photo-1517430816045-df4b7de11d1d?w=800", enrolled:true, progress:65 },
-  { id:2, title:"Modern JavaScript & ES6+", category:"Programming", level:"Beginner", instructor:"Sadia Akter", thumbnail:"https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=800", enrolled:false },
-  { id:3, title:"Full-Stack Web Development", category:"Web Development", level:"Intermediate", instructor:"Asif Amin", thumbnail:"https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=800", enrolled:true, progress:28 },
-  { id:4, title:"Python for Data Science", category:"Data Science", level:"Beginner", instructor:"Dr. Karim", thumbnail:"https://images.unsplash.com/photo-1551288049-b1f4d7b0d6e8?w=800", enrolled:false },
-  { id:5, title:"Advanced SQL & Performance Tuning", category:"Database", level:"Advanced", instructor:"Prof. Rahman", thumbnail:"https://images.unsplash.com/photo-1518770660439-4636190af475?w=800", enrolled:false }
+// Fake Database Data
+const allCourses = [
+  { id:1, title:"Database Systems with MySQL", category:"Database", instructor:"Prof. Rahman", thumbnail:"https://images.unsplash.com/photo-1517430816045-df4b7de11d1d?w=800", enrolled:true, progress:65 },
+  { id:2, title:"Modern JavaScript & ES6+", category:"Programming", instructor:"Sadia Akter", thumbnail:"https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=800", enrolled:false, progress:0 },
+  { id:3, title:"Full-Stack Web Development", category:"Web Development", instructor:"Asif Amin", thumbnail:"https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=800", enrolled:true, progress:28 },
+  { id:4, title:"Python for Data Science", category:"Data Science", instructor:"Dr. Karim", thumbnail:"https://images.unsplash.com/photo-1551288049-b1f4d7b0d6e8?w=800", enrolled:false, progress:0 },
+  { id:5, title:"Advanced SQL & Tuning", category:"Database", instructor:"Prof. Rahman", thumbnail:"https://images.unsplash.com/photo-1518770660439-4636190af475?w=800", enrolled:true, progress:100 }
 ];
 
+// 1. FILTER BASED ON ROLE
+let myData = [];
+
+if (role === 'student') {
+  // Students only see courses they are ENROLLED in
+  myData = allCourses.filter(c => c.enrolled === true);
+} else if (role === 'instructor') {
+  // Instructors only see courses ASSIGNED to them
+  myData = allCourses.filter(c => c.instructor === name || name === 'Instructor'); 
+  if(myData.length === 0) myData = [allCourses[0], allCourses[2]]; 
+} else {
+  // Admin sees all
+  myData = [...allCourses];
+}
+
+// ────────────────────────────────────────────────
+//  Rendering Function
+// ────────────────────────────────────────────────
 function renderCourses(courses) {
   const grid = document.getElementById('courseGrid');
+  const emptyState = document.getElementById('emptyState');
+  
   grid.innerHTML = '';
 
+  if (courses.length === 0) {
+    emptyState.classList.remove('d-none');
+    return;
+  } else {
+    emptyState.classList.add('d-none');
+  }
+
   courses.forEach(course => {
-    const isEnrolled = course.enrolled;
     const card = document.createElement('div');
     card.className = 'col-lg-4 col-md-6';
 
+    // Different buttons based on role
+    let actionArea = '';
+    
+    if (role === 'student') {
+      const isCompleted = course.progress === 100;
+      actionArea = `
+        <div class="mt-auto">
+          <div class="d-flex justify-content-between mb-1 small">
+            <span class="text-muted fw-medium">Progress</span>
+            <span class="fw-bold ${isCompleted ? 'text-success' : 'text-primary'}">${course.progress}%</span>
+          </div>
+          <div class="progress mb-3 shadow-sm" style="height: 8px; border-radius: 4px;">
+            <div class="progress-bar ${isCompleted ? 'bg-success' : 'bg-primary'}" role="progressbar" style="width: ${course.progress}%"></div>
+          </div>
+          <button class="btn ${isCompleted ? 'btn-success' : 'btn-outline-primary'} w-100 rounded-pill fw-medium">
+            ${isCompleted ? '<i class="fas fa-certificate me-2"></i> View Certificate' : '<i class="fas fa-play-circle me-2"></i> Resume Course'}
+          </button>
+        </div>
+      `;
+    } else if (role === 'instructor') {
+      actionArea = `
+        <div class="mt-auto pt-3 border-top">
+          <button class="btn btn-outline-primary w-100 mb-2 rounded-pill fw-medium" onclick="window.location.href='content.html'"><i class="fas fa-upload me-2"></i> Manage Content</button>
+          <button class="btn btn-light text-primary w-100 rounded-pill fw-medium"><i class="fas fa-users me-2"></i> View Students</button>
+        </div>
+      `;
+    } else {
+      actionArea = `
+        <div class="mt-auto pt-3 border-top d-flex gap-2">
+          <button class="btn btn-outline-primary rounded-pill flex-grow-1 fw-medium">View Course</button>
+          <button class="btn btn-outline-danger rounded-circle" style="width:40px; height:40px;"><i class="fas fa-ban"></i></button>
+        </div>
+      `;
+    }
+
     card.innerHTML = `
-      <div class="course-card position-relative">
+      <div class="course-card">
         <div class="course-thumbnail" style="background-image: url('${course.thumbnail}')"></div>
-        ${isEnrolled ? `<span class="badge bg-success badge-enrolled">Enrolled</span>` : ''}
         <div class="card-body">
-          <h5 class="card-title">${course.title}</h5>
-          <p class="text-muted small mb-2">${course.category} • ${course.level}</p>
-          <p class="small mb-3">By ${course.instructor}</p>
-          
-          ${role === 'student' ? `
-            ${isEnrolled ? `
-              <div class="progress mb-2" style="height:8px;">
-                <div class="progress-bar bg-success" role="progressbar" style="width: ${course.progress}%" aria-valuenow="${course.progress}" aria-valuemin="0" aria-valuemax="100"></div>
-              </div>
-              <small class="text-muted">${course.progress}% complete</small>
-            ` : `
-              <button class="btn btn-outline-primary btn-sm w-100" onclick="enrollCourse(${course.id})">
-                <i class="fas fa-plus me-1"></i> Enroll Now
-              </button>
-            `}
-          ` : `
-            <div class="d-flex gap-2 mt-2">
-              <button class="btn btn-outline-primary btn-sm flex-grow-1"><i class="fas fa-edit"></i> Edit</button>
-              <button class="btn btn-outline-danger btn-sm"><i class="fas fa-trash"></i></button>
-            </div>
-          `}
+          <div class="mb-2"><span class="badge bg-light text-dark border">${course.category}</span></div>
+          <h5 class="card-title fw-bold text-dark mb-1">${course.title}</h5>
+          <p class="small text-muted mb-4"><i class="fas fa-chalkboard-teacher me-1"></i> ${course.instructor}</p>
+          ${actionArea}
         </div>
       </div>
     `;
@@ -311,42 +296,21 @@ function renderCourses(courses) {
 }
 
 // Initial render
-renderCourses(sampleCourses.filter(c => {
-  if (role === 'instructor') return true; // show all for instructor (in real → only their courses)
-  return true; // student sees all
-}));
+renderCourses(myData);
 
-// Simple search (client-side demo)
+// Local Search inside "My Courses"
 document.getElementById('searchInput')?.addEventListener('input', e => {
-  const term = e.target.value.toLowerCase();
-  const filtered = sampleCourses.filter(c => 
+  const term = e.target.value.toLowerCase().trim();
+  const filtered = myData.filter(c => 
     c.title.toLowerCase().includes(term) || 
     c.category.toLowerCase().includes(term)
   );
   renderCourses(filtered);
 });
 
-// Demo enroll action
-function enrollCourse(id) {
-  alert(`Enrolling in course #${id}\n\n(In real app → POST /api/enrollments)`);
-  // You would update local state / call API here
-}
-
-// Demo create course
-function createCourse() {
-  const title = document.getElementById('courseTitle').value.trim();
-  if (!title) {
-    alert("Please enter a course title");
-    return;
-  }
-  alert(`Course "${title}" would be created!\n\n(In real app → POST /api/courses)`);
-  // Close modal
-  bootstrap.Modal.getInstance(document.getElementById('createCourseModal')).hide();
-}
-
 function logout() {
   localStorage.clear();
-  window.location.href = 'index.html';
+  window.location.href = '../index.html';
 }
 </script>
 
