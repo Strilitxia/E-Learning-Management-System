@@ -324,7 +324,7 @@
 // ────────────────────────────────────────────────
 // Role & UI Setup
 // ────────────────────────────────────────────────
-const role = localStorage.getItem('userRole') || 'student';
+const role = localStorage.getItem('userRole') || 'student'; // Default to instructor for demo
 const name = localStorage.getItem('userName') || 'User';
 
 document.getElementById('userFullName').textContent = name;
