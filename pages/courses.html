@@ -154,7 +154,12 @@
 //  Role & UI Logic Setup
 // ────────────────────────────────────────────────
 const role = localStorage.getItem('userRole') || 'student';
-const name = localStorage.getItem('userName') || 'Asif Amin';
+const name = localStorage.getItem('userName') || 'User';
+const userId = localStorage.getItem('userId') || 0;
+
+if (userId === 0) {
+    window.location.href = '../index.html';
+}
 
 document.getElementById('userFullName').textContent = name;
 document.getElementById('userRoleBadge').textContent = role.charAt(0).toUpperCase() + role.slice(1);
@@ -184,7 +189,7 @@ if (role === 'student') {
   `;
   pageTitle.textContent = "Assigned Courses";
   pageSubtitle.textContent = "Courses assigned to you by the Committee";
-  browseBtn.classList.add('d-none'); // Instructors don't browse to enroll
+  browseBtn.classList.add('d-none'); 
   emptyStateMsg.textContent = "You have not been assigned any courses yet.";
 } else if (role === 'admin') {
   menu.innerHTML = `
@@ -198,36 +203,22 @@ if (role === 'student') {
   pageSubtitle.textContent = "Overview of all platform courses";
 }
 
-// ────────────────────────────────────────────────
-//  Data & Filtering Logic
-// ────────────────────────────────────────────────
-// Fake Database Data
-const allCourses = [
-  { id:1, title:"Database Systems with MySQL", category:"Database", instructor:"Prof. Rahman", thumbnail:"https://images.unsplash.com/photo-1517430816045-df4b7de11d1d?w=800", enrolled:true, progress:65 },
-  { id:2, title:"Modern JavaScript & ES6+", category:"Programming", instructor:"Sadia Akter", thumbnail:"https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=800", enrolled:false, progress:0 },
-  { id:3, title:"Full-Stack Web Development", category:"Web Development", instructor:"Asif Amin", thumbnail:"https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=800", enrolled:true, progress:28 },
-  { id:4, title:"Python for Data Science", category:"Data Science", instructor:"Dr. Karim", thumbnail:"https://images.unsplash.com/photo-1551288049-b1f4d7b0d6e8?w=800", enrolled:false, progress:0 },
-  { id:5, title:"Advanced SQL & Tuning", category:"Database", instructor:"Prof. Rahman", thumbnail:"https://images.unsplash.com/photo-1518770660439-4636190af475?w=800", enrolled:true, progress:100 }
-];
+// Global variable to store fetched data for search filtering
+let myData = []; 
 
-// 1. FILTER BASED ON ROLE
-let myData = [];
-
-if (role === 'student') {
-  // Students only see courses they are ENROLLED in
-  myData = allCourses.filter(c => c.enrolled === true);
-} else if (role === 'instructor') {
-  // Instructors only see courses ASSIGNED to them
-  myData = allCourses.filter(c => c.instructor === name || name === 'Instructor'); 
-  if(myData.length === 0) myData = [allCourses[0], allCourses[2]]; 
-} else {
-  // Admin sees all
-  myData = [...allCourses];
+// ────────────────────────────────────────────────
+//  Fetch & Render Logic
+// ────────────────────────────────────────────────
+async function loadCourses() {
+    try {
+        const response = await fetch(`http://localhost/elp_project/api/courses/get_my_courses.php?userId=${userId}&role=${role}`);
+        myData = await response.json();
+        renderCourses(myData);
+    } catch (error) {
+        console.error("Error loading courses:", error);
+    }
 }
 
-// ────────────────────────────────────────────────
-//  Rendering Function
-// ────────────────────────────────────────────────
 function renderCourses(courses) {
   const grid = document.getElementById('courseGrid');
   const emptyState = document.getElementById('emptyState');
@@ -245,19 +236,20 @@ function renderCourses(courses) {
     const card = document.createElement('div');
     card.className = 'col-lg-4 col-md-6';
 
-    // Different buttons based on role
     let actionArea = '';
     
     if (role === 'student') {
-      const isCompleted = course.progress === 100;
+      const progress = course.ProgressPercentage ? parseFloat(course.ProgressPercentage) : 0;
+      const isCompleted = course.IsCompleted == 1 || progress === 100;
+      
       actionArea = `
         <div class="mt-auto">
           <div class="d-flex justify-content-between mb-1 small">
             <span class="text-muted fw-medium">Progress</span>
-            <span class="fw-bold ${isCompleted ? 'text-success' : 'text-primary'}">${course.progress}%</span>
+            <span class="fw-bold ${isCompleted ? 'text-success' : 'text-primary'}">${progress}%</span>
           </div>
           <div class="progress mb-3 shadow-sm" style="height: 8px; border-radius: 4px;">
-            <div class="progress-bar ${isCompleted ? 'bg-success' : 'bg-primary'}" role="progressbar" style="width: ${course.progress}%"></div>
+            <div class="progress-bar ${isCompleted ? 'bg-success' : 'bg-primary'}" role="progressbar" style="width: ${progress}%"></div>
           </div>
           <button class="btn ${isCompleted ? 'btn-success' : 'btn-outline-primary'} w-100 rounded-pill fw-medium">
             ${isCompleted ? '<i class="fas fa-certificate me-2"></i> View Certificate' : '<i class="fas fa-play-circle me-2"></i> Resume Course'}
@@ -271,22 +263,25 @@ function renderCourses(courses) {
           <button class="btn btn-light text-primary w-100 rounded-pill fw-medium"><i class="fas fa-users me-2"></i> View Students</button>
         </div>
       `;
-    } else {
+    } else if (role === 'admin') {
       actionArea = `
         <div class="mt-auto pt-3 border-top d-flex gap-2">
-          <button class="btn btn-outline-primary rounded-pill flex-grow-1 fw-medium">View Course</button>
-          <button class="btn btn-outline-danger rounded-circle" style="width:40px; height:40px;"><i class="fas fa-ban"></i></button>
+          <button class="btn btn-outline-primary rounded-pill flex-grow-1 fw-medium">View Details</button>
+          <button class="btn btn-outline-danger rounded-circle" style="width:40px; height:40px;" title="Remove/Ban Course"><i class="fas fa-ban"></i></button>
         </div>
       `;
     }
 
     card.innerHTML = `
       <div class="course-card">
-        <div class="course-thumbnail" style="background-image: url('${course.thumbnail}')"></div>
+        <div class="course-thumbnail" style="background-image: url('${course.ThumbnailURL}')"></div>
         <div class="card-body">
-          <div class="mb-2"><span class="badge bg-light text-dark border">${course.category}</span></div>
-          <h5 class="card-title fw-bold text-dark mb-1">${course.title}</h5>
-          <p class="small text-muted mb-4"><i class="fas fa-chalkboard-teacher me-1"></i> ${course.instructor}</p>
+          <div class="mb-2">
+             <span class="badge bg-light text-dark border">${course.Category || 'General'}</span>
+             ${role === 'admin' ? `<span class="badge bg-secondary ms-1">${course.Status || 'draft'}</span>` : ''}
+          </div>
+          <h5 class="card-title fw-bold text-dark mb-1">${course.Title}</h5>
+          <p class="small text-muted mb-4"><i class="fas fa-chalkboard-teacher me-1"></i> ${course.InstructorName}</p>
           ${actionArea}
         </div>
       </div>
@@ -295,15 +290,13 @@ function renderCourses(courses) {
   });
 }
 
-// Initial render
-renderCourses(myData);
-
 // Local Search inside "My Courses"
 document.getElementById('searchInput')?.addEventListener('input', e => {
   const term = e.target.value.toLowerCase().trim();
   const filtered = myData.filter(c => 
-    c.title.toLowerCase().includes(term) || 
-    c.category.toLowerCase().includes(term)
+    c.Title.toLowerCase().includes(term) || 
+    (c.Category && c.Category.toLowerCase().includes(term)) ||
+    c.InstructorName.toLowerCase().includes(term)
   );
   renderCourses(filtered);
 });
@@ -312,6 +305,9 @@ function logout() {
   localStorage.clear();
   window.location.href = '../index.html';
 }
+
+// Initial Data Fetch
+loadCourses();
 </script>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>

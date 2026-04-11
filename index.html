@@ -189,30 +189,68 @@ function showLogin() {
   document.getElementById('loginCard').classList.remove('d-none');
 }
 
-// Just for demo – in real project these would call your backend
-document.getElementById('loginForm')?.addEventListener('submit', e => {
+// LOGIN LOGIC
+document.getElementById('loginForm')?.addEventListener('submit', async (e) => {
   e.preventDefault();
   const email = document.getElementById('loginEmail').value;
-  
-  // For demonstration only – later you'll check real credentials
-  let role = "student";
-  if (email.includes("teacher") || email.includes("instructor")) {
-    role = "instructor";
-  } else if (email.includes("admin")) {
-    role = "admin";
+  const password = document.getElementById('loginPassword').value;
+
+  try {
+    const response = await fetch('http://localhost/elp_project/api/auth/login.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password })
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
+      // Store real DB data in localStorage to use across your HTML pages
+      localStorage.setItem('userId', data.user.id);
+      localStorage.setItem('userName', data.user.name);
+      localStorage.setItem('userEmail', data.user.email);
+      localStorage.setItem('userRole', data.user.role);
+      localStorage.setItem('isLoggedIn', 'true');
+      
+      window.location.href = "dashboard.html";
+    } else {
+      alert("Login failed: " + data.message);
+    }
+  } catch (error) {
+    console.error("Error:", error);
+    alert("Server error. Make sure XAMPP is running.");
   }
-
-  localStorage.setItem('userEmail', email);
-  localStorage.setItem('userRole', role);
-  localStorage.setItem('isLoggedIn', 'true');
-
-  window.location.href = "dashboard.html";
 });
 
-document.getElementById('registerForm')?.addEventListener('submit', e => {
+// REGISTER LOGIC
+document.getElementById('registerForm')?.addEventListener('submit', async (e) => {
   e.preventDefault();
-  alert("Registration would be sent to backend.\n\nIn real project → POST /api/register");
-  // You would do fetch() here later
+  const firstName = document.getElementById('firstName').value;
+  const lastName = document.getElementById('lastName').value;
+  const email = document.getElementById('registerEmail').value;
+  const password = document.getElementById('registerPassword').value;
+  const role = document.getElementById('registerRole').value;
+
+  try {
+    const response = await fetch('http://localhost/elp_project/api/auth/register.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ firstName, lastName, email, password, role })
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
+      alert("Registration successful! You can now log in.");
+      showLogin(); // Your existing function to switch to login view
+      document.getElementById('registerForm').reset();
+    } else {
+      alert("Registration failed: " + data.message);
+    }
+  } catch (error) {
+    console.error("Error:", error);
+    alert("Server error. Make sure XAMPP is running.");
+  }
 });
 </script>
 

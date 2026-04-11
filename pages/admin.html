@@ -213,7 +213,7 @@
         <div class="d-flex justify-content-between align-items-center mb-2">
           <div>
             <p class="mb-1 opacity-75 fw-medium">Total Users</p>
-            <h2 class="mb-0 fw-bold">1,284</h2>
+            <h2 class="mb-0 fw-bold" id="stat-total-users">0</h2>
           </div>
           <div class="icon-box"><i class="fas fa-users"></i></div>
         </div>
@@ -225,7 +225,7 @@
         <div class="d-flex justify-content-between align-items-center mb-2">
           <div>
             <p class="mb-1 opacity-75 fw-medium">Active Courses</p>
-            <h2 class="mb-0 fw-bold">56</h2>
+            <h2 class="mb-0 fw-bold" id="stat-active-courses">0</h2>
           </div>
           <div class="icon-box"><i class="fas fa-book-open"></i></div>
         </div>
@@ -237,7 +237,7 @@
         <div class="d-flex justify-content-between align-items-center mb-2">
           <div>
             <p class="mb-1 opacity-75 fw-medium">Enrollments</p>
-            <h2 class="mb-0 fw-bold">347</h2>
+            <h2 class="mb-0 fw-bold" id="stat-enrollments">0</h2>
           </div>
           <div class="icon-box"><i class="fas fa-graduation-cap"></i></div>
         </div>
@@ -249,7 +249,7 @@
         <div class="d-flex justify-content-between align-items-center mb-2">
           <div>
             <p class="mb-1 opacity-75 fw-medium">Pending Reports</p>
-            <h2 class="mb-0 fw-bold">14</h2>
+            <h2 class="mb-0 fw-bold" id="stat-pending-reports">0</h2>
           </div>
           <div class="icon-box"><i class="fas fa-flag"></i></div>
         </div>
@@ -375,12 +375,9 @@
 
 <script>
 // ────────────────────────────────────────────────
-//  Initialization
+//  Initialization & Security Check
 // ────────────────────────────────────────────────
-localStorage.setItem('userRole', 'admin');
-localStorage.setItem('userName', 'Developer Admin');
-
-const role = localStorage.getItem('userRole') || 'admin';
+const role = localStorage.getItem('userRole') || '';
 if (role !== 'admin') {
   alert("Access restricted to Administrators only.");
   window.location.href = 'dashboard.html';
@@ -390,8 +387,10 @@ document.getElementById('userFullName').textContent = localStorage.getItem('user
 const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
 document.getElementById('currentDate').textContent = new Date().toLocaleDateString('en-US', options);
 
+let allUsersData = []; // Store fetched users globally for search
+
 // ────────────────────────────────────────────────
-//  Tab Switching (manual, stable)
+//  Tab Switching
 // ────────────────────────────────────────────────
 const sidebar = document.getElementById('sidebar');
 const navLinks = document.querySelectorAll('.sidebar .nav-link[data-tab-target]');
@@ -432,17 +431,31 @@ function getAvatarColor(name) {
 }
 
 // ────────────────────────────────────────────────
-//  Users Table (Admin Dashboard)
+//  API Calls & Data Rendering
 // ────────────────────────────────────────────────
-let sampleUsers = [
-  {id: 1, name:"Rahim Khan", email:"rahim@example.com", role:"student", joined:"2025-11-12", status:"active"},
-  {id: 2, name:"Sadia Akter", email:"sadia@teacher.com", role:"instructor", joined:"2025-08-03", status:"active"},
-  {id: 3, name:"Karim Hossain", email:"karim@example.com", role:"student", joined:"2026-02-19", status:"pending"},
-  {id: 4, name:"Nadia Sultana", email:"nadia@admin.com", role:"admin", joined:"2025-01-15", status:"active"},
-  {id: 5, name:"Asif Amin", email:"asif@example.com", role:"student", joined:"2026-03-01", status:"banned"}
-];
 
-function renderUsers(users = sampleUsers) {
+// 1. Fetch Top Stats
+async function loadAdminStats() {
+    try {
+        const res = await fetch('http://localhost/elp_project/api/admin/get_admin_stats.php');
+        const data = await res.json();
+        document.getElementById('stat-total-users').textContent = data.total_users || 0;
+        document.getElementById('stat-active-courses').textContent = data.active_courses || 0;
+        document.getElementById('stat-enrollments').textContent = data.enrollments || 0;
+        document.getElementById('stat-pending-reports').textContent = data.pending_reports || 0;
+    } catch(err) { console.error("Stats Error:", err); }
+}
+
+// 2. Fetch Users
+async function loadUsers() {
+    try {
+        const res = await fetch('http://localhost/elp_project/api/admin/get_users.php');
+        allUsersData = await res.json();
+        renderUsers(allUsersData);
+    } catch(err) { console.error("Users Error:", err); }
+}
+
+function renderUsers(users) {
   const tbody = document.getElementById('usersTableBody');
   tbody.innerHTML = '';
   if (users.length === 0) {
@@ -450,170 +463,179 @@ function renderUsers(users = sampleUsers) {
     return;
   }
   users.forEach(user => {
-    let statusBadge = user.status === 'active' ? 'bg-success bg-opacity-10 text-success' :
-                      user.status === 'pending' ? 'bg-warning bg-opacity-10 text-warning' :
+    let name = user.FirstName + ' ' + user.LastName;
+    let statusBadge = user.Status === 'active' ? 'bg-success bg-opacity-10 text-success' :
+                      user.Status === 'pending' ? 'bg-warning bg-opacity-10 text-warning' :
                       'bg-danger bg-opacity-10 text-danger';
+    
+    // Format date nicely
+    let joinDate = new Date(user.JoinedDate).toLocaleDateString();
+
     const tr = document.createElement('tr');
     tr.innerHTML = `
       <td>
         <div class="d-flex align-items-center">
-          <div class="avatar-circle ${getAvatarColor(user.name)} me-3 shadow-sm" style="font-size: 0.9rem;">
-            ${getInitials(user.name)}
+          <div class="avatar-circle ${getAvatarColor(name)} me-3 shadow-sm" style="font-size: 0.9rem;">
+            ${getInitials(name)}
           </div>
           <div>
-            <h6 class="mb-0 fw-semibold">${user.name}</h6>
-            <small class="text-muted">${user.email}</small>
+            <h6 class="mb-0 fw-semibold">${name}</h6>
+            <small class="text-muted">${user.Email}</small>
           </div>
         </div>
       </td>
       <td>
-        <select class="form-select form-select-sm shadow-none bg-light border-0 w-auto" onchange="updateRole(${user.id}, this.value)">
-          <option value="student" ${user.role==='student'?'selected':''}>Student</option>
-          <option value="instructor" ${user.role==='instructor'?'selected':''}>Instructor</option>
-          <option value="admin" ${user.role==='admin'?'selected':''}>Admin</option>
+        <select class="form-select form-select-sm shadow-none bg-light border-0 w-auto" onchange="updateRole(${user.UserID}, this.value)">
+          <option value="student" ${user.Role==='student'?'selected':''}>Student</option>
+          <option value="instructor" ${user.Role==='instructor'?'selected':''}>Instructor</option>
+          <option value="admin" ${user.Role==='admin'?'selected':''}>Admin</option>
         </select>
       </td>
-      <td class="text-muted">${user.joined}</td>
-      <td><span class="badge rounded-pill ${statusBadge} px-3 py-2 border-0 text-capitalize">${user.status}</span></td>
+      <td class="text-muted">${joinDate}</td>
+      <td><span class="badge rounded-pill ${statusBadge} px-3 py-2 border-0 text-capitalize">${user.Status}</span></td>
       <td class="text-end">
-        <button class="btn btn-sm btn-light text-primary me-1 rounded-circle shadow-sm" onclick="editUser(${user.id})"><i class="fas fa-edit"></i></button>
-        <button class="btn btn-sm btn-light text-danger rounded-circle shadow-sm" onclick="banUser(${user.id})"><i class="fas fa-ban"></i></button>
+        <button class="btn btn-sm btn-light text-danger rounded-circle shadow-sm" onclick="banUser(${user.UserID})"><i class="fas fa-ban"></i></button>
       </td>
     `;
     tbody.appendChild(tr);
   });
 }
 
-function updateRole(id, newRole) { showToast(`User role updated to ${newRole}.`, 'info'); }
-function editUser(id) { showToast('Edit user modal would open here.', 'secondary'); }
-function banUser(id) {
-  sampleUsers = sampleUsers.filter(u => u.id !== id);
-  renderUsers();
-  showToast('User has been banned and removed from view.', 'danger');
-}
-
+// User Search functionality
 document.getElementById('userSearch').addEventListener('input', e => {
   const term = e.target.value.toLowerCase().trim();
-  const filtered = sampleUsers.filter(u => 
-    u.name.toLowerCase().includes(term) || u.email.toLowerCase().includes(term)
+  const filtered = allUsersData.filter(u => 
+    (u.FirstName + ' ' + u.LastName).toLowerCase().includes(term) || u.Email.toLowerCase().includes(term)
   );
   renderUsers(filtered);
 });
 
-// ────────────────────────────────────────────────
-//  Moderation Table
-// ────────────────────────────────────────────────
-let sampleModerationUsers = [
-  {id: 3, name:"Karim Hossain", email:"karim@example.com", reason:"Multiple failed login attempts from different countries", reported:"2026-03-25", status:"flagged"},
-  {id: 5, name:"Asif Amin", email:"asif@example.com", reason:"Reported for inappropriate discussion comments", reported:"2026-03-26", status:"pending"},
-  {id: 7, name:"Rina Begum", email:"rina@unknown.com", reason:"Suspicious account creation pattern", reported:"2 hours ago", status:"flagged"},
-  {id: 8, name:"New User XYZ", email:"tempuser@example.com", reason:"Pending manual verification", reported:"2026-03-27", status:"pending"}
-];
+// 3. User Actions (Role Update / Ban)
+async function updateRole(userId, newRole) {
+    await fetch('http://localhost/elp_project/api/admin/update_user.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'update_role', userId: userId, role: newRole })
+    });
+    showToast(`User role updated to ${newRole}.`, 'info');
+}
 
-function renderModerationTable() {
+async function banUser(userId) {
+    if(confirm("Are you sure you want to ban this user?")) {
+        await fetch('http://localhost/elp_project/api/admin/update_user.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action: 'ban', userId: userId })
+        });
+        showToast('User has been banned.', 'danger');
+        loadUsers(); // Refresh table
+    }
+}
+
+// 4. Fetch Moderation Reports
+async function loadReports() {
+    try {
+        const res = await fetch('http://localhost/elp_project/api/admin/get_reports.php');
+        const reports = await res.json();
+        renderModerationTable(reports);
+    } catch(err) { console.error("Reports Error:", err); }
+}
+
+function renderModerationTable(reports) {
   const tbody = document.getElementById('moderationTableBody');
   tbody.innerHTML = '';
-  sampleModerationUsers.forEach(user => {
+  
+  if (reports.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="5" class="text-center text-muted py-4">No pending moderation items.</td></tr>`;
+    return;
+  }
+
+  reports.forEach(report => {
+    let name = report.FirstName + ' ' + report.LastName;
+    let reportDate = new Date(report.ReportDate).toLocaleString();
+
     const tr = document.createElement('tr');
     tr.innerHTML = `
       <td>
         <div class="d-flex align-items-center">
-          <div class="avatar-circle ${getAvatarColor(user.name)} me-3 shadow-sm" style="font-size: 0.9rem;">
-            ${getInitials(user.name)}
+          <div class="avatar-circle ${getAvatarColor(name)} me-3 shadow-sm" style="font-size: 0.9rem;">
+            ${getInitials(name)}
           </div>
           <div>
-            <h6 class="mb-0 fw-semibold">${user.name}</h6>
-            <small class="text-muted">${user.email}</small>
+            <h6 class="mb-0 fw-semibold">${name}</h6>
+            <small class="text-muted">${report.Email}</small>
           </div>
         </div>
       </td>
-      <td class="text-muted">${user.reason}</td>
-      <td class="text-muted">${user.reported}</td>
-      <td><span class="badge rounded-pill bg-warning bg-opacity-10 text-warning px-3 py-2">${user.status}</span></td>
+      <td class="text-muted">${report.Reason}</td>
+      <td class="text-muted">${reportDate}</td>
+      <td><span class="badge rounded-pill bg-warning bg-opacity-10 text-warning px-3 py-2 text-capitalize">${report.ResolutionStatus}</span></td>
       <td class="text-end">
-        <button class="btn btn-sm btn-success px-3 rounded-pill me-2 shadow-sm" onclick="moderateUser(${user.id}, 'approve')">Approve</button>
-        <button class="btn btn-sm btn-warning px-3 rounded-pill me-2 shadow-sm" onclick="moderateUser(${user.id}, 'suspend')">Suspend</button>
-        <button class="btn btn-sm btn-danger px-3 rounded-pill shadow-sm" onclick="moderateUser(${user.id}, 'ban')">Ban</button>
+        <button class="btn btn-sm btn-success px-3 rounded-pill me-2 shadow-sm" onclick="moderateUser(${report.ReportID}, ${report.UserID}, 'approve')">Approve</button>
+        <button class="btn btn-sm btn-warning px-3 rounded-pill me-2 shadow-sm" onclick="moderateUser(${report.ReportID}, ${report.UserID}, 'suspend')">Suspend</button>
+        <button class="btn btn-sm btn-danger px-3 rounded-pill shadow-sm" onclick="moderateUser(${report.ReportID}, ${report.UserID}, 'ban')">Ban</button>
       </td>
     `;
     tbody.appendChild(tr);
   });
-  if (sampleModerationUsers.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="5" class="text-center text-muted py-4">No moderation items at the moment.</td></tr>`;
-  }
 }
 
-function moderateUser(id, action) {
-  sampleModerationUsers = sampleModerationUsers.filter(u => u.id !== id);
-  renderModerationTable();
-  let msg = action === 'approve' ? 'User approved and activated.' : 
-            action === 'suspend' ? 'User suspended temporarily.' : 'User banned successfully.';
-  showToast(msg, action === 'approve' ? 'success' : 'danger');
+// 5. Action on Moderation Report
+async function moderateUser(reportId, userId, action) {
+    await fetch('http://localhost/elp_project/api/admin/resolve_report.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ reportId: reportId, userId: userId, action: action })
+    });
+
+    let msg = action === 'approve' ? 'User approved and report dismissed.' : 
+              action === 'suspend' ? 'User suspended temporarily.' : 'User banned successfully.';
+    
+    showToast(msg, action === 'approve' ? 'success' : 'danger');
+    
+    // Refresh both tables to show updated statuses
+    loadReports();
+    loadUsers();
+    loadAdminStats();
 }
 
 // ────────────────────────────────────────────────
-//  Charts Data
+//  Static Chart Rendering (Unchanged)
 // ────────────────────────────────────────────────
 Chart.defaults.font.family = "'Segoe UI', system-ui, sans-serif";
 Chart.defaults.color = "#64748b";
 
-// User Registration Trend (Line Chart)
 new Chart(document.getElementById('registrationChart'), {
   type: 'line',
   data: {
     labels: ['Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar'],
     datasets: [{
-      label: 'New Users',
-      data: [45, 78, 112, 89, 134, 156],
-      borderColor: '#3b82f6',
-      backgroundColor: 'rgba(59, 130, 246, 0.1)',
-      borderWidth: 3,
-      tension: 0.4,
-      fill: true,
-      pointBackgroundColor: '#fff',
-      pointBorderColor: '#3b82f6',
-      pointBorderWidth: 2,
-      pointRadius: 4
+      label: 'New Users', data: [45, 78, 112, 89, 134, 156],
+      borderColor: '#3b82f6', backgroundColor: 'rgba(59, 130, 246, 0.1)',
+      borderWidth: 3, tension: 0.4, fill: true
     }]
   },
-  options: {
-    responsive: true,
-    maintainAspectRatio: false, // Relies on .chart-container wrapper now!
-    plugins: { legend: { display: false } },
-    scales: {
-      y: { beginAtZero: true, grid: { borderDash: [5, 5], color: '#e2e8f0' } },
-      x: { grid: { display: false } }
-    }
-  }
+  options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
 });
 
-// Category Distribution (Doughnut Chart)
 new Chart(document.getElementById('categoryChart'), {
   type: 'doughnut',
   data: {
     labels: ['Programming', 'Design', 'Business', 'Data Science', 'Others'],
     datasets: [{
       data: [35, 20, 15, 20, 10],
-      backgroundColor: ['#3b82f6', '#10b981', '#f59e0b', '#0ea5e9', '#64748b'],
-      borderWidth: 0,
-      hoverOffset: 4
+      backgroundColor: ['#3b82f6', '#10b981', '#f59e0b', '#0ea5e9', '#64748b'], borderWidth: 0
     }]
   },
-  options: {
-    responsive: true,
-    maintainAspectRatio: false, // Relies on .chart-container wrapper now!
-    cutout: '75%',
-    plugins: {
-      legend: { position: 'bottom', labels: { usePointStyle: true, padding: 20 } }
-    }
-  }
+  options: { responsive: true, maintainAspectRatio: false, cutout: '75%', plugins: { legend: { position: 'bottom' } } }
 });
 
 // ────────────────────────────────────────────────
 //  Initial Render
 // ────────────────────────────────────────────────
-renderUsers();
-renderModerationTable();
+loadAdminStats();
+loadUsers();
+loadReports();
 
 function logout() {
   localStorage.clear();

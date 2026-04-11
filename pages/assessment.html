@@ -366,154 +366,111 @@ if (role === 'student') {
 document.getElementById(activeView).classList.remove('d-none');
 
 // ────────────────────────────────────────────────
-// Student Data & Render
+// API Data Fetching & Rendering
 // ────────────────────────────────────────────────
-const studentAssessments = [
-  { id: 101, course: "Database Systems with MySQL", title: "Midterm Quiz", dueDate: "2 Days", status: "pending", timeLimit: 45, urgent: true },
-  { id: 102, course: "Modern JavaScript", title: "Promises Assignment", dueDate: "5 Days", status: "pending", timeLimit: 60, urgent: false },
-  { id: 201, course: "Database Systems with MySQL", title: "Quiz 1: ER Modeling", dateTaken: "2025-02-28", score: 92, maxScore: 100, status: "completed" },
-  { id: 202, course: "Full-Stack Web Dev", title: "HTML/CSS Basics", dateTaken: "2025-02-15", score: 100, maxScore: 100, status: "completed" },
-  { id: 203, course: "Full-Stack Web Dev", title: "Midterm Exam", dateTaken: "2025-02-10", score: 68, maxScore: 100, status: "completed" }
-];
+const userId = localStorage.getItem('userId');
 
-if (role === 'student') {
-  // 1. Render Pending
+async function loadAssessments() {
+  try {
+    if (role === 'student') {
+      const res = await fetch(`http://localhost/elp_project/api/assessments/get_student_assessments.php?userId=${userId}`);
+      const data = await res.json();
+      renderStudentAssessments(data.pending, data.completed);
+    } else if (role === 'instructor') {
+      const res = await fetch(`http://localhost/elp_project/api/assessments/get_instructor_assessments.php?userId=${userId}`);
+      const data = await res.json();
+      renderInstructorAssessments(data);
+    }
+  } catch (error) {
+    console.error("Error fetching assessments:", error);
+  }
+}
+
+// Render Student View
+function renderStudentAssessments(pending, completed) {
   const pendingContainer = document.getElementById('studentPendingQuizzes');
-  const pending = studentAssessments.filter(a => a.status === 'pending');
-  
-  if(pending.length === 0) pendingContainer.innerHTML = '<p class="text-muted">No pending tasks. Great job!</p>';
-  else {
+  pendingContainer.innerHTML = '';
+
+  if(pending.length === 0) {
+    pendingContainer.innerHTML = '<p class="text-muted">No pending tasks. Great job!</p>';
+  } else {
     pending.forEach(quiz => {
+      // Create a URL parameter so take-quiz.html knows which quiz to load
       pendingContainer.innerHTML += `
-        <div class="task-item p-3 rounded-3 shadow-sm ${quiz.urgent ? 'urgent' : ''} d-flex justify-content-between align-items-center flex-wrap gap-2">
+        <div class="task-item p-3 rounded-3 shadow-sm d-flex justify-content-between align-items-center flex-wrap gap-2">
           <div>
-            <h6 class="mb-1 fw-bold text-dark">${quiz.title}</h6>
-            <p class="mb-1 text-muted small">${quiz.course} • ${quiz.timeLimit} min</p>
-            <span class="badge ${quiz.urgent ? 'bg-danger-subtle text-danger' : 'bg-secondary-subtle text-secondary'}">Due in ${quiz.dueDate}</span>
+            <h6 class="mb-1 fw-bold text-dark">${quiz.Title}</h6>
+            <p class="mb-1 text-muted small">${quiz.CourseTitle} • ${quiz.TimeLimit} min</p>
           </div>
-          <a href="take-quiz.html?quizId=${quiz.id}" class="btn btn-sm btn-primary rounded-pill px-3 fw-medium">Start</a>
+          <a href="take-quiz.html?quizId=${quiz.AssessmentID}" class="btn btn-sm btn-primary rounded-pill px-3 fw-medium">Start</a>
         </div>
       `;
     });
   }
 
-  // 2. Render Completed History
   const historyTbody = document.getElementById('studentPastResults');
-  const completed = studentAssessments.filter(a => a.status === 'completed');
+  historyTbody.innerHTML = '';
+  let totalScore = 0;
+
   completed.forEach(res => {
-    const percentage = Math.round((res.score / res.maxScore) * 100);
+    const percentage = Math.round((res.ScoreEarned / res.MaxScore) * 100);
+    totalScore += percentage;
     const badgeColor = percentage >= 80 ? 'bg-success' : percentage >= 60 ? 'bg-warning text-dark' : 'bg-danger';
     
+    // Format Date
+    const dateObj = new Date(res.SubmissionDate);
+    const formattedDate = dateObj.toLocaleDateString();
+
     historyTbody.innerHTML += `
       <tr>
-        <td class="fw-medium text-dark">${res.course}</td>
-        <td>${res.title}</td>
-        <td>${res.dateTaken}</td>
+        <td class="fw-medium text-dark">${res.CourseTitle}</td>
+        <td>${res.Title}</td>
+        <td>${formattedDate}</td>
         <td><span class="badge ${badgeColor} score-badge rounded-pill">${percentage}%</span></td>
         <td><button class="btn btn-sm btn-outline-primary rounded-pill px-3">Review</button></td>
       </tr>
     `;
   });
 
-  // 3. Dynamic Performance Feedback Logic
-  // Using an array of the last 5 test scores
-  const trendData = [92, 100, 68, 85, 84]; 
-  const latest = trendData[trendData.length - 1]; // 84
-  const previous = trendData[trendData.length - 2]; // 85
-
-  let feedbackText = "";
-  let alertClass = "";
-  let icon = "";
-
-  if (latest < previous - 5 && latest < 75) {
-    feedbackText = "Be careful, your marks are falling. Consider reviewing recent course materials!";
-    alertClass = "alert-danger text-danger bg-danger-subtle";
-    icon = "fa-exclamation-triangle";
-  } else if (latest >= 85) {
-    feedbackText = "You are doing great! Keep up the excellent work.";
-    alertClass = "alert-success text-success bg-success-subtle";
-    icon = "fa-star";
-  } else if (latest > previous) {
-    feedbackText = "Good job, your scores are improving. Keep the momentum going!";
-    alertClass = "alert-primary text-primary bg-primary-subtle";
-    icon = "fa-arrow-trend-up";
+  // Calculate and update Average Score card
+  if (completed.length > 0) {
+    document.querySelector('#studentView .stat-card.bg-gradient-primary h2').textContent = Math.round(totalScore / completed.length) + '%';
   } else {
-    feedbackText = "Your performance is steady. Keep practicing to reach the next level!";
-    alertClass = "alert-info text-info bg-info-subtle";
-    icon = "fa-info-circle";
+    document.querySelector('#studentView .stat-card.bg-gradient-primary h2').textContent = 'N/A';
   }
-
-  // Inject feedback into DOM
-  document.getElementById('performanceFeedback').innerHTML = `
-    <div class="alert ${alertClass} border-0 d-flex align-items-center py-2 px-3 mb-4 rounded-3 shadow-sm">
-      <i class="fas ${icon} me-2 fs-5"></i>
-      <span class="fw-medium mb-0">${feedbackText}</span>
-    </div>
-  `;
-
-  // 4. Render Chart
-  new Chart(document.getElementById('studentPerformanceChart').getContext('2d'), {
-    type: 'line',
-    data: {
-      labels: ['Quiz 1', 'HTML Basics', 'Midterm', 'Quiz 2', 'Current'],
-      datasets: [{
-        label: 'Score %',
-        data: trendData, // using the variable mapped to the feedback
-        borderColor: '#3b82f6', backgroundColor: 'rgba(59, 130, 246, 0.1)', borderWidth: 3, fill: true, tension: 0.3
-      }]
-    },
-    options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { min: 0, max: 100 } } }
-  });
+  document.querySelector('#studentView .stat-card.bg-gradient-success h2').textContent = completed.length;
+  document.querySelector('#studentView .stat-card.bg-gradient-warning h2').textContent = pending.length;
 }
 
-// ────────────────────────────────────────────────
-// Instructor Data & Render
-// ────────────────────────────────────────────────
-if (role === 'instructor') {
+// Render Instructor View
+function renderInstructorAssessments(assessments) {
   const table = document.getElementById('instructorAssessmentsList');
-  table.innerHTML = `
-    <tr>
-      <td>
-        <h6 class="mb-0 fw-bold">Quiz 1: Database Concepts</h6>
-        <small class="text-muted">Database Systems with MySQL</small>
-      </td>
-      <td><span class="badge bg-success-subtle text-success rounded-pill px-3">Active</span></td>
-      <td><span class="fw-medium">45 / 50</span> submitted</td>
-      <td><span class="badge bg-primary score-badge rounded-pill">82%</span></td>
-      <td class="text-end">
-        <button class="btn btn-sm btn-light text-primary me-2"><i class="fas fa-edit"></i></button>
-        <button class="btn btn-sm btn-outline-primary rounded-pill px-3">Analytics</button>
-      </td>
-    </tr>
-    <tr>
-      <td>
-        <h6 class="mb-0 fw-bold">Midterm Exam</h6>
-        <small class="text-muted">Full-Stack Web Development</small>
-      </td>
-      <td><span class="badge bg-secondary-subtle text-secondary rounded-pill px-3">Closed</span></td>
-      <td><span class="fw-medium">32 / 32</span> submitted</td>
-      <td><span class="badge bg-warning text-dark score-badge rounded-pill">68%</span></td>
-      <td class="text-end">
-        <button class="btn btn-sm btn-light text-primary me-2"><i class="fas fa-edit"></i></button>
-        <button class="btn btn-sm btn-outline-primary rounded-pill px-3">Analytics</button>
-      </td>
-    </tr>
-  `;
+  table.innerHTML = '';
 
-  // Chart
-  new Chart(document.getElementById('gradeDistributionChart').getContext('2d'), {
-    type: 'doughnut',
-    data: {
-      labels: ['A (90-100)', 'B (80-89)', 'C (70-79)', 'D/F (<70)'],
-      datasets: [{
-        data: [25, 40, 20, 15],
-        backgroundColor: ['#10b981', '#3b82f6', '#f59e0b', '#ef4444'],
-        borderWidth: 0
-      }]
-    },
-    options: { responsive: true, cutout: '70%', plugins: { legend: { position: 'bottom' } } }
+  assessments.forEach(a => {
+    const avgScore = a.AvgScore ? Math.round((a.AvgScore / a.MaxScore) * 100) : 0;
+    const badgeColor = avgScore >= 70 ? 'bg-primary' : 'bg-warning text-dark';
+    
+    table.innerHTML += `
+      <tr>
+        <td>
+          <h6 class="mb-0 fw-bold">${a.Title}</h6>
+          <small class="text-muted">${a.CourseTitle}</small>
+        </td>
+        <td><span class="badge bg-success-subtle text-success rounded-pill px-3">${a.Status}</span></td>
+        <td><span class="fw-medium">${a.SubmissionsCount}</span> submitted</td>
+        <td><span class="badge ${badgeColor} score-badge rounded-pill">${avgScore}%</span></td>
+        <td class="text-end">
+          <button class="btn btn-sm btn-light text-primary me-2"><i class="fas fa-edit"></i></button>
+          <button class="btn btn-sm btn-outline-primary rounded-pill px-3">Analytics</button>
+        </td>
+      </tr>
+    `;
   });
 }
+
+// Call on load
+loadAssessments();
 
 function logout() {
   localStorage.clear();

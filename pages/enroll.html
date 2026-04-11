@@ -183,6 +183,7 @@
 // ────────────────────────────────────────────────
 const role = localStorage.getItem('userRole') || 'student';
 const name = localStorage.getItem('userName') || 'User';
+const userId = localStorage.getItem('userId') || 0;
 
 if (role !== 'student') {
   alert("The course catalog is primarily for students.");
@@ -200,21 +201,22 @@ document.getElementById('sidebarMenu').innerHTML = `
   <a href="profile.html" class="nav-link"><i class="fas fa-user"></i> Profile</a>
 `;
 
-// ────────────────────────────────────────────────
-// Mock Data (Catalog)
-// ────────────────────────────────────────────────
-let catalogCourses = [
-  { id: 1, title: "Database Systems with MySQL", category: "Database", level: "Intermediate", instructor: "Prof. Rahman", rating: 4.8, students: 1240, duration: "4 Weeks", thumbnail: "https://images.unsplash.com/photo-1517430816045-df4b7de11d1d?w=800", enrolled: true },
-  { id: 2, title: "Modern JavaScript & ES6+", category: "Programming", level: "Beginner", instructor: "Sadia Akter", rating: 4.9, students: 3420, duration: "6 Weeks", thumbnail: "https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=800", enrolled: false },
-  { id: 3, title: "Full-Stack Web Development Bootcamp", category: "Web Development", level: "Intermediate", instructor: "Asif Amin", rating: 4.7, students: 2890, duration: "12 Weeks", thumbnail: "https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=800", enrolled: false },
-  { id: 4, title: "Python for Data Science & ML", category: "Data Science", level: "Beginner", instructor: "Dr. Karim", rating: 4.6, students: 890, duration: "8 Weeks", thumbnail: "https://images.unsplash.com/photo-1551288049-b1f4d7b0d6e8?w=800", enrolled: false },
-  { id: 5, title: "Advanced SQL & Database Tuning", category: "Database", level: "Advanced", instructor: "Prof. Rahman", rating: 4.9, students: 450, duration: "3 Weeks", thumbnail: "https://images.unsplash.com/photo-1518770660439-4636190af475?w=800", enrolled: false },
-  { id: 6, title: "React Native Mobile Dev", category: "Web Development", level: "Intermediate", instructor: "Sadia Akter", rating: 4.5, students: 1120, duration: "5 Weeks", thumbnail: "https://images.unsplash.com/photo-1551650975-87deedd944c3?w=800", enrolled: false }
-];
+// Global variable to store fetched catalog
+let catalogCourses = [];
 
 // ────────────────────────────────────────────────
-// Render & Filter Logic
+// API Data Fetching & Rendering
 // ────────────────────────────────────────────────
+async function loadCatalog() {
+    try {
+        const response = await fetch(`http://localhost/elp_project/api/courses/get_catalog.php?userId=${userId}`);
+        catalogCourses = await response.json();
+        filterAndRender(); // Render the courses initially
+    } catch (error) {
+        console.error("Error loading catalog:", error);
+    }
+}
+
 function renderCatalog(courses) {
   const grid = document.getElementById('courseGrid');
   const noResults = document.getElementById('noResults');
@@ -233,25 +235,25 @@ function renderCatalog(courses) {
 
     col.innerHTML = `
       <div class="course-card">
-        <div class="course-thumbnail" style="background-image: url('${course.thumbnail}')">
-          <div class="badge-floating shadow-sm">${course.category}</div>
+        <div class="course-thumbnail" style="background-image: url('${course.ThumbnailURL}')">
+          <div class="badge-floating shadow-sm">${course.Category || 'General'}</div>
         </div>
         
         <div class="card-body">
-          <h5 class="fw-bold text-dark mb-1">${course.title}</h5>
-          <div class="instructor-name"><i class="fas fa-chalkboard-teacher me-1"></i> ${course.instructor}</div>
+          <h5 class="fw-bold text-dark mb-1">${course.Title}</h5>
+          <div class="instructor-name"><i class="fas fa-chalkboard-teacher me-1"></i> ${course.InstructorName}</div>
           
           <div class="course-meta">
-            <span><i class="fas fa-star"></i> ${course.rating} (${course.students})</span>
-            <span><i class="far fa-clock text-muted"></i> ${course.duration}</span>
-            <span class="badge bg-light text-dark border ms-auto">${course.level}</span>
+            <span><i class="fas fa-star"></i> ${course.Rating} (${course.StudentCount})</span>
+            <span><i class="far fa-clock text-muted"></i> ${course.Duration || 'Self-paced'}</span>
+            <span class="badge bg-light text-dark border ms-auto">${course.Level || 'All Levels'}</span>
           </div>
 
           <div class="mt-auto pt-3 border-top d-flex justify-content-between align-items-center">
             <span class="fw-bold text-success fs-5">Free</span>
-            ${course.enrolled ? 
+            ${course.IsEnrolled ? 
               `<button class="btn btn-outline-primary px-4 rounded-pill" onclick="window.location.href='courses.html'">Go to Course</button>` : 
-              `<button class="btn btn-primary px-4 rounded-pill fw-medium" id="btn-enroll-${course.id}" onclick="enrollCourse(${course.id}, this)">Enroll Now</button>`
+              `<button class="btn btn-primary px-4 rounded-pill fw-medium" id="btn-enroll-${course.CourseID}" onclick="enrollCourse(${course.CourseID}, this)">Enroll Now</button>`
             }
           </div>
         </div>
@@ -261,27 +263,33 @@ function renderCatalog(courses) {
   });
 }
 
+// ────────────────────────────────────────────────
+// Search & Filter Logic
+// ────────────────────────────────────────────────
 function filterAndRender() {
   let filtered = [...catalogCourses];
 
   // Search
   const search = document.getElementById('searchInput').value.toLowerCase().trim();
   if (search) {
-    filtered = filtered.filter(c => c.title.toLowerCase().includes(search) || c.instructor.toLowerCase().includes(search));
+    filtered = filtered.filter(c => 
+        c.Title.toLowerCase().includes(search) || 
+        c.InstructorName.toLowerCase().includes(search)
+    );
   }
   // Category
   const cat = document.getElementById('categoryFilter').value;
-  if (cat) filtered = filtered.filter(c => c.category === cat);
+  if (cat) filtered = filtered.filter(c => c.Category === cat);
   
   // Level
   const lvl = document.getElementById('levelFilter').value;
-  if (lvl) filtered = filtered.filter(c => c.level === lvl);
+  if (lvl) filtered = filtered.filter(c => c.Level === lvl);
 
   // Sort
   const sort = document.getElementById('sortFilter').value;
-  if (sort === 'rating') filtered.sort((a,b) => b.rating - a.rating);
-  else if (sort === 'popular') filtered.sort((a,b) => b.students - a.students);
-  else if (sort === 'newest') filtered.sort((a,b) => b.id - a.id);
+  if (sort === 'rating') filtered.sort((a,b) => b.Rating - a.Rating);
+  else if (sort === 'popular') filtered.sort((a,b) => b.StudentCount - a.StudentCount);
+  else if (sort === 'newest') filtered.sort((a,b) => b.CourseID - a.CourseID); // Assuming larger ID is newer
 
   renderCatalog(filtered);
 }
@@ -301,39 +309,61 @@ function resetFilters() {
 }
 
 // ────────────────────────────────────────────────
-// Enroll Action (Simulating API call & UX)
+// Enroll Action (POST to API)
 // ────────────────────────────────────────────────
-function enrollCourse(courseId, btnElement) {
+async function enrollCourse(courseId, btnElement) {
   // 1. Show Loading State
   btnElement.innerHTML = `<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> Enrolling...`;
   btnElement.disabled = true;
 
-  // 2. Simulate network delay
-  setTimeout(() => {
-    // Update local data
-    const course = catalogCourses.find(c => c.id === courseId);
-    if (course) course.enrolled = true;
+  try {
+      // 2. Call the PHP API
+      const response = await fetch('http://localhost/elp_project/api/courses/enroll_course.php', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ studentId: userId, courseId: courseId })
+      });
 
-    // Change Button visually to "Go to Course"
-    btnElement.className = 'btn btn-outline-primary px-4 rounded-pill transition-all';
-    btnElement.innerHTML = `Go to Course`;
-    btnElement.disabled = false;
-    btnElement.onclick = () => window.location.href = 'courses.html';
+      const result = await response.json();
 
-    // Show Bootstrap Toast Success Message
-    const toastEl = document.getElementById('enrollToast');
-    const toast = new bootstrap.Toast(toastEl);
-    toast.show();
-  }, 800);
+      if(result.success) {
+          // Update local data array so it reflects the enrollment immediately
+          const course = catalogCourses.find(c => c.CourseID === courseId);
+          if (course) {
+              course.IsEnrolled = true;
+              course.StudentCount++;
+          }
+
+          // Change Button visually to "Go to Course"
+          btnElement.className = 'btn btn-outline-primary px-4 rounded-pill transition-all';
+          btnElement.innerHTML = `Go to Course`;
+          btnElement.disabled = false;
+          btnElement.onclick = () => window.location.href = 'courses.html';
+
+          // Show Bootstrap Toast Success Message
+          const toastEl = document.getElementById('enrollToast');
+          const toast = new bootstrap.Toast(toastEl);
+          toast.show();
+      } else {
+          alert("Enrollment failed: " + result.error);
+          btnElement.innerHTML = `Enroll Now`;
+          btnElement.disabled = false;
+      }
+  } catch (error) {
+      console.error("Enrollment error:", error);
+      alert("Something went wrong. Please try again.");
+      btnElement.innerHTML = `Enroll Now`;
+      btnElement.disabled = false;
+  }
 }
-
-// Initial render
-filterAndRender();
 
 function logout() {
   localStorage.clear();
   window.location.href = '../index.html';
 }
+
+// Start loading data when the page opens
+loadCatalog();
 </script>
 
 </body>

@@ -166,7 +166,6 @@
         </a>
         <ul class="dropdown-menu dropdown-menu-end shadow-sm">
           <li><a class="dropdown-item py-2" href="pages/profile.html"><i class="fas fa-user-circle me-2 text-muted"></i> My Profile</a></li>
-          <li><a class="dropdown-item py-2" href="settings.html"><i class="fas fa-cog me-2 text-muted"></i> Settings</a></li>
           <li><hr class="dropdown-divider"></li>
           <li><a class="dropdown-item py-2 text-danger" href="#" onclick="logout()"><i class="fas fa-sign-out-alt me-2"></i> Logout</a></li>
         </ul>
@@ -210,7 +209,7 @@
           <div class="d-flex justify-content-between align-items-center">
             <div>
               <p class="mb-1 opacity-75 fw-medium">Enrolled Courses</p>
-              <h2 class="mb-0 fw-bold">4</h2>
+              <h2 class="mb-0 fw-bold" id="stat-student-enrolled">0</h2>
             </div>
             <div class="icon-box"><i class="fas fa-book-open"></i></div>
           </div>
@@ -221,7 +220,7 @@
           <div class="d-flex justify-content-between align-items-center">
             <div>
               <p class="mb-1 opacity-75 fw-medium">Completed</p>
-              <h2 class="mb-0 fw-bold">2</h2>
+              <h2 class="mb-0 fw-bold" id="stat-student-completed">0</h2>
             </div>
             <div class="icon-box"><i class="fas fa-check-circle"></i></div>
           </div>
@@ -232,7 +231,7 @@
           <div class="d-flex justify-content-between align-items-center">
             <div>
               <p class="mb-1 opacity-75 fw-medium">Certificates</p>
-              <h2 class="mb-0 fw-bold">2</h2>
+              <h2 class="mb-0 fw-bold" id="stat-student-certs">0</h2>
             </div>
             <div class="icon-box"><i class="fas fa-award"></i></div>
           </div>
@@ -243,7 +242,7 @@
           <div class="d-flex justify-content-between align-items-center">
             <div>
               <p class="mb-1 opacity-75 fw-medium">Learning Streak</p>
-              <h2 class="mb-0 fw-bold">5 Days <i class="fas fa-fire fs-5 text-white"></i></h2>
+              <h2 class="mb-0 fw-bold"><span id="stat-student-streak">0</span> Days <i class="fas fa-fire fs-5 text-white"></i></h2>
             </div>
             <div class="icon-box"><i class="fas fa-bolt"></i></div>
           </div>
@@ -255,24 +254,29 @@
     <div class="row g-4 mb-4">
       <!-- Continue Learning -->
       <div class="col-lg-7">
-        <div class="card card-custom h-100 p-4">
+        <div class="card card-custom h-100 p-4" id="continueLearningContainer">
           <div class="d-flex justify-content-between align-items-center mb-4">
             <h5 class="fw-bold mb-0">Continue Learning</h5>
             <a href="pages/courses.html" class="text-decoration-none small fw-medium">View all courses</a>
           </div>
-          <div class="d-flex align-items-center gap-4 bg-light p-3 rounded-4 border">
-            <img src="https://images.unsplash.com/photo-1517430816045-df4b7de11d1d?w=150" alt="Course" class="rounded-3" style="width: 100px; height: 80px; object-fit: cover;">
+          
+          <div id="continueLearningContent" class="d-flex align-items-center gap-4 bg-light p-3 rounded-4 border">
+            <img id="cl-thumbnail" src="" alt="Course" class="rounded-3" style="width: 100px; height: 80px; object-fit: cover;">
             <div class="flex-grow-1">
-              <h6 class="fw-bold mb-1">Database Systems with MySQL</h6>
-              <p class="text-muted small mb-2">Module 4: Joins & Subqueries</p>
-              <div class="d-flex align-items-center gap-3">
+              <h6 class="fw-bold mb-1" id="cl-title">Loading...</h6>
+              <div class="d-flex align-items-center gap-3 mt-3">
                 <div class="progress flex-grow-1" style="height: 8px;">
-                  <div class="progress-bar bg-primary" style="width: 65%"></div>
+                  <div id="cl-progress-bar" class="progress-bar bg-primary" style="width: 0%"></div>
                 </div>
-                <span class="small fw-bold">65%</span>
+                <span class="small fw-bold" id="cl-progress-text">0%</span>
               </div>
             </div>
             <button class="btn btn-primary rounded-pill px-4">Resume</button>
+          </div>
+
+          <div id="continueLearningEmpty" class="d-none text-center py-3">
+            <p class="text-muted">You have no active courses.</p>
+            <a href="pages/enroll.html" class="btn btn-outline-primary btn-sm">Explore Courses</a>
           </div>
         </div>
       </div>
@@ -325,19 +329,19 @@
       <div class="col-xl-3 col-sm-6">
         <div class="stat-card bg-gradient-primary">
           <p class="mb-1 opacity-75 fw-medium">Active Courses</p>
-          <h2 class="mb-0 fw-bold">5</h2>
+          <h2 class="mb-0 fw-bold" id="stat-inst-courses">0</h2>
         </div>
       </div>
       <div class="col-xl-3 col-sm-6">
         <div class="stat-card bg-gradient-success">
           <p class="mb-1 opacity-75 fw-medium">Total Students</p>
-          <h2 class="mb-0 fw-bold">1,248</h2>
+          <h2 class="mb-0 fw-bold" id="stat-inst-students">0</h2>
         </div>
       </div>
       <div class="col-xl-3 col-sm-6">
         <div class="stat-card bg-gradient-info">
           <p class="mb-1 opacity-75 fw-medium">Avg. Course Rating</p>
-          <h2 class="mb-0 fw-bold">4.8 <i class="fas fa-star text-warning fs-5"></i></h2>
+          <h2 class="mb-0 fw-bold" id="stat-inst-rating">0 <i class="fas fa-star text-warning fs-5"></i></h2>
         </div>
       </div>
       <div class="col-xl-3 col-sm-6">
@@ -389,21 +393,21 @@
       <div class="col-xl-3 col-sm-6">
         <div class="stat-card bg-gradient-primary">
           <p class="mb-1 opacity-75 fw-medium">Total Users</p>
-          <h2 class="mb-0 fw-bold">3,452</h2>
+          <h2 class="mb-0 fw-bold" id="stat-admin-users">0</h2>
           <small><i class="fas fa-arrow-up"></i> 12% this month</small>
         </div>
       </div>
       <div class="col-xl-3 col-sm-6">
         <div class="stat-card bg-gradient-success">
           <p class="mb-1 opacity-75 fw-medium">Active Courses</p>
-          <h2 class="mb-0 fw-bold">128</h2>
+          <h2 class="mb-0 fw-bold" id="stat-admin-courses">0</h2>
           <small><i class="fas fa-check"></i> 4 added today</small>
         </div>
       </div>
       <div class="col-xl-3 col-sm-6">
         <div class="stat-card bg-gradient-warning">
           <p class="mb-1 opacity-75 fw-medium">Pending Approvals</p>
-          <h2 class="mb-0 fw-bold">7</h2>
+          <h2 class="mb-0 fw-bold" id="stat-admin-reports">0</h2>
           <small><i class="fas fa-clock"></i> Requires action</small>
         </div>
       </div>
@@ -453,11 +457,8 @@
 </div>
 
 <script>
-// ────────────────────────────────────────────────
-//  Initialization & Dynamic Setup
-// ────────────────────────────────────────────────
-
-// 1. Get User Data
+// 1. Initial Setup
+const userId = localStorage.getItem('userId') || 1; // Assuming 1 for testing
 const role = localStorage.getItem('userRole') || 'student';
 const name = localStorage.getItem('userName') || 'Guest Learner';
 
@@ -465,17 +466,13 @@ document.getElementById('userFullName').textContent = name;
 document.getElementById('userGreetingName').textContent = name.split(' ')[0];
 document.getElementById('userRoleBadge').textContent = role.charAt(0).toUpperCase() + role.slice(1);
 
-// 2. Dynamic Time Greeting & Date
-const hour = new Date().getHours();
-let greeting = "Good evening";
-if (hour < 12) greeting = "Good morning";
-else if (hour < 18) greeting = "Good afternoon";
-document.getElementById('timeGreeting').textContent = greeting;
+// Configure Chart.js Defaults
+Chart.defaults.font.family = "'Segoe UI', system-ui, sans-serif";
+Chart.defaults.color = "#64748b";
+let studyChartInstance = null;
+let skillsChartInstance = null;
 
-const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-document.getElementById('currentDate').textContent = new Date().toLocaleDateString('en-US', options);
-
-// 3. Populate Sidebar Menu
+// 2. Setup UI based on role
 const menu = document.getElementById('sidebarMenu');
 if (role === 'student') {
   menu.innerHTML = `
@@ -507,80 +504,109 @@ if (role === 'student') {
   document.getElementById('roleWelcomeText').textContent = "Platform oversight and system health metrics.";
 }
 
-// ────────────────────────────────────────────────
-//  Chart.js Renderings (Role Specific)
-// ────────────────────────────────────────────────
-Chart.defaults.font.family = "'Segoe UI', system-ui, sans-serif";
-Chart.defaults.color = "#64748b";
+// 3. Dynamic Time Greeting & Date
+const hour = new Date().getHours();
+let greeting = "Good evening";
+if (hour < 12) greeting = "Good morning";
+else if (hour < 18) greeting = "Good afternoon";
+document.getElementById('timeGreeting').textContent = greeting;
 
-if (role === 'student') {
-  // Line Chart: Study Activity
-  new Chart(document.getElementById('studyActivityChart').getContext('2d'), {
-    type: 'line',
-    data: {
-      labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-      datasets: [{
-        label: 'Hours Studied',
-        data: [1.5, 2, 0.5, 3, 2.5, 4, 1],
-        borderColor: '#3b82f6',
-        backgroundColor: 'rgba(59, 130, 246, 0.1)',
-        borderWidth: 3,
-        fill: true,
-        tension: 0.4
-      }]
-    },
-    options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
-  });
+const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+document.getElementById('currentDate').textContent = new Date().toLocaleDateString('en-US', options);
 
-  // Radar Chart: Skills Progress
-  new Chart(document.getElementById('skillsChart').getContext('2d'), {
-    type: 'radar',
-    data: {
-      labels: ['HTML/CSS', 'JavaScript', 'React', 'Databases', 'Python', 'UI/UX'],
-      datasets: [{
-        label: 'Skill Level',
-        data: [90, 75, 60, 85, 40, 70],
-        backgroundColor: 'rgba(16, 185, 129, 0.2)',
-        borderColor: '#10b981',
-        pointBackgroundColor: '#10b981',
-        borderWidth: 2
-      }]
-    },
-    options: { responsive: true, plugins: { legend: { display: false } }, scales: { r: { angleLines: { color: '#e2e8f0' }, grid: { color: '#e2e8f0' }, suggestedMin: 0, suggestedMax: 100 } } }
-  });
+// 4. Fetch Real Data
+async function fetchDashboardData() {
+  try {
+    const response = await fetch(`http://localhost/elp_project/api/dashboard/get_stats.php?userId=${userId}&role=${role}`);
+    const data = await response.json();
+
+    if (response.ok) {
+        if (role === 'student') {
+            // Populate Stat Cards
+            document.getElementById('stat-student-enrolled').textContent = data.enrolled || 0;
+            document.getElementById('stat-student-completed').textContent = data.completed || 0;
+            document.getElementById('stat-student-certs').textContent = data.certificates || 0;
+            document.getElementById('stat-student-streak').textContent = data.streak || 0;
+
+            // Populate Continue Learning
+            if (data.continue_learning && data.continue_learning.Title) {
+                document.getElementById('continueLearningEmpty').classList.add('d-none');
+                document.getElementById('continueLearningContent').classList.remove('d-none');
+                
+                document.getElementById('cl-title').textContent = data.continue_learning.Title;
+                document.getElementById('cl-progress-bar').style.width = `${data.continue_learning.ProgressPercentage}%`;
+                document.getElementById('cl-progress-text').textContent = `${data.continue_learning.ProgressPercentage}%`;
+                document.getElementById('cl-thumbnail').src = data.continue_learning.ThumbnailURL || 'https://via.placeholder.com/150';
+            } else {
+                document.getElementById('continueLearningContent').classList.add('d-none');
+                document.getElementById('continueLearningEmpty').classList.remove('d-none');
+            }
+
+            // Render Dynamic Charts
+            if(data.charts) {
+                renderStudentCharts(data.charts);
+            }
+        } 
+        // Handle Instructor and Admin updates here similarly...
+    }
+  } catch (error) {
+    console.error("Error fetching data. Ensure backend is running.", error);
+  }
 }
 
-if (role === 'instructor') {
-  // Bar Chart: Enrollment Trend
-  new Chart(document.getElementById('enrollmentTrendChart').getContext('2d'), {
-    type: 'bar',
-    data: {
-      labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
-      datasets: [{
-        label: 'New Enrollments',
-        data: [120, 190, 150, 210],
-        backgroundColor: '#6366f1',
-        borderRadius: 6
-      }]
-    },
-    options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
-  });
+// 3. Render Chart.js Dynamically
+function renderStudentCharts(chartData) {
+    // --- Study Activity Line Chart ---
+    const ctxActivity = document.getElementById('studyActivityChart').getContext('2d');
+    
+    // Destroy previous instance to prevent hover glitches
+    if (studyChartInstance) studyChartInstance.destroy(); 
+    
+    studyChartInstance = new Chart(ctxActivity, {
+        type: 'line',
+        data: {
+            labels: chartData.activity.labels.length > 0 ? chartData.activity.labels : ['No Data'],
+            datasets: [{
+                label: 'Submissions',
+                data: chartData.activity.data.length > 0 ? chartData.activity.data : [0],
+                borderColor: '#3b82f6', 
+                backgroundColor: 'rgba(59, 130, 246, 0.1)', 
+                borderWidth: 3, 
+                fill: true, 
+                tension: 0.4
+            }]
+        },
+        options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } } }
+    });
+
+    // --- Skills Radar Chart ---
+    const ctxSkills = document.getElementById('skillsChart').getContext('2d');
+    
+    if (skillsChartInstance) skillsChartInstance.destroy();
+
+    skillsChartInstance = new Chart(ctxSkills, {
+        type: 'radar',
+        data: {
+            labels: chartData.skills.labels.length > 0 ? chartData.skills.labels : ['No Data'],
+            datasets: [{ 
+                label: 'Skill Proficiency (%)', 
+                data: chartData.skills.data.length > 0 ? chartData.skills.data : [0], 
+                backgroundColor: 'rgba(16, 185, 129, 0.2)', 
+                borderColor: '#10b981', 
+                pointBackgroundColor: '#10b981', 
+                borderWidth: 2 
+            }]
+        },
+        options: { 
+            responsive: true, 
+            plugins: { legend: { display: false } }, 
+            scales: { r: { angleLines: { color: '#e2e8f0' }, grid: { color: '#e2e8f0' }, suggestedMin: 0, suggestedMax: 100 } } 
+        }
+    });
 }
 
-if (role === 'admin') {
-  // Multi-Line Chart: Platform Growth
-  new Chart(document.getElementById('adminGrowthChart').getContext('2d'), {
-    type: 'line',
-    data: {
-      labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-      datasets: [
-        { label: 'New Users', data: [400, 550, 600, 800, 950, 1200], borderColor: '#3b82f6', tension: 0.3 },
-        { label: 'New Courses', data: [15, 25, 20, 45, 30, 60], borderColor: '#f59e0b', tension: 0.3 }
-      ]
-    },
-    options: { responsive: true }
-  });
-}
+// Execute on load
+fetchDashboardData();
 
 function logout() {
   localStorage.clear();

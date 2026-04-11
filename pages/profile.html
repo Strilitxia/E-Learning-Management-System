@@ -146,10 +146,10 @@
         <div class="card-body pt-0 px-4 pb-4">
           <div class="profile-avatar-container">
             <img src="https://via.placeholder.com/150?text=User" alt="Profile Picture" class="profile-avatar" id="profileAvatar">
-            <label for="avatarInput" class="avatar-edit-btn shadow-sm" title="Upload new photo">
-              <i class="fas fa-camera fs-6"></i>
-            </label>
-            <input type="file" id="avatarInput" accept="image/*" class="d-none">
+            <div class="avatar-edit-btn shadow-sm" onclick="changeProfilePicture()" title="Add photo URL">
+              <i class="fas fa-link fs-6"></i>
+            </div>
+            <input type="hidden" id="profilePictureURL" value="">
           </div>
           <h4 class="fw-bold mb-1 text-dark" id="displayName">Asif Amin</h4>
           <p class="text-muted mb-2" id="displayEmail">asif@example.com</p>
@@ -168,19 +168,19 @@
         <h6 class="fw-bold mb-3 border-bottom pb-2">Platform Activity</h6>
         <div class="stat-row d-flex justify-content-between align-items-center">
           <span class="text-muted"><i class="fas fa-book-open me-2"></i> Courses Enrolled</span>
-          <span class="fw-bold text-dark">4</span>
+          <span class="fw-bold text-dark" id="stat-enrolled">0</span>
         </div>
         <div class="stat-row d-flex justify-content-between align-items-center">
           <span class="text-muted"><i class="fas fa-check-circle me-2"></i> Courses Completed</span>
-          <span class="fw-bold text-dark">2</span>
+          <span class="fw-bold text-dark" id="stat-completed">0</span>
         </div>
         <div class="stat-row d-flex justify-content-between align-items-center">
           <span class="text-muted"><i class="fas fa-award me-2"></i> Certificates Earned</span>
-          <span class="fw-bold text-dark">2</span>
+          <span class="fw-bold text-dark" id="stat-certs">0</span>
         </div>
         <div class="stat-row d-flex justify-content-between align-items-center">
           <span class="text-muted"><i class="fas fa-calendar-alt me-2"></i> Member Since</span>
-          <span class="fw-medium text-dark">March 2025</span>
+          <span class="fw-medium text-dark" id="stat-joined">Loading...</span>
         </div>
       </div>
     </div>
@@ -340,14 +340,14 @@
 
 <script>
 // ────────────────────────────────────────────────
-// Role & Data Setup
+// Role & Setup
 // ────────────────────────────────────────────────
 const role = localStorage.getItem('userRole') || 'student';
-let fullName = localStorage.getItem('userName') || 'Asif Amin';
-const email = localStorage.getItem('userEmail') || 'asif@example.com';
+const userId = localStorage.getItem('userId') || 0;
 
-// Update DOM initially
-updateUIData();
+if (userId === 0) {
+    window.location.href = '../index.html';
+}
 
 // ────────────────────────────────────────────────
 // Sidebar Menu Generation
@@ -379,77 +379,138 @@ if (role === 'student') {
 }
 
 // ────────────────────────────────────────────────
-// Profile Functions
+// API Data Fetching & Rendering
 // ────────────────────────────────────────────────
+async function loadProfile() {
+    try {
+        const response = await fetch(`http://localhost/elp_project/api/profile/get_profile.php?userId=${userId}`);
+        const data = await response.json();
 
-function updateUIData() {
-  // Update Top Navbar & Sidebar
-  document.getElementById('userFullName').textContent = fullName;
-  document.getElementById('userRoleBadge').textContent = role.charAt(0).toUpperCase() + role.slice(1);
-  
-  // Update Profile Card
-  document.getElementById('displayName').textContent = fullName;
-  document.getElementById('displayEmail').textContent = email;
-  document.getElementById('displayRole').textContent = role.charAt(0).toUpperCase() + role.slice(1);
+        if (data.error) return alert("Error loading profile: " + data.error);
 
-  // Split name for input fields
-  const nameParts = fullName.split(' ');
-  document.getElementById('firstName').value = nameParts[0] || '';
-  document.getElementById('lastName').value = nameParts.slice(1).join(' ') || '';
-  document.getElementById('email').value = email;
+        const user = data.user;
+        const stats = data.stats;
+        const fullName = user.FirstName + ' ' + user.LastName;
+
+        // Update Top Navbar
+        document.getElementById('userFullName').textContent = fullName;
+        document.getElementById('userRoleBadge').textContent = user.Role.charAt(0).toUpperCase() + user.Role.slice(1);
+        
+        // Update Profile Card
+        document.getElementById('displayName').textContent = fullName;
+        document.getElementById('displayEmail').textContent = user.Email;
+        document.getElementById('displayRole').textContent = user.Role.charAt(0).toUpperCase() + user.Role.slice(1);
+        
+        if (user.ProfilePictureURL) {
+            document.getElementById('profileAvatar').src = user.ProfilePictureURL;
+            document.getElementById('profilePictureURL').value = user.ProfilePictureURL;
+        }
+
+        // Populate Form Fields
+        document.getElementById('firstName').value = user.FirstName;
+        document.getElementById('lastName').value = user.LastName;
+        document.getElementById('email').value = user.Email;
+        document.getElementById('phone').value = user.Phone || '';
+        document.getElementById('bio').value = user.Bio || '';
+
+        // Populate Stats
+        const joinDate = new Date(user.JoinedDate).toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+        document.getElementById('stat-joined').textContent = joinDate;
+
+        if (role === 'student') {
+            document.getElementById('stat-enrolled').textContent = stats.enrolled;
+            document.getElementById('stat-completed').textContent = stats.completed;
+            document.getElementById('stat-certs').textContent = stats.certificates;
+        } else {
+            // Hide stats for instructors/admins if irrelevant, or leave 0
+            document.getElementById('stat-enrolled').parentElement.classList.add('d-none');
+            document.getElementById('stat-completed').parentElement.classList.add('d-none');
+            document.getElementById('stat-certs').parentElement.classList.add('d-none');
+        }
+
+    } catch (error) {
+        console.error("Error loading profile:", error);
+    }
 }
 
-// Avatar Image Preview
-document.getElementById('avatarInput').addEventListener('change', function(e) {
-  const file = e.target.files[0];
-  if (file) {
-    const reader = new FileReader();
-    reader.onload = function(e) {
-      document.getElementById('profileAvatar').src = e.target.result;
-      showToast("Profile picture updated successfully!");
-    };
-    reader.readAsDataURL(file);
-  }
-});
+// ────────────────────────────────────────────────
+// Form Actions
+// ────────────────────────────────────────────────
 
 // Save Profile Info
-function saveProfile() {
-  const first = document.getElementById('firstName').value.trim();
-  const last = document.getElementById('lastName').value.trim();
+async function saveProfile() {
+  const firstName = document.getElementById('firstName').value.trim();
+  const lastName = document.getElementById('lastName').value.trim();
+  const phone = document.getElementById('phone').value.trim();
+  const bio = document.getElementById('bio').value.trim();
+  const profilePictureURL = document.getElementById('profilePictureURL').value.trim();
   
-  if (!first || !last) {
-    alert("First and Last name are required.");
-    return;
-  }
+  if (!firstName || !lastName) return alert("First and Last name are required.");
 
-  fullName = first + " " + last;
-  localStorage.setItem('userName', fullName);
-  updateUIData();
-  
-  showToast("Profile information saved successfully!");
+  try {
+      const response = await fetch('http://localhost/elp_project/api/profile/update_profile.php', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ userId, firstName, lastName, phone, bio, profilePictureURL })
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+          // Update local storage so navbar name updates on other pages
+          localStorage.setItem('userName', firstName + ' ' + lastName);
+          
+          showToast("Profile information saved successfully!");
+          loadProfile(); // Refresh UI instantly
+      } else {
+          alert("Update failed: " + result.error);
+      }
+  } catch (error) {
+      console.error("Error saving profile:", error);
+  }
 }
 
 // Change Password
-function changePassword() {
-  const currPass = document.getElementById('currentPassword').value;
-  const newPass = document.getElementById('newPassword').value;
-  const confirm = document.getElementById('confirmPassword').value;
+async function changePassword() {
+  const currentPassword = document.getElementById('currentPassword').value;
+  const newPassword = document.getElementById('newPassword').value;
+  const confirmPassword = document.getElementById('confirmPassword').value;
 
-  if (!currPass || !newPass || !confirm) {
-    alert("Please fill in all password fields.");
-    return;
-  }
-  if (newPass.length < 8) {
-    alert("New password must be at least 8 characters.");
-    return;
-  }
-  if (newPass !== confirm) {
-    alert("New passwords do not match.");
-    return;
-  }
+  if (!currentPassword || !newPassword || !confirmPassword) return alert("Please fill in all password fields.");
+  if (newPassword.length < 8) return alert("New password must be at least 8 characters.");
+  if (newPassword !== confirmPassword) return alert("New passwords do not match.");
 
-  document.getElementById('passwordForm').reset();
-  showToast("Password updated securely!");
+  try {
+      const response = await fetch('http://localhost/elp_project/api/profile/change_password.php', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ userId, currentPassword, newPassword })
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+          document.getElementById('passwordForm').reset();
+          showToast("Password updated securely!");
+      } else {
+          alert("Error: " + result.error);
+      }
+  } catch (error) {
+      console.error("Error changing password:", error);
+  }
+}
+
+// Change Profile Picture URL
+function changeProfilePicture() {
+  const currentURL = document.getElementById('profilePictureURL').value;
+  const newURL = prompt("Enter the image URL for your profile picture:", currentURL || "");
+  
+  if (newURL !== null && newURL.trim() !== "") {
+    const trimmedURL = newURL.trim();
+    document.getElementById('profileAvatar').src = trimmedURL;
+    document.getElementById('profilePictureURL').value = trimmedURL;
+    showToast("Profile picture updated visually.");
+  }
 }
 
 // Custom Toast Function
@@ -460,11 +521,13 @@ function showToast(message) {
   toast.show();
 }
 
-// Logout
 function logout() {
   localStorage.clear();
   window.location.href = '../index.html';
 }
+
+// Init
+loadProfile();
 </script>
 
 </body>
