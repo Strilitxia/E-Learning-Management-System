@@ -175,7 +175,7 @@ try {
 
         // 6b. Grading Tasks
         $stmtAction = $conn->prepare("
-            SELECT a.Title, c.Title as CourseTitle, COUNT(sub.SubmissionID) as NeedsGrading
+            SELECT a.AssessmentID, a.Title, c.Title as CourseTitle, COUNT(sub.SubmissionID) as NeedsGrading
             FROM Assessment_Submission sub
             JOIN Assessment a ON sub.AssessmentID = a.AssessmentID
             JOIN Course c ON a.CourseID = c.CourseID
@@ -191,7 +191,7 @@ try {
                 'type' => 'grade',
                 'title' => 'Grade ' . $task['Title'],
                 'detail' => $task['CourseTitle'],
-                'link' => 'pages/assessment.html', // Correct link for grading
+                'link' => 'pages/grade-assessment.html?id=' . $task['AssessmentID'],
                 'count' => $task['NeedsGrading']
             ];
         }

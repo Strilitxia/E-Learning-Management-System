@@ -18,7 +18,7 @@ try {
     // 2. Get "Needs Attention" (Last 5 recent submissions for instructor's courses)
     $stmtSub = $conn->prepare("
         SELECT sub.SubmissionID, sub.SubmissionDate, sub.ScoreEarned,
-               a.Title as AssessmentTitle, a.MaxScore, c.Title as CourseTitle,
+               a.AssessmentID, a.Title as AssessmentTitle, a.MaxScore, c.Title as CourseTitle,
                u.FirstName, u.LastName
         FROM Assessment_Submission sub
         JOIN Assessment a ON sub.AssessmentID = a.AssessmentID
