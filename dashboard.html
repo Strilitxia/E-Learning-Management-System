@@ -142,14 +142,12 @@
       <div class="dropdown">
         <button class="btn btn-light rounded-circle position-relative" data-bs-toggle="dropdown" style="width: 42px; height: 42px;">
           <i class="far fa-bell"></i>
-          <span class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle"></span>
+          <span id="notifBadge" class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle d-none"></span>
         </button>
-        <ul class="dropdown-menu dropdown-menu-end shadow-sm p-2" style="width: 300px;">
+        <ul class="dropdown-menu dropdown-menu-end shadow-sm p-2" style="width: 300px; max-height: 400px; overflow-y: auto;" id="notifDropdown">
           <li><h6 class="dropdown-header text-dark fw-bold">Notifications</h6></li>
-          <li><a class="dropdown-item py-2 border-bottom" href="#"><small class="text-muted d-block">2 hrs ago</small>New course matching your interests</a></li>
-          <li><a class="dropdown-item py-2" href="#"><small class="text-muted d-block">1 day ago</small>Your assignment was graded</a></li>
           <li><hr class="dropdown-divider"></li>
-          <li><a class="dropdown-item text-center text-primary fw-medium" href="#">View all</a></li>
+          <li><a class="dropdown-item text-center text-muted small py-3" href="#">No new notifications</a></li>
         </ul>
       </div>
 
@@ -271,7 +269,7 @@
                 <span class="small fw-bold" id="cl-progress-text">0%</span>
               </div>
             </div>
-            <button class="btn btn-primary rounded-pill px-4">Resume</button>
+            <button class="btn btn-primary rounded-pill px-4" id="cl-resume-btn">Resume</button>
           </div>
 
           <div id="continueLearningEmpty" class="d-none text-center py-3">
@@ -284,8 +282,8 @@
       <!-- Upcoming Deadlines -->
       <div class="col-lg-5">
         <div class="card card-custom h-100 p-4">
-          <h5 class="fw-bold mb-4">Upcoming Deadlines</h5>
-          <div class="timeline">
+          <h5 class="fw-bold mb-4">Activity & Deadlines</h5>
+          <div class="timeline" id="studentDeadlinesTimeline">
             <div class="timeline-item">
               <h6 class="fw-bold mb-0">Database Midterm Quiz</h6>
               <small class="text-danger fw-medium"><i class="far fa-clock me-1"></i> Due Today, 11:59 PM</small>
@@ -347,7 +345,7 @@
       <div class="col-xl-3 col-sm-6">
         <div class="stat-card bg-gradient-warning">
           <p class="mb-1 opacity-75 fw-medium">Pending Assignments</p>
-          <h2 class="mb-0 fw-bold">24</h2>
+          <h2 class="mb-0 fw-bold" id="stat-inst-pending">0</h2>
         </div>
       </div>
     </div>
@@ -362,21 +360,8 @@
       <div class="col-lg-4">
         <div class="card card-custom p-4 h-100">
           <h5 class="fw-bold mb-4">Action Items</h5>
-          <div class="list-group list-group-flush border-top border-bottom mb-3">
-            <a href="#" class="list-group-item list-group-item-action py-3 d-flex justify-content-between align-items-center px-0">
-              <div>
-                <i class="fas fa-edit text-primary me-2"></i> Grade Midterms
-                <small class="d-block text-muted">Web Dev Bootcamp</small>
-              </div>
-              <span class="badge bg-danger rounded-pill">12</span>
-            </a>
-            <a href="#" class="list-group-item list-group-item-action py-3 d-flex justify-content-between align-items-center px-0">
-              <div>
-                <i class="fas fa-comments text-success me-2"></i> Unread Q&A
-                <small class="d-block text-muted">Python Basics</small>
-              </div>
-              <span class="badge bg-warning text-dark rounded-pill">5</span>
-            </a>
+          <div class="list-group list-group-flush border-top border-bottom mb-3" id="instActionItemsContainer">
+            <div class="text-center py-3 text-muted small">Loading...</div>
           </div>
           <button class="btn btn-outline-primary w-100"><i class="fas fa-plus me-2"></i> Create New Content</button>
         </div>
@@ -414,8 +399,8 @@
       <div class="col-xl-3 col-sm-6">
         <div class="stat-card bg-gradient-danger">
           <p class="mb-1 opacity-75 fw-medium">Reported Issues</p>
-          <h2 class="mb-0 fw-bold">2</h2>
-          <small><i class="fas fa-exclamation-triangle"></i> System alerts</small>
+          <h2 class="mb-0 fw-bold" id="stat-admin-recent-reports">0</h2>
+          <small><i class="fas fa-exclamation-triangle"></i> Recent alerts</small>
         </div>
       </div>
     </div>
@@ -430,7 +415,7 @@
       <div class="col-lg-4">
         <div class="card card-custom p-4 h-100">
           <h5 class="fw-bold mb-4">System Activity Log</h5>
-          <div class="timeline">
+          <div class="timeline" id="adminActivityLogTimeline">
             <div class="timeline-item">
               <small class="text-muted">10 mins ago</small>
               <h6 class="fw-medium mb-0">New Instructor signed up</h6>
@@ -454,165 +439,253 @@
 
   </div>
 
-</div>
+</div>  <script>
+    // 1. User Setup
+    const userId = localStorage.getItem('userId');
+    const role = localStorage.getItem('userRole') || 'student';
+    const userName = localStorage.getItem('userName') || 'User';
 
-<script>
-// 1. Initial Setup
-const userId = localStorage.getItem('userId') || 1; // Assuming 1 for testing
-const role = localStorage.getItem('userRole') || 'student';
-const name = localStorage.getItem('userName') || 'Guest Learner';
+    if (!userId) window.location.href = 'index.html';
 
-document.getElementById('userFullName').textContent = name;
-document.getElementById('userGreetingName').textContent = name.split(' ')[0];
-document.getElementById('userRoleBadge').textContent = role.charAt(0).toUpperCase() + role.slice(1);
+    document.getElementById('userFullName').textContent = userName;
+    document.getElementById('userRoleBadge').textContent = role.charAt(0).toUpperCase() + role.slice(1);
 
-// Configure Chart.js Defaults
-Chart.defaults.font.family = "'Segoe UI', system-ui, sans-serif";
-Chart.defaults.color = "#64748b";
-let studyChartInstance = null;
-let skillsChartInstance = null;
-
-// 2. Setup UI based on role
-const menu = document.getElementById('sidebarMenu');
-if (role === 'student') {
-  menu.innerHTML = `
-    <a href="dashboard.html" class="nav-link active"><i class="fas fa-th-large"></i> Dashboard</a>
-    <a href="pages/courses.html" class="nav-link"><i class="fas fa-book"></i> My Courses</a>
-    <a href="pages/enroll.html" class="nav-link"><i class="fas fa-compass"></i> Explore</a>
-    <a href="pages/assessment.html" class="nav-link"><i class="fas fa-pen-square"></i> Assessments</a>
-    <a href="pages/profile.html" class="nav-link"><i class="fas fa-user"></i> Profile</a>
-  `;
-  document.getElementById('studentDashboard').classList.remove('d-none');
-} else if (role === 'instructor') {
-  menu.innerHTML = `
-    <a href="dashboard.html" class="nav-link active"><i class="fas fa-th-large"></i> Dashboard</a>
-    <a href="pages/courses.html" class="nav-link"><i class="fas fa-chalkboard-teacher"></i> Course Manager</a>
-    <a href="pages/content.html" class="nav-link"><i class="fas fa-upload"></i> Content Library</a>
-    <a href="pages/assessment.html" class="nav-link"><i class="fas fa-chart-line"></i> Student Results</a>
-    <a href="pages/profile.html" class="nav-link"><i class="fas fa-user"></i> Profile</a>
-  `;
-  document.getElementById('instructorDashboard').classList.remove('d-none');
-  document.getElementById('roleWelcomeText').textContent = "Here is an overview of your teaching performance.";
-} else if (role === 'admin') {
-  menu.innerHTML = `
-    <a href="dashboard.html" class="nav-link active"><i class="fas fa-th-large"></i> Dashboard</a>
-    <a href="pages/admin.html" class="nav-link"><i class="fas fa-users-cog"></i> User Management</a>
-    <a href="pages/admin.html#courses" class="nav-link"><i class="fas fa-shield-alt"></i> Moderation</a>
-    <a href="pages/profile.html" class="nav-link"><i class="fas fa-user-shield"></i> Admin Profile</a>
-  `;
-  document.getElementById('adminDashboard').classList.remove('d-none');
-  document.getElementById('roleWelcomeText').textContent = "Platform oversight and system health metrics.";
-}
-
-// 3. Dynamic Time Greeting & Date
-const hour = new Date().getHours();
-let greeting = "Good evening";
-if (hour < 12) greeting = "Good morning";
-else if (hour < 18) greeting = "Good afternoon";
-document.getElementById('timeGreeting').textContent = greeting;
-
-const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-document.getElementById('currentDate').textContent = new Date().toLocaleDateString('en-US', options);
-
-// 4. Fetch Real Data
-async function fetchDashboardData() {
-  try {
-    const response = await fetch(`http://localhost/elp_project/api/dashboard/get_stats.php?userId=${userId}&role=${role}`);
-    const data = await response.json();
-
-    if (response.ok) {
-        if (role === 'student') {
-            // Populate Stat Cards
-            document.getElementById('stat-student-enrolled').textContent = data.enrolled || 0;
-            document.getElementById('stat-student-completed').textContent = data.completed || 0;
-            document.getElementById('stat-student-certs').textContent = data.certificates || 0;
-            document.getElementById('stat-student-streak').textContent = data.streak || 0;
-
-            // Populate Continue Learning
-            if (data.continue_learning && data.continue_learning.Title) {
-                document.getElementById('continueLearningEmpty').classList.add('d-none');
-                document.getElementById('continueLearningContent').classList.remove('d-none');
-                
-                document.getElementById('cl-title').textContent = data.continue_learning.Title;
-                document.getElementById('cl-progress-bar').style.width = `${data.continue_learning.ProgressPercentage}%`;
-                document.getElementById('cl-progress-text').textContent = `${data.continue_learning.ProgressPercentage}%`;
-                document.getElementById('cl-thumbnail').src = data.continue_learning.ThumbnailURL || 'https://via.placeholder.com/150';
-            } else {
-                document.getElementById('continueLearningContent').classList.add('d-none');
-                document.getElementById('continueLearningEmpty').classList.remove('d-none');
-            }
-
-            // Render Dynamic Charts
-            if(data.charts) {
-                renderStudentCharts(data.charts);
-            }
-        } 
-        // Handle Instructor and Admin updates here similarly...
+    // 2. Sidebar Navigation by Role
+    const menu = document.getElementById('sidebarMenu');
+    if (role === 'student') {
+      menu.innerHTML = `
+        <a href="dashboard.html" class="nav-link active"><i class="fas fa-th-large"></i> Dashboard</a>
+        <a href="pages/courses.html" class="nav-link"><i class="fas fa-book"></i> My Courses</a>
+        <a href="pages/enroll.html" class="nav-link"><i class="fas fa-compass"></i> Explore</a>
+        <a href="pages/assessment.html" class="nav-link"><i class="fas fa-pen-square"></i> Assessments</a>
+        <a href="pages/profile.html" class="nav-link"><i class="fas fa-user"></i> Profile</a>
+      `;
+      document.getElementById('studentDashboard').classList.remove('d-none');
+    } else if (role === 'instructor') {
+      menu.innerHTML = `
+        <a href="dashboard.html" class="nav-link active"><i class="fas fa-th-large"></i> Dashboard</a>
+        <a href="pages/courses.html" class="nav-link"><i class="fas fa-chalkboard-teacher"></i> Assigned Courses</a>
+        <a href="pages/content.html" class="nav-link"><i class="fas fa-upload"></i> Content Library</a>
+        <a href="pages/assessment.html" class="nav-link"><i class="fas fa-chart-line"></i> Assessments</a>
+        <a href="pages/profile.html" class="nav-link"><i class="fas fa-user"></i> Profile</a>
+      `;
+      document.getElementById('instructorDashboard').classList.remove('d-none');
+      document.getElementById('roleWelcomeText').textContent = "Here is an overview of your teaching performance.";
+    } else if (role === 'admin') {
+      menu.innerHTML = `
+        <a href="dashboard.html" class="nav-link active"><i class="fas fa-th-large"></i> Dashboard</a>
+        <a href="pages/admin.html" class="nav-link"><i class="fas fa-users-cog"></i> User Management</a>
+        <a href="pages/admin.html#courses" class="nav-link"><i class="fas fa-shield-alt"></i> Moderation</a>
+        <a href="pages/profile.html" class="nav-link"><i class="fas fa-user-shield"></i> Admin Profile</a>
+      `;
+      document.getElementById('adminDashboard').classList.remove('d-none');
+      document.getElementById('roleWelcomeText').textContent = "Platform oversight and system health metrics.";
     }
-  } catch (error) {
-    console.error("Error fetching data. Ensure backend is running.", error);
-  }
-}
 
-// 3. Render Chart.js Dynamically
-function renderStudentCharts(chartData) {
-    // --- Study Activity Line Chart ---
-    const ctxActivity = document.getElementById('studyActivityChart').getContext('2d');
-    
-    // Destroy previous instance to prevent hover glitches
-    if (studyChartInstance) studyChartInstance.destroy(); 
-    
-    studyChartInstance = new Chart(ctxActivity, {
-        type: 'line',
-        data: {
-            labels: chartData.activity.labels.length > 0 ? chartData.activity.labels : ['No Data'],
-            datasets: [{
-                label: 'Submissions',
-                data: chartData.activity.data.length > 0 ? chartData.activity.data : [0],
-                borderColor: '#3b82f6', 
-                backgroundColor: 'rgba(59, 130, 246, 0.1)', 
-                borderWidth: 3, 
-                fill: true, 
-                tension: 0.4
-            }]
-        },
-        options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } } }
-    });
+    // 3. Greeting & Dates
+    const hour = new Date().getHours();
+    let greeting = hour < 12 ? "Good morning" : (hour < 18 ? "Good afternoon" : "Good evening");
+    document.getElementById('timeGreeting').textContent = `${greeting}, ${userName}!`;
+    document.getElementById('currentDate').textContent = new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
 
-    // --- Skills Radar Chart ---
-    const ctxSkills = document.getElementById('skillsChart').getContext('2d');
-    
-    if (skillsChartInstance) skillsChartInstance.destroy();
+    // 4. Fetch Core Stats
+    let studyChartInstance = null;
+    let skillsChartInstance = null;
+    let instructorChartInstance = null;
+    let adminChartInstance = null;
 
-    skillsChartInstance = new Chart(ctxSkills, {
-        type: 'radar',
-        data: {
-            labels: chartData.skills.labels.length > 0 ? chartData.skills.labels : ['No Data'],
-            datasets: [{ 
-                label: 'Skill Proficiency (%)', 
-                data: chartData.skills.data.length > 0 ? chartData.skills.data : [0], 
-                backgroundColor: 'rgba(16, 185, 129, 0.2)', 
-                borderColor: '#10b981', 
-                pointBackgroundColor: '#10b981', 
-                borderWidth: 2 
-            }]
-        },
-        options: { 
-            responsive: true, 
-            plugins: { legend: { display: false } }, 
-            scales: { r: { angleLines: { color: '#e2e8f0' }, grid: { color: '#e2e8f0' }, suggestedMin: 0, suggestedMax: 100 } } 
+    async function loadDashboardStats() {
+      try {
+        const response = await fetch(`api/dashboard/get_stats.php?userId=${userId}&role=${role}`);
+        const data = await response.json();
+
+        if (role === 'student') {
+          if(document.getElementById('stat-student-enrolled')) document.getElementById('stat-student-enrolled').textContent = data.enrolled || 0;
+          if(document.getElementById('stat-student-completed')) document.getElementById('stat-student-completed').textContent = data.completed || 0;
+          if(document.getElementById('stat-student-certs')) document.getElementById('stat-student-certs').textContent = data.certificates || 0;
+          if(document.getElementById('stat-student-streak')) document.getElementById('stat-student-streak').textContent = data.streak || 0;
+
+          if (data.continue_learning && data.continue_learning.Title) {
+            document.getElementById('continueLearningEmpty').classList.add('d-none');
+            document.getElementById('continueLearningContent').classList.remove('d-none');
+            document.getElementById('cl-title').textContent = data.continue_learning.Title;
+            const prog = parseFloat(data.continue_learning.ProgressPercentage || 0);
+            document.getElementById('cl-progress-bar').style.width = `${prog}%`;
+            document.getElementById('cl-progress-text').textContent = `${Math.round(prog)}%`;
+            document.getElementById('cl-thumbnail').src = data.continue_learning.ThumbnailURL || 'https://via.placeholder.com/150';
+            
+            const btn = document.getElementById('cl-resume-btn');
+            if(prog >= 100) {
+              btn.innerHTML = '<i class="fas fa-certificate me-2"></i> View Certificate';
+              btn.className = "btn btn-success rounded-pill px-4";
+              btn.onclick = () => window.open(`pages/certificate.html?courseId=${data.continue_learning.CourseID}`, '_blank');
+            } else {
+               btn.innerHTML = 'Resume';
+               btn.className = "btn btn-primary rounded-pill px-4";
+               btn.onclick = () => window.location.href = `pages/learning.html?courseId=${data.continue_learning.CourseID}`;
+            }
+          }
+
+          // Student Activity & Deadlines
+          const activityContainer = document.getElementById('studentDeadlinesTimeline');
+          if (activityContainer && data.student_activity) {
+            if (data.student_activity.length === 0) {
+              activityContainer.innerHTML = '<div class="text-muted small py-2">No recent activity.</div>';
+            } else {
+              activityContainer.innerHTML = data.student_activity.map(item => {
+                let badgeClass = 'text-muted';
+                let iconClass = 'fa-info-circle';
+                let label = '';
+                let urgencyText = '';
+
+                if (item.type === 'deadline') {
+                  badgeClass = 'text-danger';
+                  iconClass = 'fa-clock';
+                  label = 'DUE SOON';
+                  const dueDate = new Date(item.DueDate);
+                  const isToday = dueDate.toDateString() === new Date().toDateString();
+                  urgencyText = isToday ? 'Due Today' : 'Due ' + dueDate.toLocaleDateString();
+                } else if (item.type === 'assignment') {
+                  badgeClass = 'text-warning';
+                  iconClass = 'fa-edit';
+                  label = 'NEW ASSIGNMENT';
+                  urgencyText = 'Just assigned';
+                } else if (item.type === 'module') {
+                  badgeClass = 'text-success';
+                  iconClass = 'fa-layer-group';
+                  label = 'NEW CONTENT';
+                  urgencyText = 'Freshly published';
+                } else if (item.type === 'course') {
+                  badgeClass = 'text-primary';
+                  iconClass = 'fa-rocket';
+                  label = 'PLATFORM UPDATE';
+                  urgencyText = 'New course added';
+                }
+
+                return `
+                  <div class="timeline-item">
+                    <div class="d-flex justify-content-between align-items-start mb-1">
+                      <h6 class="fw-bold mb-0">${item.Title}</h6>
+                      <span class="badge rounded-pill bg-light ${badgeClass} border fw-bold" style="font-size: 0.65rem;">${label}</span>
+                    </div>
+                    <small class="${badgeClass} fw-medium">
+                      <i class="fas ${iconClass} me-1"></i> ${urgencyText}
+                      ${item.CourseTitle ? `<span class="text-muted ms-1">in ${item.CourseTitle}</span>` : ''}
+                    </small>
+                  </div>`;
+              }).join('');
+            }
+          }
+          if(data.charts) renderCharts(data.charts);
+        } else if (role === 'instructor') {
+          document.getElementById('stat-inst-courses').textContent = data.active_courses || 0;
+          document.getElementById('stat-inst-students').textContent = data.total_students || 0;
+          document.getElementById('stat-inst-rating').innerHTML = `${data.avg_rating || 0} <i class="fas fa-star text-warning"></i>`;
+          document.getElementById('stat-inst-pending').textContent = data.pending_assignments || 0;
+          
+          const actionList = document.getElementById('instActionItemsContainer');
+          if (actionList && data.action_items) {
+            actionList.innerHTML = data.action_items.map(item => {
+              let icon = 'fa-edit text-primary';
+              if (item.type === 'alert') icon = 'fa-exclamation-circle text-warning';
+              if (item.type === 'info') icon = 'fa-check-circle text-success';
+
+              return `
+              <a href="${item.link || '#'}" class="list-group-item list-group-item-action py-3 d-flex justify-content-between align-items-center px-0">
+                <div><i class="fas ${icon} me-2"></i> ${item.title}<small class="d-block text-muted">${item.detail}</small></div>
+                ${item.count > 0 ? `<span class="badge bg-danger rounded-pill">${item.count}</span>` : ''}
+              </a>`;
+            }).join('');
+          }
+          if(data.instructor_growth) renderInstructorChart(data.instructor_growth);
+        } else if (role === 'admin') {
+          document.getElementById('stat-admin-users').textContent = data.total_users || 0;
+          document.getElementById('stat-admin-courses').textContent = data.active_courses || 0;
+          document.getElementById('stat-admin-reports').textContent = data.pending_reports || 0;
+          if(document.getElementById('stat-admin-recent-reports')) 
+              document.getElementById('stat-admin-recent-reports').textContent = data.admin_recent_reports || 0;
+
+          // Admin Activity Log
+          const logContainer = document.getElementById('adminActivityLogTimeline');
+          if (logContainer && data.admin_activity_log) {
+            if (data.admin_activity_log.length === 0) {
+              logContainer.innerHTML = '<div class="text-muted small py-2">No recent system activity.</div>';
+            } else {
+              logContainer.innerHTML = data.admin_activity_log.map(item => {
+                const dateStr = new Date(item.dt).toLocaleString([], {month: 'short', day: 'numeric', hour: '2-digit', minute:'2-digit'});
+                let icon = 'fa-info-circle';
+                if (item.type === 'signup') icon = 'fa-user-plus text-primary';
+                if (item.type === 'course') icon = 'fa-book text-success';
+                if (item.type === 'report') icon = 'fa-flag text-danger';
+
+                return `
+                  <div class="timeline-item">
+                    <small class="text-muted" style="font-size: 0.7rem;">${dateStr}</small>
+                    <h6 class="fw-medium mb-0" style="font-size: 0.85rem;"><i class="fas ${icon} me-2"></i> ${item.type.toUpperCase()}: ${item.title}</h6>
+                  </div>`;
+              }).join('');
+            }
+          }
+          if(data.admin) renderAdminChart(data.admin);
         }
-    });
-}
+      } catch (err) { console.error("Stats Error:", err); }
+    }
 
-// Execute on load
-fetchDashboardData();
+    // 5. Notifications
+    async function loadNotifications() {
+      try {
+        const res = await fetch(`api/notifications/get_notifications.php?userId=${userId}`);
+        const data = await res.json();
+        if(data && data.success) renderNotifications(data.notifications);
+      } catch(err) { console.error("Notif Error:", err); }
+    }
 
-function logout() {
-  localStorage.clear();
-  window.location.href = 'index.html';
-}
-</script>
+    function renderNotifications(notifs) {
+      const dropdown = document.getElementById('notifDropdown');
+      const badge = document.getElementById('notifBadge');
+      if(!notifs || notifs.length === 0) return;
+      const unreadCount = notifs.filter(n => n.IsRead == 0).length;
+      unreadCount > 0 ? badge.classList.remove('d-none') : badge.classList.add('d-none');
+      let html = `<li><h6 class="dropdown-header text-dark fw-bold">Notifications (${unreadCount})</h6></li>`;
+      notifs.forEach(n => {
+        html += `<li><a class="dropdown-item py-2 border-bottom ${n.IsRead == 0 ? 'bg-light' : ''}" href="#" onclick="markRead(${n.NotificationID})"><div class="small fw-bold">${n.Message}</div><small class="text-muted">${new Date(n.CreatedAt).toLocaleDateString()}</small></a></li>`;
+      });
+      dropdown.innerHTML = html;
+    }
+
+    async function markRead(id) {
+       await fetch('api/notifications/mark_read.php', { method: 'POST', body: JSON.stringify({ notificationId: id }) });
+       loadNotifications();
+    }
+
+    // Charting logic simplified for reliability
+    function renderCharts(c) {
+      if(document.getElementById('studyActivityChart')) {
+        if(studyChartInstance) studyChartInstance.destroy();
+        studyChartInstance = new Chart(document.getElementById('studyActivityChart').getContext('2d'), { type: 'line', data: { labels: c.activity.labels, datasets: [{ label: 'Activity', data: c.activity.data, borderColor: '#3b82f6', tension: 0.4, fill: true }] } });
+      }
+      if(document.getElementById('skillsChart')) {
+        if(skillsChartInstance) skillsChartInstance.destroy();
+        skillsChartInstance = new Chart(document.getElementById('skillsChart').getContext('2d'), { type: 'radar', data: { labels: c.skills.labels, datasets: [{ label: 'Proficiency', data: c.skills.data, backgroundColor: 'rgba(16,185,129,0.2)', borderColor: '#10b981' }] } });
+      }
+    }
+
+    function renderInstructorChart(g) {
+      if(instructorChartInstance) instructorChartInstance.destroy();
+      instructorChartInstance = new Chart(document.getElementById('enrollmentTrendChart').getContext('2d'), { type: 'bar', data: { labels: g.labels, datasets: [{ label: 'Enrollments', data: g.data, backgroundColor: '#3b82f6', borderRadius: 6 }] } });
+    }
+
+    function renderAdminChart(a) {
+      if(adminChartInstance) adminChartInstance.destroy();
+      adminChartInstance = new Chart(document.getElementById('adminGrowthChart').getContext('2d'), { type: 'line', data: { labels: a.labels, datasets: [{ label: 'Users', data: a.users, borderColor: '#3b82f6', tension: 0.4 }, { label: 'Courses', data: a.courses, borderColor: '#10b981', tension: 0.4 }] } });
+    }
+
+    // Start
+    loadDashboardStats();
+    loadNotifications();
+
+    function logout() { localStorage.clear(); window.location.href = 'index.html'; }
+  </script>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>

@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Course Player - ELP</title>
+  <!-- Bootstrap 5 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- FontAwesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    body { background-color: #f8fafc; overflow-x: hidden; }
+    .topbar { background: #fff; height: 60px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 1000; }
+    
+    .sidebar {
+      position: fixed; top: 60px; left: 0; bottom: 0; width: 320px;
+      background: #fff; border-right: 1px solid #e2e8f0; overflow-y: auto; padding-bottom: 2rem;
+      transition: transform 0.3s ease-in-out; z-index: 1040;
+    }
+    .main-content {
+      margin-left: 320px; padding: 2rem; min-height: calc(100vh - 60px);
+    }
+
+    .accordion-button:not(.collapsed) {
+      color: #0f172a; background-color: #f1f5f9; box-shadow: none; font-weight: 600;
+    }
+    .accordion-button:focus { box-shadow: none; }
+    
+    .lesson-item {
+      padding: 0.75rem 1.25rem; border-bottom: 1px solid #f1f5f9; cursor: pointer; transition: all 0.2s;
+      display: flex; align-items: center; gap: 0.75rem; color: #475569;
+    }
+    .lesson-item:hover { background-color: #f8fafc; color: #0f172a; }
+    .lesson-item.active { background-color: #eff6ff; color: #3b82f6; border-left: 3px solid #3b82f6; }
+    
+    .video-container {
+      position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 0.75rem; background: #000;
+    }
+    .video-container iframe {
+      position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0;
+    }
+    .content-box {
+      background: #fff; border-radius: 1rem; padding: 2rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); margin-bottom: 2rem;
+    }
+
+    /* Progress UI */
+    .progress-circle {
+      width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      background: conic-gradient(#10b981 var(--prog), #e2e8f0 0); font-size: 0.75rem; font-weight: bold;
+    }
+    .progress-inner {
+      width: 34px; height: 34px; border-radius: 50%; background: #fff; display: flex; align-items: center; justify-content: center;
+    }
+
+    @media (max-width: 991.98px) {
+      .sidebar { position: static; width: 100%; height: auto; border-right: none; border-bottom: 1px solid #e2e8f0; }
+      .main-content { margin-left: 0; padding: 1rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Topbar -->
+  <div class="topbar d-flex align-items-center px-4 justify-content-between">
+    <div class="d-flex align-items-center gap-3">
+      <a href="courses.html" class="btn btn-sm btn-light rounded-circle"><i class="fas fa-arrow-left"></i></a>
+      <h5 class="mb-0 fw-bold d-none d-md-block" id="courseHeaderTitle">Loading Course...</h5>
+    </div>
+    <div class="d-flex align-items-center gap-3">
+      <div class="text-end d-none d-sm-block">
+        <h6 class="mb-0 fw-bold" id="progressText">0% Complete</h6>
+        <small class="text-muted"><span id="completedCount">0</span> / <span id="totalCount">0</span> Modules</small>
+      </div>
+      <div class="progress-circle shadow-sm" id="progressUi" style="--prog: 0%;">
+        <div class="progress-inner text-success" id="progressUiText"><i class="fas fa-trophy text-muted opacity-50"></i></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sidebar Curriculum -->
+  <div class="sidebar">
+    <div class="p-4 bg-light border-bottom">
+      <h6 class="fw-bold mb-0 text-dark">Course Content</h6>
+    </div>
+    <div class="accordion accordion-flush" id="curriculumAccordion">
+      <div class="text-center py-5 text-muted">
+        <div class="spinner-border text-primary" role="status"></div>
+        <p class="mt-2 text-sm">Loading Curriculum...</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main View Area -->
+  <div class="main-content">
+    <div id="learningContainer" class="d-none">
+      
+      <div class="content-box">
+        <div class="d-flex align-items-center justify-content-between mb-4">
+          <span class="badge bg-primary text-white rounded-pill px-3" id="viewLabel">Lesson</span>
+          <button class="btn btn-outline-secondary btn-sm rounded-pill" onclick="toggleSidebar()"><i class="fas fa-list me-2"></i> Menu</button>
+        </div>
+        
+        <h2 class="fw-bold mb-4" id="viewTitle">Select a lesson from the menu</h2>
+
+        <!-- Video Player Block -->
+        <div id="videoBlock" class="d-none mb-4">
+          <div class="video-container">
+            <iframe id="videoPlayer" src="" allowfullscreen></iframe>
+          </div>
+        </div>
+
+        <!-- Text Block -->
+        <div id="textBlock" class="d-none mb-4 fs-5" style="line-height: 1.8; color: #334155;">
+          
+        </div>
+
+        <!-- File Block -->
+        <div id="fileBlock" class="d-none mb-4 bg-light p-4 rounded-3 border text-center">
+          <i class="fas fa-file-archive fa-4x text-primary mb-3 opacity-50"></i>
+          <h5 class="fw-bold">Downloadable Resource</h5>
+          <p class="text-muted" id="fileNameDisplay">resource.zip</p>
+          <a href="#" class="btn btn-primary rounded-pill px-4" id="fileDownloadBtn" download><i class="fas fa-download me-2"></i> Download File</a>
+        </div>
+      </div>
+
+      <!-- Action Footer -->
+      <div class="d-flex justify-content-between align-items-center bg-white p-4 rounded-3 shadow-sm">
+        <button class="btn btn-light rounded-pill px-4 fw-medium text-muted" id="prevBtn" onclick="navigateContent(-1)" disabled><i class="fas fa-arrow-left me-2"></i> Previous</button>
+        
+        <div>
+           <button class="btn btn-success rounded-pill px-4 fw-medium shadow-sm" id="completeModuleBtn" onclick="markNextModule()"><i class="fas fa-check-circle me-2"></i> Mark Module Complete & Continue</button>
+        </div>
+
+        <button class="btn btn-primary rounded-pill px-4 fw-medium" id="nextBtn" onclick="navigateContent(1)">Next <i class="fas fa-arrow-right ms-2"></i></button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // System setup
+    const userId = localStorage.getItem('userId');
+    const role = localStorage.getItem('userRole');
+    if(!userId || role !== 'student') {
+        alert("Please log in as a student to access this page.");
+        window.location.href = '../index.html';
+    }
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const courseId = urlParams.get('courseId');
+    if(!courseId) window.location.href = 'courses.html';
+
+    // State mechanics
+    let modulesList = [];
+    let flatLessons = [];
+    let currentLessonIndex = -1;
+    let completedModules = 0;
+    let totalModules = 0;
+
+    // To prevent youtube query formatting issues, embed converter
+    function ytUrlToEmbed(url) {
+      if(!url) return '';
+      // Support for regular, embed, shorts, and mobile URLs
+      let match = url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|shorts\/|watch\?v=|watch\?.+&v=))((\w|-){11})/);
+      return (match && match[1]) ? `https://www.youtube.com/embed/${match[1]}?rel=0&autoplay=0` : url;
+    }
+
+    // Init
+    async function initPlayer() {
+      try {
+        // 1. Get user's enrollment progress string
+        const catRes = await fetch(`http://localhost/elp_project/api/courses/get_my_courses.php?userId=${userId}&role=student`);
+        const catData = await catRes.json();
+        const myCourse = catData.find(c => c.CourseID == courseId);
+        
+        if(myCourse) {
+          document.getElementById('courseHeaderTitle').textContent = myCourse.Title;
+          const initialProg = parseFloat(myCourse.ProgressPercentage || 0);
+          updateProgressUI(initialProg);
+        } else {
+          alert('You are not enrolled in this course.');
+          return window.location.href = 'courses.html';
+        }
+
+        // 2. Fetch Course Architecture
+        const modRes = await fetch(`http://localhost/elp_project/api/content/get_course_content.php?courseId=${courseId}`);
+        modulesList = await modRes.json();
+        
+        totalModules = modulesList.length;
+        document.getElementById('totalCount').textContent = totalModules;
+
+        // Based on initial progress percentage, back-calculate completed modules
+        if(myCourse) {
+             completedModules = Math.round((parseFloat(myCourse.ProgressPercentage) / 100) * totalModules);
+        }
+        document.getElementById('completedCount').textContent = completedModules;
+
+        renderSidebar();
+        
+        if(flatLessons.length > 0) {
+            document.getElementById('learningContainer').classList.remove('d-none');
+            // Fix index init: Skip navigateContent(0) and call loadLesson directly to set index to 0
+            loadLesson(0); 
+        } else {
+            document.getElementById('learningContainer').classList.remove('d-none');
+            document.getElementById('viewTitle').textContent = "This course does not have any content yet.";
+            document.getElementById('completeModuleBtn').classList.add('d-none');
+            document.getElementById('nextBtn').classList.add('d-none');
+        }
+
+      } catch(err) {
+        console.error("Player init err:", err);
+      }
+    }
+
+    function renderSidebar() {
+      const acc = document.getElementById('curriculumAccordion');
+      acc.innerHTML = '';
+      flatLessons = [];
+
+      modulesList.forEach((mod, mIdx) => {
+        let itemsHtml = '';
+        if(mod.contents && mod.contents.length > 0) {
+            mod.contents.forEach((les, lIdx) => {
+                const globalIdx = flatLessons.length;
+                flatLessons.push({ ...les, moduleIndex: mIdx });
+                
+                const icon = les.ContentType === 'video' ? 'fa-play-circle' : (les.ContentType === 'text' ? 'fa-file-alt' : 'fa-paperclip');
+                itemsHtml += `
+                  <div class="lesson-item" id="nav-les-${globalIdx}" onclick="loadLesson(${globalIdx})">
+                    <i class="fas ${icon} text-primary opacity-50"></i>
+                    <span>${les.Title}</span>
+                  </div>
+                `;
+            });
+        } else {
+            itemsHtml = `<div class="p-3 small text-muted fst-italic">Empty Module</div>`;
+        }
+
+        const isExpanded = mIdx === 0 ? "show" : "";
+        const isCollapsed = mIdx === 0 ? "" : "collapsed";
+
+        acc.innerHTML += `
+          <div class="accordion-item border-0 border-bottom">
+            <h2 class="accordion-header">
+              <button class="accordion-button ${isCollapsed}" type="button" data-bs-toggle="collapse" data-bs-target="#mod-${mIdx}">
+                ${mIdx+1}. ${mod.Title}
+              </button>
+            </h2>
+            <div id="mod-${mIdx}" class="accordion-collapse collapse ${isExpanded}" data-bs-parent="#curriculumAccordion">
+              <div class="accordion-body p-0">
+                ${itemsHtml}
+              </div>
+            </div>
+          </div>
+        `;
+      });
+    }
+
+    function loadLesson(globalIdx) {
+      if(globalIdx < 0 || globalIdx >= flatLessons.length) return;
+      currentLessonIndex = globalIdx;
+      const lesson = flatLessons[globalIdx];
+
+      // Highlight UI
+      document.querySelectorAll('.lesson-item').forEach(el => el.classList.remove('active'));
+      const activeNav = document.getElementById(`nav-les-${globalIdx}`);
+      if(activeNav) activeNav.classList.add('active');
+
+      // Expand respective accordion secretly if closed
+      const targetCollapse = document.getElementById(`mod-${lesson.moduleIndex}`);
+      if(targetCollapse && !targetCollapse.classList.contains('show')) {
+          new bootstrap.Collapse(targetCollapse, { toggle: false }).show();
+      }
+
+      // Populate Data
+      document.getElementById('viewTitle').textContent = lesson.Title;
+      
+      const vBlock = document.getElementById('videoBlock');
+      const tBlock = document.getElementById('textBlock');
+      const fBlock = document.getElementById('fileBlock');
+      vBlock.classList.add('d-none'); tBlock.classList.add('d-none'); fBlock.classList.add('d-none');
+      document.getElementById('videoPlayer').src = '';
+
+      if (lesson.ContentType === 'video') {
+         document.getElementById('viewLabel').innerHTML = '<i class="fas fa-video me-1"></i> Video';
+         document.getElementById('videoPlayer').src = ytUrlToEmbed(lesson.ContentURL);
+         vBlock.classList.remove('d-none');
+      } else if (lesson.ContentType === 'text') {
+         document.getElementById('viewLabel').innerHTML = '<i class="fas fa-align-left me-1"></i> Article';
+         tBlock.innerHTML = lesson.TextBody ? lesson.TextBody.replace(/\n/g, '<br>') : 'No content provided.';
+         tBlock.classList.remove('d-none');
+      } else if (lesson.ContentType === 'file') {
+         document.getElementById('viewLabel').innerHTML = '<i class="fas fa-paperclip me-1"></i> Resource';
+         document.getElementById('fileNameDisplay').textContent = lesson.FileURL || 'download.zip';
+         fBlock.classList.remove('d-none');
+      }
+
+      // Nav Button states
+      document.getElementById('prevBtn').disabled = globalIdx === 0;
+      
+      // Determine if at end of a module block to show "Mark Module Complete"
+      let isLastLessonInMod = false;
+      if (globalIdx === flatLessons.length - 1) {
+          isLastLessonInMod = true; // absolute end
+      } else {
+          if (flatLessons[globalIdx].moduleIndex !== flatLessons[globalIdx+1].moduleIndex) {
+              isLastLessonInMod = true;
+          }
+      }
+
+      const completeBtn = document.getElementById('completeModuleBtn');
+      const nextBtn = document.getElementById('nextBtn');
+      
+      if(isLastLessonInMod) {
+          // If we are on a module they haven't mathematically completed yet
+          if (lesson.moduleIndex >= completedModules) {
+              completeBtn.classList.remove('d-none');
+              nextBtn.classList.add('d-none');
+              if(globalIdx === flatLessons.length - 1) {
+                  completeBtn.innerHTML = '<i class="fas fa-trophy me-2"></i> Finish Course';
+              } else {
+                  completeBtn.innerHTML = '<i class="fas fa-check-circle me-2"></i> Complete Module & Continue';
+              }
+          } else {
+              completeBtn.classList.add('d-none');
+              nextBtn.classList.remove('d-none');
+              nextBtn.disabled = globalIdx === flatLessons.length - 1;
+          }
+      } else {
+          completeBtn.classList.add('d-none');
+          nextBtn.classList.remove('d-none');
+          nextBtn.disabled = false;
+      }
+    }
+
+    function navigateContent(dir) {
+       loadLesson(currentLessonIndex + dir);
+    }
+
+    async function markNextModule() {
+      if(totalModules === 0) return;
+      
+      completedModules++;
+      let newPerc = (completedModules / totalModules) * 100;
+      if (newPerc > 100) newPerc = 100;
+      
+      try {
+        await fetch('http://localhost/elp_project/api/courses/update_progress.php', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ studentId: userId, courseId: courseId, progressPercentage: newPerc })
+        });
+        
+        document.getElementById('completedCount').textContent = completedModules;
+        updateProgressUI(newPerc);
+        
+        // Progress to next item or declare victory
+        if(currentLessonIndex < flatLessons.length - 1) {
+            navigateContent(1);
+        } else {
+            document.getElementById('learningContainer').innerHTML = `
+              <div class="text-center py-5 my-5">
+                <i class="fas fa-award fa-5x text-warning mb-4 shadow rounded-circle bg-white p-4"></i>
+                <h1 class="fw-bold fs-1">Course Completed!</h1>
+                <p class="text-muted fs-5">Congratulations, you have finished all modules!</p>
+                <button class="btn btn-primary rounded-pill px-5 py-3 mt-3 fw-bold shadow-sm" onclick="window.location.href='courses.html'">Back to Dashboard</button>
+              </div>
+            `;
+        }
+
+      } catch(e) {
+          console.error(e);
+      }
+    }
+
+    function updateProgressUI(perc) {
+        document.getElementById('progressText').textContent = Math.round(perc) + '% Complete';
+        document.getElementById('progressUi').style.setProperty('--prog', perc + '%');
+        if(perc >= 100) {
+            document.getElementById('progressUiText').innerHTML = '<i class="fas fa-check text-success"></i>';
+        }
+    }
+
+    function toggleSidebar() {
+        const sb = document.querySelector('.sidebar');
+        const mc = document.querySelector('.main-content');
+        if(sb.style.transform === 'translateX(-100%)' || window.getComputedStyle(sb).transform === 'matrix(1, 0, 0, 1, -320, 0)') {
+            sb.style.transform = 'translateX(0)';
+            if(window.innerWidth > 992) mc.style.marginLeft = '320px';
+        } else {
+            sb.style.transform = 'translateX(-100%)';
+            if(window.innerWidth > 992) mc.style.marginLeft = '0';
+        }
+    }
+
+    window.onload = initPlayer;
+  </script>
+</body>
+</html>

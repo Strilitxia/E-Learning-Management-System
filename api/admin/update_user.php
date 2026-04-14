@@ -10,6 +10,9 @@ if(isset($data->userId) && isset($data->action)) {
         } elseif ($data->action === 'ban') {
             $stmt = $conn->prepare("UPDATE Users SET Status = 'banned' WHERE UserID = :id");
             $stmt->execute(['id' => $data->userId]);
+        } elseif ($data->action === 'unban') {
+            $stmt = $conn->prepare("UPDATE Users SET Status = 'active' WHERE UserID = :id");
+            $stmt->execute(['id' => $data->userId]);
         }
         echo json_encode(["success" => true]);
     } catch (PDOException $e) {

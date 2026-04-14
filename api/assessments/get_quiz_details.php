@@ -4,7 +4,7 @@ $quizId = isset($_GET['quizId']) ? intval($_GET['quizId']) : 0;
 
 try {
     // Get Assessment Details
-    $stmt1 = $conn->prepare("SELECT AssessmentID, Title, TimeLimit FROM Assessment WHERE AssessmentID = :qid");
+    $stmt1 = $conn->prepare("SELECT AssessmentID, Title, TimeLimit, Type, MaxScore FROM Assessment WHERE AssessmentID = :qid");
     $stmt1->execute(['qid' => $quizId]);
     $quiz = $stmt1->fetch(PDO::FETCH_ASSOC);
 
@@ -28,6 +28,8 @@ try {
     echo json_encode([
         "id" => $quiz['AssessmentID'],
         "title" => $quiz['Title'],
+        "type" => $quiz['Type'],
+        "maxScore" => (int)$quiz['MaxScore'],
         "duration" => (int)$quiz['TimeLimit'] * 60, // Convert minutes to seconds for JS timer
         "questions" => $questions
     ]);

@@ -1,15 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Admin Panel - E-Learning Platform</title>
 
   <!-- Bootstrap 5.3 -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  
+
   <!-- Font Awesome -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 
   <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -19,26 +20,32 @@
       background-color: #f4f7fe;
       font-family: 'Segoe UI', system-ui, sans-serif;
     }
+
     .top-navbar {
       position: fixed;
-      top: 0; left: 0; right: 0;
+      top: 0;
+      left: 0;
+      right: 0;
       z-index: 1000;
       background: white;
       border-bottom: 1px solid #e2e8f0;
       padding: 0.8rem 2.5rem;
     }
+
     .sidebar {
       min-height: 100vh;
       background: white;
       border-right: 1px solid #e2e8f0;
       position: fixed;
       width: 250px;
-      top: 0; left: 0;
+      top: 0;
+      left: 0;
       padding-top: 85px;
       overflow-y: auto;
       z-index: 900;
       transition: transform 0.3s ease;
     }
+
     .sidebar .nav-link {
       color: #64748b;
       padding: 0.85rem 1.5rem;
@@ -47,15 +54,20 @@
       margin-bottom: 0.2rem;
       cursor: pointer;
     }
+
     .sidebar .nav-link:hover,
     .sidebar .nav-link.active {
       background-color: #f8fafc;
       color: #0d6efd;
       border-left: 3px solid #0d6efd;
     }
+
     .sidebar .nav-link i {
-      width: 24px; text-align: center; margin-right: 12px;
+      width: 24px;
+      text-align: center;
+      margin-right: 12px;
     }
+
     .main-content {
       margin-left: 250px;
       padding: 6rem 2.5rem 2rem 2.5rem;
@@ -67,12 +79,19 @@
         transform: translateX(-100%);
         z-index: 1040;
       }
-      .sidebar.show { transform: translateX(0); }
+
+      .sidebar.show {
+        transform: translateX(0);
+      }
+
       .main-content {
         margin-left: 0 !important;
         padding: 6rem 1rem 2rem 1rem;
       }
-      .top-navbar { padding: 0.8rem 1rem; }
+
+      .top-navbar {
+        padding: 0.8rem 1rem;
+      }
     }
 
     /* --- UI ELEMENTS --- */
@@ -84,19 +103,41 @@
       box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
       transition: transform 0.2s ease-in-out;
     }
-    .stat-card:hover { transform: translateY(-5px); }
-    .stat-card .icon-box {
-      width: 48px; height: 48px;
-      border-radius: 12px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 1.5rem;
-      background: rgba(255,255,255,0.2);
+
+    .stat-card:hover {
+      transform: translateY(-5px);
     }
-    .bg-gradient-primary { background: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%); }
-    .bg-gradient-success { background: linear-gradient(135deg, #10b981 0%, #059669 100%); }
-    .bg-gradient-warning { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); }
-    .bg-gradient-danger  { background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); }
-    .bg-gradient-info    { background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%); }
+
+    .stat-card .icon-box {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .bg-gradient-primary {
+      background: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%);
+    }
+
+    .bg-gradient-success {
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    }
+
+    .bg-gradient-warning {
+      background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    }
+
+    .bg-gradient-danger {
+      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    }
+
+    .bg-gradient-info {
+      background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+    }
 
     .card-custom {
       border: none;
@@ -106,13 +147,20 @@
     }
 
     .avatar-circle {
-      width: 40px; height: 40px;
+      width: 40px;
+      height: 40px;
       border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      font-weight: bold; color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      color: white;
     }
-    .table> :not(caption)>*>* { padding: 1rem 0.75rem; }
-    
+
+    .table> :not(caption)>*>* {
+      padding: 1rem 0.75rem;
+    }
+
     /* Strict chart container to prevent infinite Y-axis resizing */
     .chart-container {
       position: relative;
@@ -121,358 +169,511 @@
     }
   </style>
 </head>
+
 <body>
 
-<!-- Toast Notification Container -->
-<div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1055;">
-  <div id="liveToast" class="toast align-items-center text-bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
-    <div class="d-flex">
-      <div class="toast-body" id="toastMessage">Action completed successfully.</div>
-      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-    </div>
-  </div>
-</div>
-
-<!-- Top Navbar -->
-<nav class="top-navbar navbar navbar-expand-lg">
-  <div class="container-fluid">
-    <button class="btn btn-light d-lg-none me-3 border-0" onclick="document.querySelector('.sidebar').classList.toggle('show')">
-      <i class="fas fa-bars"></i>
-    </button>
-
-    <a class="navbar-brand fw-bold fs-4" href="../dashboard.html">
-      ELP <span class="text-primary">Admin Panel</span>
-    </a>
-
-    <div class="ms-auto d-flex align-items-center gap-3">
-      <div class="dropdown">
-        <button class="btn btn-light rounded-circle position-relative shadow-sm" data-bs-toggle="dropdown" style="width: 42px; height: 42px;">
-          <i class="far fa-bell text-secondary"></i>
-          <span class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle"></span>
-        </button>
-        <ul class="dropdown-menu dropdown-menu-end shadow-sm p-2" style="width: 300px;">
-          <li><h6 class="dropdown-header text-dark fw-bold">System Alerts</h6></li>
-          <li><a class="dropdown-item py-2 border-bottom" href="#"><small class="text-muted d-block">10 mins ago</small>3 new courses await approval</a></li>
-          <li><a class="dropdown-item py-2" href="#"><small class="text-muted d-block">1 hr ago</small>New instructor signups detected</a></li>
-          <li><hr class="dropdown-divider"></li>
-          <li><a class="dropdown-item text-center text-primary fw-medium" href="#">View all alerts</a></li>
-        </ul>
-      </div>
-
-      <div class="dropdown">
-        <a class="d-flex align-items-center text-decoration-none dropdown-toggle" href="#" data-bs-toggle="dropdown">
-          <div class="me-3 text-end d-none d-sm-block">
-            <div id="userFullName" class="fw-bold text-dark mb-0 lh-1">Loading...</div>
-            <small id="userRoleBadge" class="text-muted" style="font-size: 0.8rem;">Administrator</small>
-          </div>
-          <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center shadow-sm" style="width:42px; height:42px;">
-            <i class="fas fa-user-shield"></i>
-          </div>
-        </a>
-        <ul class="dropdown-menu dropdown-menu-end shadow-sm">
-          <li><a class="dropdown-item py-2" href="profile.html"><i class="fas fa-user-circle me-2 text-muted"></i> Admin Profile</a></li>
-          <li><a class="dropdown-item py-2" href="settings.html"><i class="fas fa-cog me-2 text-muted"></i> System Settings</a></li>
-          <li><hr class="dropdown-divider"></li>
-          <li><a class="dropdown-item py-2 text-danger" href="#" onclick="logout()"><i class="fas fa-sign-out-alt me-2"></i> Logout</a></li>
-        </ul>
-      </div>
-    </div>
-  </div>
-</nav>
-
-<!-- Sidebar -->
-<div class="sidebar shadow-sm" id="sidebar">
-  <div class="nav flex-column">
-    <a href="#" class="nav-link active" data-tab-target="#users"><i class="fas fa-tachometer-alt"></i> Admin Dashboard</a>
-    <a href="#" class="nav-link" data-tab-target="#moderation"><i class="fas fa-shield-alt"></i> Moderation</a>
-    <a href="#" class="nav-link" data-tab-target="#analytics"><i class="fas fa-chart-pie"></i> Platform Analytics</a>
-    <a href="../dashboard.html" class="nav-link mt-4"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
-  </div>
-</div>
-
-<!-- Main Content -->
-<div class="main-content">
-
-  <!-- Header -->
-  <div class="d-flex justify-content-between align-items-end mb-4 flex-wrap gap-3">
-    <div>
-      <h2 class="fw-bold text-dark mb-1">System Management</h2>
-      <p class="text-muted mb-0">Platform oversight and system health metrics.</p>
-    </div>
-    <div class="text-end d-none d-md-block">
-      <div class="bg-white px-4 py-2 rounded-pill shadow-sm text-muted fw-medium border">
-        <i class="far fa-calendar-alt me-2 text-primary"></i> <span id="currentDate"></span>
+  <!-- Toast Notification Container -->
+  <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1055;">
+    <div id="liveToast" class="toast align-items-center text-bg-success border-0" role="alert" aria-live="assertive"
+      aria-atomic="true">
+      <div class="d-flex">
+        <div class="toast-body" id="toastMessage">Action completed successfully.</div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"
+          aria-label="Close"></button>
       </div>
     </div>
   </div>
 
-  <!-- Quick Stats -->
-  <div class="row g-4 mb-4">
-    <div class="col-xl-3 col-sm-6">
-      <div class="stat-card bg-gradient-primary">
-        <div class="d-flex justify-content-between align-items-center mb-2">
-          <div>
-            <p class="mb-1 opacity-75 fw-medium">Total Users</p>
-            <h2 class="mb-0 fw-bold" id="stat-total-users">0</h2>
-          </div>
-          <div class="icon-box"><i class="fas fa-users"></i></div>
+  <!-- Top Navbar -->
+  <nav class="top-navbar navbar navbar-expand-lg">
+    <div class="container-fluid">
+      <button class="btn btn-light d-lg-none me-3 border-0"
+        onclick="document.querySelector('.sidebar').classList.toggle('show')">
+        <i class="fas fa-bars"></i>
+      </button>
+
+      <a class="navbar-brand fw-bold fs-4" href="../dashboard.html">
+        ELP <span class="text-primary">Admin Panel</span>
+      </a>
+
+      <div class="ms-auto d-flex align-items-center gap-3">
+        <div class="dropdown">
+          <button class="btn btn-light rounded-circle position-relative shadow-sm" data-bs-toggle="dropdown"
+            style="width: 42px; height: 42px;">
+            <i class="far fa-bell text-secondary"></i>
+            <span
+              class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle"></span>
+          </button>
+          <ul class="dropdown-menu dropdown-menu-end shadow-sm p-2" style="width: 300px;">
+            <li>
+              <h6 class="dropdown-header text-dark fw-bold">System Alerts</h6>
+            </li>
+            <li><a class="dropdown-item py-2 border-bottom" href="#"><small class="text-muted d-block">10 mins
+                  ago</small>3 new courses await approval</a></li>
+            <li><a class="dropdown-item py-2" href="#"><small class="text-muted d-block">1 hr ago</small>New instructor
+                signups detected</a></li>
+            <li>
+              <hr class="dropdown-divider">
+            </li>
+            <li><a class="dropdown-item text-center text-primary fw-medium" href="#">View all alerts</a></li>
+          </ul>
         </div>
-        <small class="fw-medium"><i class="fas fa-arrow-up me-1"></i>12% this month</small>
+
+        <div class="dropdown">
+          <a class="d-flex align-items-center text-decoration-none dropdown-toggle" href="#" data-bs-toggle="dropdown">
+            <div class="me-3 text-end d-none d-sm-block">
+              <div id="userFullName" class="fw-bold text-dark mb-0 lh-1">Loading...</div>
+              <small id="userRoleBadge" class="text-muted" style="font-size: 0.8rem;">Administrator</small>
+            </div>
+            <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center shadow-sm"
+              style="width:42px; height:42px;">
+              <i class="fas fa-user-shield"></i>
+            </div>
+          </a>
+          <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+            <li><a class="dropdown-item py-2" href="profile.html"><i class="fas fa-user-circle me-2 text-muted"></i>
+                Admin Profile</a></li>
+            <li>
+              <hr class="dropdown-divider">
+            </li>
+            <li><a class="dropdown-item py-2 text-danger" href="#" onclick="logout()"><i
+                  class="fas fa-sign-out-alt me-2"></i> Logout</a></li>
+          </ul>
+        </div>
       </div>
     </div>
-    <div class="col-xl-3 col-sm-6">
-      <div class="stat-card bg-gradient-success">
-        <div class="d-flex justify-content-between align-items-center mb-2">
-          <div>
-            <p class="mb-1 opacity-75 fw-medium">Active Courses</p>
-            <h2 class="mb-0 fw-bold" id="stat-active-courses">0</h2>
-          </div>
-          <div class="icon-box"><i class="fas fa-book-open"></i></div>
-        </div>
-        <small class="fw-medium">8 pending approval</small>
-      </div>
-    </div>
-    <div class="col-xl-3 col-sm-6">
-      <div class="stat-card bg-gradient-info">
-        <div class="d-flex justify-content-between align-items-center mb-2">
-          <div>
-            <p class="mb-1 opacity-75 fw-medium">Enrollments</p>
-            <h2 class="mb-0 fw-bold" id="stat-enrollments">0</h2>
-          </div>
-          <div class="icon-box"><i class="fas fa-graduation-cap"></i></div>
-        </div>
-        <small class="fw-medium"><i class="fas fa-arrow-up me-1"></i>19% increase</small>
-      </div>
-    </div>
-    <div class="col-xl-3 col-sm-6">
-      <div class="stat-card bg-gradient-warning">
-        <div class="d-flex justify-content-between align-items-center mb-2">
-          <div>
-            <p class="mb-1 opacity-75 fw-medium">Pending Reports</p>
-            <h2 class="mb-0 fw-bold" id="stat-pending-reports">0</h2>
-          </div>
-          <div class="icon-box"><i class="fas fa-flag"></i></div>
-        </div>
-        <small class="fw-medium text-dark">5 high priority</small>
-      </div>
+  </nav>
+
+  <!-- Sidebar -->
+  <div class="sidebar shadow-sm" id="sidebar">
+    <div class="nav flex-column">
+      <a href="#" class="nav-link active" data-tab-target="#users"><i class="fas fa-tachometer-alt"></i> Admin
+        Dashboard</a>
+      <a href="#" class="nav-link" data-tab-target="#moderation"><i class="fas fa-shield-alt"></i> Moderation</a>
+      <a href="#" class="nav-link" data-tab-target="#courses"><i class="fas fa-book"></i> Course Management</a>
+      <a href="#" class="nav-link" data-tab-target="#analytics"><i class="fas fa-chart-pie"></i> Platform Analytics</a>
+      <a href="../dashboard.html" class="nav-link mt-4"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
     </div>
   </div>
 
-  <!-- Tab Content -->
-  <div class="tab-content" id="adminTabsContent">
+  <!-- Main Content -->
+  <div class="main-content">
 
-    <!-- Admin Dashboard Tab (User Management mapped to DB Architecture) -->
-    <div class="tab-pane fade show active" id="users" role="tabpanel">
-      <div class="card card-custom p-4">
-        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
-          <h5 class="fw-bold mb-0">User Management</h5>
-          <div class="input-group" style="max-width: 300px;">
-            <span class="input-group-text bg-light border-end-0 rounded-start-pill text-muted"><i class="fas fa-search"></i></span>
-            <input type="text" class="form-control bg-light border-start-0 rounded-end-pill shadow-none" placeholder="Search users..." id="userSearch">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-end mb-4 flex-wrap gap-3">
+      <div>
+        <h2 class="fw-bold text-dark mb-1">System Management</h2>
+        <p class="text-muted mb-0">Platform oversight and system health metrics.</p>
+      </div>
+      <div class="text-end d-none d-md-block">
+        <div class="bg-white px-4 py-2 rounded-pill shadow-sm text-muted fw-medium border">
+          <i class="far fa-calendar-alt me-2 text-primary"></i> <span id="currentDate"></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Stats -->
+    <div class="row g-4 mb-4">
+      <div class="col-xl-3 col-sm-6">
+        <div class="stat-card bg-gradient-primary">
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <div>
+              <p class="mb-1 opacity-75 fw-medium">Total Users</p>
+              <h2 class="mb-0 fw-bold" id="stat-total-users">0</h2>
+            </div>
+            <div class="icon-box"><i class="fas fa-users"></i></div>
+          </div>
+          <small class="fw-medium"><i class="fas fa-arrow-up me-1"></i>12% this month</small>
+        </div>
+      </div>
+      <div class="col-xl-3 col-sm-6">
+        <div class="stat-card bg-gradient-success">
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <div>
+              <p class="mb-1 opacity-75 fw-medium">Active Courses</p>
+              <h2 class="mb-0 fw-bold" id="stat-active-courses">0</h2>
+            </div>
+            <div class="icon-box"><i class="fas fa-book-open"></i></div>
+          </div>
+          <small class="fw-medium">8 pending approval</small>
+        </div>
+      </div>
+      <div class="col-xl-3 col-sm-6">
+        <div class="stat-card bg-gradient-info">
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <div>
+              <p class="mb-1 opacity-75 fw-medium">Enrollments</p>
+              <h2 class="mb-0 fw-bold" id="stat-enrollments">0</h2>
+            </div>
+            <div class="icon-box"><i class="fas fa-graduation-cap"></i></div>
+          </div>
+          <small class="fw-medium"><i class="fas fa-arrow-up me-1"></i>19% increase</small>
+        </div>
+      </div>
+      <div class="col-xl-3 col-sm-6">
+        <div class="stat-card bg-gradient-warning">
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <div>
+              <p class="mb-1 opacity-75 fw-medium">Pending Reports</p>
+              <h2 class="mb-0 fw-bold" id="stat-pending-reports">0</h2>
+            </div>
+            <div class="icon-box"><i class="fas fa-flag"></i></div>
+          </div>
+          <small class="fw-medium text-dark" id="stat-high-priority">0 high priority</small>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab Content -->
+    <div class="tab-content" id="adminTabsContent">
+
+      <!-- Admin Dashboard Tab (User Management mapped to DB Architecture) -->
+      <div class="tab-pane fade show active" id="users" role="tabpanel">
+        <div class="card card-custom p-4">
+          <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+            <h5 class="fw-bold mb-0">User Management</h5>
+            <div class="input-group" style="max-width: 300px;">
+              <span class="input-group-text bg-light border-end-0 rounded-start-pill text-muted"><i
+                  class="fas fa-search"></i></span>
+              <input type="text" class="form-control bg-light border-start-0 rounded-end-pill shadow-none"
+                placeholder="Search users..." id="userSearch">
+            </div>
+          </div>
+          <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+              <thead class="text-muted" style="font-size: 0.85rem; text-transform: uppercase;">
+                <tr>
+                  <th class="border-top-0 border-bottom-2">User</th>
+                  <th class="border-top-0 border-bottom-2">Role</th>
+                  <th class="border-top-0 border-bottom-2">Joined Date</th>
+                  <th class="border-top-0 border-bottom-2">Status</th>
+                  <th class="text-end border-top-0 border-bottom-2">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="usersTableBody"></tbody>
+            </table>
           </div>
         </div>
-        <div class="table-responsive">
-          <table class="table table-hover align-middle mb-0">
-            <thead class="text-muted" style="font-size: 0.85rem; text-transform: uppercase;">
-              <tr>
-                <th class="border-top-0 border-bottom-2">User</th>
-                <th class="border-top-0 border-bottom-2">Role</th>
-                <th class="border-top-0 border-bottom-2">Joined Date</th>
-                <th class="border-top-0 border-bottom-2">Status</th>
-                <th class="text-end border-top-0 border-bottom-2">Actions</th>
-              </tr>
-            </thead>
-            <tbody id="usersTableBody"></tbody>
-          </table>
+      </div>
+
+      <!-- Moderation Tab (Course Moderation mapped to DB Architecture) -->
+      <div class="tab-pane fade" id="moderation" role="tabpanel">
+        <div class="card card-custom p-4">
+          <h5 class="fw-bold mb-1">User Moderation</h5>
+          <p class="text-muted small mb-4">Review flagged accounts, pending registrations, and reported activity.</p>
+          <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+              <thead class="text-muted" style="font-size: 0.85rem; text-transform: uppercase;">
+                <tr>
+                  <th class="border-top-0 border-bottom-2">User (Reported)</th>
+                  <th class="border-top-0 border-bottom-2 small">Reported By</th>
+                  <th class="border-top-0 border-bottom-2 small">Reason / Flag</th>
+                  <th class="border-top-0 border-bottom-2">Date</th>
+                  <th class="border-top-0 border-bottom-2 text-center">Status</th>
+                  <th class="text-end border-top-0 border-bottom-2">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="moderationTableBody"></tbody>
+            </table>
+          </div>
         </div>
       </div>
-    </div>
 
-    <!-- Moderation Tab (Course Moderation mapped to DB Architecture) -->
-    <div class="tab-pane fade" id="moderation" role="tabpanel">
-      <div class="card card-custom p-4">
-        <h5 class="fw-bold mb-1">User Moderation</h5>
-        <p class="text-muted small mb-4">Review flagged accounts, pending registrations, and reported activity.</p>
-        <div class="table-responsive">
-          <table class="table table-hover align-middle mb-0">
-            <thead class="text-muted" style="font-size: 0.85rem; text-transform: uppercase;">
-              <tr>
-                <th class="border-top-0 border-bottom-2">User</th>
-                <th class="border-top-0 border-bottom-2">Reason / Flag</th>
-                <th class="border-top-0 border-bottom-2">Reported</th>
-                <th class="border-top-0 border-bottom-2">Status</th>
-                <th class="text-end border-top-0 border-bottom-2">Actions</th>
-              </tr>
-            </thead>
-            <tbody id="moderationTableBody"></tbody>
-          </table>
+      <!-- Course Management Tab -->
+      <div class="tab-pane fade" id="courses" role="tabpanel">
+        <div class="card card-custom p-4 mb-4">
+          <h5 class="fw-bold mb-4">Course Assignment</h5>
+          <p class="text-muted small mb-4">Mint a new course or assign an existing course to an approved instructor.</p>
+          <div class="row g-5">
+            <!-- CREATE COURSE BLOCK -->
+            <div class="col-md-6 border-end">
+              <h6 class="fw-bold mb-3"><i class="fas fa-plus-circle text-primary me-2"></i>Create & Assign New Course
+              </h6>
+              <div class="mb-3">
+                <label class="form-label">Course Title</label>
+                <input type="text" class="form-control" id="newCourseTitle"
+                  placeholder="e.g., Intro to Machine Learning">
+              </div>
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label class="form-label">Category</label>
+                  <select class="form-select" id="newCourseCategory">
+                    <option value="Programming">Programming</option>
+                    <option value="Design">Design</option>
+                    <option value="Business">Business</option>
+                    <option value="Data Science">Data Science</option>
+                  </select>
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label class="form-label">Level</label>
+                  <select class="form-select" id="newCourseLevel">
+                    <option value="Beginner">Beginner</option>
+                    <option value="Intermediate">Intermediate</option>
+                    <option value="Advanced">Advanced</option>
+                  </select>
+                </div>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Course Banner Image URL</label>
+                <input type="text" class="form-control" id="newCourseThumbnail"
+                  placeholder="https://example.com/banner.jpg">
+                <small class="text-muted" style="font-size: 0.75rem;">Leave empty for system default.</small>
+              </div>
+              <div class="mb-4">
+                <label class="form-label">Assign to Instructor</label>
+                <select class="form-select" id="createCourseInstructorId">
+                  <option value="">Loading instructors...</option>
+                </select>
+              </div>
+              <button class="btn btn-primary rounded-pill px-4 w-100" onclick="adminCreateCourse()">Create &
+                Assign</button>
+            </div>
+
+            <!-- REASSIGN COURSE BLOCK -->
+            <div class="col-md-6">
+              <h6 class="fw-bold mb-3"><i class="fas fa-exchange-alt text-success me-2"></i>Re-assign Existing Course
+              </h6>
+              <div class="mb-3">
+                <label class="form-label">Course</label>
+                <select class="form-select" id="assignCourseId">
+                  <option value="">Loading courses...</option>
+                </select>
+              </div>
+              <div class="mb-4">
+                <label class="form-label">Instructor</label>
+                <select class="form-select" id="assignInstructorId">
+                  <option value="">Loading instructors...</option>
+                </select>
+              </div>
+              <button class="btn btn-outline-success rounded-pill px-4 w-100" onclick="assignCourse()">Re-assign
+                Course</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- NEW COURSE REPOSITORY BLOCK -->
+        <div class="card card-custom p-4 bg-white border-light shadow-sm">
+          <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+              <h5 class="fw-bold mb-1"><i class="fas fa-database text-primary me-2"></i>Course Repository</h5>
+              <p class="text-muted small mb-0">Monitor and manage all active, draft, and archived courses in real-time.
+              </p>
+            </div>
+            <button class="btn btn-outline-primary rounded-pill px-4 btn-sm fw-medium"
+              onclick="loadAllCoursesForManagement()">
+              <i class="fas fa-sync-alt me-2"></i> Refresh List
+            </button>
+          </div>
+          <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+              <thead class="text-muted" style="font-size: 0.8rem; text-transform: uppercase;">
+                <tr>
+                  <th class="border-top-0 border-bottom-2">Course Information</th>
+                  <th class="border-top-0 border-bottom-2">Instructor</th>
+                  <th class="border-top-0 border-bottom-2">Category</th>
+                  <th class="border-top-0 border-bottom-2">Status</th>
+                  <th class="text-end border-top-0 border-bottom-2">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="managementCoursesTableBody">
+                <tr>
+                  <td colspan="5" class="text-center py-4">Loading repository...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
-    </div>
 
-    <!-- Platform Analytics Tab (Analytics Dashboard mapped to DB Architecture) -->
-    <div class="tab-pane fade" id="analytics" role="tabpanel">
-      <div class="row g-4">
-        <div class="col-lg-12 mb-4">
-          <div class="row g-3">
-            <div class="col-md-3">
-              <div class="card card-custom p-3 text-center">
-                <div class="text-success fw-bold">Enrollments Today</div>
-                <h3 class="fw-bold text-dark mb-0">42</h3>
-                <small class="text-muted">+8 from yesterday</small>
+      <!-- Platform Analytics Tab (Analytics Dashboard mapped to DB Architecture) -->
+      <div class="tab-pane fade" id="analytics" role="tabpanel">
+        <div class="row g-4">
+          <div class="col-lg-12 mb-4">
+            <div class="row g-3">
+              <div class="col-md-3">
+                <div class="card card-custom p-3 text-center">
+                  <div class="text-success fw-bold">Enrollments Today</div>
+                  <h3 class="fw-bold text-dark mb-0">42</h3>
+                  <small class="text-muted">+8 from yesterday</small>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="card card-custom p-3 text-center">
+                  <div class="text-primary fw-bold">Avg. Course Completion</div>
+                  <h3 class="fw-bold text-dark mb-0">68%</h3>
+                  <small class="text-muted">Across all modules</small>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="card card-custom p-3 text-center">
+                  <div class="text-warning fw-bold">Active Instructors</div>
+                  <h3 class="fw-bold text-dark mb-0">19</h3>
+                  <small class="text-muted">4 new this month</small>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="card card-custom p-3 text-center">
+                  <div class="text-info fw-bold">Total Quizzes Taken</div>
+                  <h3 class="fw-bold text-dark mb-0">1,892</h3>
+                  <small class="text-muted">This quarter</small>
+                </div>
               </div>
             </div>
-            <div class="col-md-3">
-              <div class="card card-custom p-3 text-center">
-                <div class="text-primary fw-bold">Avg. Course Completion</div>
-                <h3 class="fw-bold text-dark mb-0">68%</h3>
-                <small class="text-muted">Across all modules</small>
-              </div>
-            </div>
-            <div class="col-md-3">
-              <div class="card card-custom p-3 text-center">
-                <div class="text-warning fw-bold">Active Instructors</div>
-                <h3 class="fw-bold text-dark mb-0">19</h3>
-                <small class="text-muted">4 new this month</small>
-              </div>
-            </div>
-            <div class="col-md-3">
-              <div class="card card-custom p-3 text-center">
-                <div class="text-info fw-bold">Total Quizzes Taken</div>
-                <h3 class="fw-bold text-dark mb-0">1,892</h3>
-                <small class="text-muted">This quarter</small>
-              </div>
-            </div>
           </div>
-        </div>
 
-        <div class="col-lg-8">
-          <div class="card card-custom p-4 h-100">
-            <h5 class="fw-bold mb-4">User Registration Trend</h5>
-            <!-- FIX: Wrapped in strict container -->
-            <div class="chart-container">
-              <canvas id="registrationChart"></canvas>
+          <div class="col-lg-8">
+            <div class="card card-custom p-4 h-100">
+              <h5 class="fw-bold mb-4">User Registration Trend</h5>
+              <!-- FIX: Wrapped in strict container -->
+              <div class="chart-container">
+                <canvas id="registrationChart"></canvas>
+              </div>
             </div>
           </div>
-        </div>
-        <div class="col-lg-4">
-          <div class="card card-custom p-4 h-100">
-            <h5 class="fw-bold mb-4">Category Distribution</h5>
-            <!-- FIX: Wrapped in strict container -->
-            <div class="chart-container d-flex justify-content-center">
-              <canvas id="categoryChart"></canvas>
+          <div class="col-lg-4">
+            <div class="card card-custom p-4 h-100">
+              <h5 class="fw-bold mb-4">Category Distribution</h5>
+              <!-- FIX: Wrapped in strict container -->
+              <div class="chart-container d-flex justify-content-center">
+                <canvas id="categoryChart"></canvas>
+              </div>
             </div>
           </div>
         </div>
       </div>
+
     </div>
 
   </div>
 
-</div>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // ────────────────────────────────────────────────
+    //  Initialization & Security Check
+    // ────────────────────────────────────────────────
+    const role = localStorage.getItem('userRole') || '';
+    if (role !== 'admin') {
+      alert("Access restricted to Administrators only.");
+      window.location.href = 'dashboard.html';
+    }
 
-<script>
-// ────────────────────────────────────────────────
-//  Initialization & Security Check
-// ────────────────────────────────────────────────
-const role = localStorage.getItem('userRole') || '';
-if (role !== 'admin') {
-  alert("Access restricted to Administrators only.");
-  window.location.href = 'dashboard.html';
-}
+    document.getElementById('userFullName').textContent = localStorage.getItem('userName') || 'Admin User';
+    const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+    document.getElementById('currentDate').textContent = new Date().toLocaleDateString('en-US', options);
 
-document.getElementById('userFullName').textContent = localStorage.getItem('userName') || 'Admin User';
-const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-document.getElementById('currentDate').textContent = new Date().toLocaleDateString('en-US', options);
+    let allUsersData = []; // Store fetched users globally for search
 
-let allUsersData = []; // Store fetched users globally for search
+    // ────────────────────────────────────────────────
+    //  Tab Switching
+    // ────────────────────────────────────────────────
+    const sidebar = document.getElementById('sidebar');
+    const navLinks = document.querySelectorAll('.sidebar .nav-link[data-tab-target]');
 
-// ────────────────────────────────────────────────
-//  Tab Switching
-// ────────────────────────────────────────────────
-const sidebar = document.getElementById('sidebar');
-const navLinks = document.querySelectorAll('.sidebar .nav-link[data-tab-target]');
+    navLinks.forEach(link => {
+      link.addEventListener('click', function (e) {
+        e.preventDefault();
+        navLinks.forEach(l => l.classList.remove('active'));
+        this.classList.add('active');
+        if (window.innerWidth < 992) sidebar.classList.remove('show');
 
-navLinks.forEach(link => {
-  link.addEventListener('click', function(e) {
-    e.preventDefault();
-    navLinks.forEach(l => l.classList.remove('active'));
-    this.classList.add('active');
-    if (window.innerWidth < 992) sidebar.classList.remove('show');
+        const targetId = this.getAttribute('data-tab-target');
 
-    const targetId = this.getAttribute('data-tab-target');
-    const allPanes = document.querySelectorAll('#adminTabsContent .tab-pane');
-    allPanes.forEach(pane => pane.classList.remove('show', 'active'));
-    const targetPane = document.querySelector(targetId);
-    if (targetPane) targetPane.classList.add('show', 'active');
-  });
-});
+        // Tab Specific Logic
+        if (targetId === '#courses') loadAllCoursesForManagement();
+        if (targetId === '#moderation') loadReports();
+        if (targetId === '#users') loadUsers();
 
-// ────────────────────────────────────────────────
-//  Toast & Helpers
-// ────────────────────────────────────────────────
-function showToast(message, type = 'success') {
-  const toastEl = document.getElementById('liveToast');
-  const toastMessage = document.getElementById('toastMessage');
-  toastMessage.textContent = message;
-  toastEl.className = `toast align-items-center text-bg-${type} border-0`;
-  const toast = new bootstrap.Toast(toastEl);
-  toast.show();
-}
+        const allPanes = document.querySelectorAll('#adminTabsContent .tab-pane');
+        allPanes.forEach(pane => pane.classList.remove('show', 'active'));
+        const targetPane = document.querySelector(targetId);
+        if (targetPane) targetPane.classList.add('show', 'active');
+      });
+    });
 
-function getInitials(name) {
-  return name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
-}
-function getAvatarColor(name) {
-  const colors = ['bg-primary', 'bg-success', 'bg-danger', 'bg-warning text-dark', 'bg-info', 'bg-secondary'];
-  return colors[name.charCodeAt(0) % colors.length];
-}
+    // ────────────────────────────────────────────────
+    //  Toast & Helpers
+    // ────────────────────────────────────────────────
+    function showToast(message, type = 'success') {
+      const toastEl = document.getElementById('liveToast');
+      const toastMessage = document.getElementById('toastMessage');
+      toastMessage.textContent = message;
+      toastEl.className = `toast align-items-center text-bg-${type} border-0`;
+      const toast = new bootstrap.Toast(toastEl);
+      toast.show();
+    }
 
-// ────────────────────────────────────────────────
-//  API Calls & Data Rendering
-// ────────────────────────────────────────────────
+    function getInitials(name) {
+      return name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+    }
+    function getAvatarColor(name) {
+      const colors = ['bg-primary', 'bg-success', 'bg-danger', 'bg-warning text-dark', 'bg-info', 'bg-secondary'];
+      return colors[name.charCodeAt(0) % colors.length];
+    }
 
-// 1. Fetch Top Stats
-async function loadAdminStats() {
-    try {
+    // ────────────────────────────────────────────────
+    //  API Calls & Data Rendering
+    // ────────────────────────────────────────────────
+
+    // 1. Fetch Top Stats & Analytics
+    async function loadAdminStats() {
+      try {
         const res = await fetch('http://localhost/elp_project/api/admin/get_admin_stats.php');
         const data = await res.json();
+
+        // Quick Stats
         document.getElementById('stat-total-users').textContent = data.total_users || 0;
         document.getElementById('stat-active-courses').textContent = data.active_courses || 0;
         document.getElementById('stat-enrollments').textContent = data.enrollments || 0;
         document.getElementById('stat-pending-reports').textContent = data.pending_reports || 0;
-    } catch(err) { console.error("Stats Error:", err); }
-}
+        document.getElementById('stat-high-priority').textContent = (data.high_priority_reports || 0) + ' high priority';
 
-// 2. Fetch Users
-async function loadUsers() {
-    try {
-        const res = await fetch('http://localhost/elp_project/api/admin/get_users.php');
+        // Analytics Tab Stats
+        const els = {
+          enrollmentsToday: document.querySelector('#analytics .text-success + h3'),
+          avgComp: document.querySelector('#analytics .text-primary + h3'),
+          activeInstructors: document.querySelector('#analytics .text-warning + h3'),
+          totalQuizzes: document.querySelector('#analytics .text-info + h3')
+        };
+
+        if (els.enrollmentsToday) els.enrollmentsToday.textContent = data.enrollments_today || 0;
+        if (els.avgComp) els.avgComp.textContent = (data.avg_completion || 0) + '%';
+        if (els.activeInstructors) els.activeInstructors.textContent = data.active_instructors || 0;
+        if (els.totalQuizzes) els.totalQuizzes.textContent = data.total_quizzes || 0;
+
+        // Render Dynamic Charts
+        renderAnalyticsCharts(data.registration_trend, data.category_distribution);
+
+      } catch (err) { console.error("Stats Error:", err); }
+    }
+
+    // 2. Fetch Users
+    async function loadUsers() {
+      try {
+        const res = await fetch('../api/admin/get_users.php');
         allUsersData = await res.json();
         renderUsers(allUsersData);
-    } catch(err) { console.error("Users Error:", err); }
-}
+      } catch (err) { console.error("Users Error:", err); }
+    }
 
-function renderUsers(users) {
-  const tbody = document.getElementById('usersTableBody');
-  tbody.innerHTML = '';
-  if (users.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="5" class="text-center text-muted py-4">No users found.</td></tr>`;
-    return;
-  }
-  users.forEach(user => {
-    let name = user.FirstName + ' ' + user.LastName;
-    let statusBadge = user.Status === 'active' ? 'bg-success bg-opacity-10 text-success' :
-                      user.Status === 'pending' ? 'bg-warning bg-opacity-10 text-warning' :
-                      'bg-danger bg-opacity-10 text-danger';
-    
-    // Format date nicely
-    let joinDate = new Date(user.JoinedDate).toLocaleDateString();
+    function renderUsers(users) {
+      const tbody = document.getElementById('usersTableBody');
+      tbody.innerHTML = '';
+      if (users.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" class="text-center text-muted py-4">No users found.</td></tr>`;
+        return;
+      }
+      users.forEach(user => {
+        let name = user.FirstName + ' ' + user.LastName;
+        let statusBadge = user.Status === 'active' ? 'bg-success bg-opacity-10 text-success' :
+          user.Status === 'pending' ? 'bg-warning bg-opacity-10 text-warning' :
+            'bg-danger bg-opacity-10 text-danger';
 
-    const tr = document.createElement('tr');
-    tr.innerHTML = `
+        // Format date nicely
+        let joinDate = new Date(user.JoinedDate).toLocaleDateString();
+
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
       <td>
         <div class="d-flex align-items-center">
           <div class="avatar-circle ${getAvatarColor(name)} me-3 shadow-sm" style="font-size: 0.9rem;">
@@ -486,76 +687,91 @@ function renderUsers(users) {
       </td>
       <td>
         <select class="form-select form-select-sm shadow-none bg-light border-0 w-auto" onchange="updateRole(${user.UserID}, this.value)">
-          <option value="student" ${user.Role==='student'?'selected':''}>Student</option>
-          <option value="instructor" ${user.Role==='instructor'?'selected':''}>Instructor</option>
-          <option value="admin" ${user.Role==='admin'?'selected':''}>Admin</option>
+          <option value="student" ${user.Role === 'student' ? 'selected' : ''}>Student</option>
+          <option value="instructor" ${user.Role === 'instructor' ? 'selected' : ''}>Instructor</option>
+          <option value="admin" ${user.Role === 'admin' ? 'selected' : ''}>Admin</option>
         </select>
       </td>
       <td class="text-muted">${joinDate}</td>
       <td><span class="badge rounded-pill ${statusBadge} px-3 py-2 border-0 text-capitalize">${user.Status}</span></td>
       <td class="text-end">
-        <button class="btn btn-sm btn-light text-danger rounded-circle shadow-sm" onclick="banUser(${user.UserID})"><i class="fas fa-ban"></i></button>
+        ${user.Status === 'banned'
+            ? `<button class="btn btn-sm btn-light text-success rounded-circle shadow-sm" onclick="unbanUser(${user.UserID})" title="Unban"><i class="fas fa-check-circle"></i></button>`
+            : `<button class="btn btn-sm btn-light text-danger rounded-circle shadow-sm" onclick="banUser(${user.UserID})" title="Ban"><i class="fas fa-ban"></i></button>`}
       </td>
     `;
-    tbody.appendChild(tr);
-  });
-}
+        tbody.appendChild(tr);
+      });
+    }
 
-// User Search functionality
-document.getElementById('userSearch').addEventListener('input', e => {
-  const term = e.target.value.toLowerCase().trim();
-  const filtered = allUsersData.filter(u => 
-    (u.FirstName + ' ' + u.LastName).toLowerCase().includes(term) || u.Email.toLowerCase().includes(term)
-  );
-  renderUsers(filtered);
-});
+    // User Search functionality
+    document.getElementById('userSearch').addEventListener('input', e => {
+      const term = e.target.value.toLowerCase().trim();
+      const filtered = allUsersData.filter(u =>
+        (u.FirstName + ' ' + u.LastName).toLowerCase().includes(term) || u.Email.toLowerCase().includes(term)
+      );
+      renderUsers(filtered);
+    });
 
-// 3. User Actions (Role Update / Ban)
-async function updateRole(userId, newRole) {
-    await fetch('http://localhost/elp_project/api/admin/update_user.php', {
+    // 3. User Actions (Role Update / Ban)
+    async function updateRole(userId, newRole) {
+      await fetch('http://localhost/elp_project/api/admin/update_user.php', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ action: 'update_role', userId: userId, role: newRole })
-    });
-    showToast(`User role updated to ${newRole}.`, 'info');
-}
+      });
+      showToast(`User role updated to ${newRole}.`, 'info');
+    }
 
-async function banUser(userId) {
-    if(confirm("Are you sure you want to ban this user?")) {
+    async function banUser(userId) {
+      if (confirm("Are you sure you want to ban this user?")) {
         await fetch('http://localhost/elp_project/api/admin/update_user.php', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ action: 'ban', userId: userId })
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'ban', userId: userId })
         });
         showToast('User has been banned.', 'danger');
         loadUsers(); // Refresh table
+      }
     }
-}
 
-// 4. Fetch Moderation Reports
-async function loadReports() {
-    try {
+    async function unbanUser(userId) {
+      if (confirm("Are you sure you want to unban this user?")) {
+        await fetch('http://localhost/elp_project/api/admin/update_user.php', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'unban', userId: userId })
+        });
+        showToast('User has been unbanned.', 'success');
+        loadUsers(); // Refresh table
+      }
+    }
+
+    // 4. Fetch Moderation Reports
+    async function loadReports() {
+      try {
         const res = await fetch('http://localhost/elp_project/api/admin/get_reports.php');
         const reports = await res.json();
         renderModerationTable(reports);
-    } catch(err) { console.error("Reports Error:", err); }
-}
+      } catch (err) { console.error("Reports Error:", err); }
+    }
 
-function renderModerationTable(reports) {
-  const tbody = document.getElementById('moderationTableBody');
-  tbody.innerHTML = '';
-  
-  if (reports.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="5" class="text-center text-muted py-4">No pending moderation items.</td></tr>`;
-    return;
-  }
+    function renderModerationTable(reports) {
+      const tbody = document.getElementById('moderationTableBody');
+      tbody.innerHTML = '';
 
-  reports.forEach(report => {
-    let name = report.FirstName + ' ' + report.LastName;
-    let reportDate = new Date(report.ReportDate).toLocaleString();
+      if (reports.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" class="text-center text-muted py-4">No pending moderation items.</td></tr>`;
+        return;
+      }
 
-    const tr = document.createElement('tr');
-    tr.innerHTML = `
+      reports.forEach(report => {
+        let name = report.FirstName + ' ' + report.LastName;
+        let reporter = (report.ReporterFirst && report.ReporterLast) ? (report.ReporterFirst + ' ' + report.ReporterLast) : 'System/Other';
+        let reportDate = new Date(report.ReportDate).toLocaleString();
+
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
       <td>
         <div class="d-flex align-items-center">
           <div class="avatar-circle ${getAvatarColor(name)} me-3 shadow-sm" style="font-size: 0.9rem;">
@@ -567,8 +783,9 @@ function renderModerationTable(reports) {
           </div>
         </div>
       </td>
-      <td class="text-muted">${report.Reason}</td>
-      <td class="text-muted">${reportDate}</td>
+      <td class="small fw-medium">${reporter}</td>
+      <td class="text-muted small">${report.Reason}</td>
+      <td class="text-muted small">${reportDate}</td>
       <td><span class="badge rounded-pill bg-warning bg-opacity-10 text-warning px-3 py-2 text-capitalize">${report.ResolutionStatus}</span></td>
       <td class="text-end">
         <button class="btn btn-sm btn-success px-3 rounded-pill me-2 shadow-sm" onclick="moderateUser(${report.ReportID}, ${report.UserID}, 'approve')">Approve</button>
@@ -576,72 +793,260 @@ function renderModerationTable(reports) {
         <button class="btn btn-sm btn-danger px-3 rounded-pill shadow-sm" onclick="moderateUser(${report.ReportID}, ${report.UserID}, 'ban')">Ban</button>
       </td>
     `;
-    tbody.appendChild(tr);
-  });
-}
+        tbody.appendChild(tr);
+      });
+    }
 
-// 5. Action on Moderation Report
-async function moderateUser(reportId, userId, action) {
-    await fetch('http://localhost/elp_project/api/admin/resolve_report.php', {
+    // 5. Action on Moderation Report
+    async function moderateUser(reportId, userId, action) {
+      await fetch('http://localhost/elp_project/api/admin/resolve_report.php', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ reportId: reportId, userId: userId, action: action })
-    });
+      });
 
-    let msg = action === 'approve' ? 'User approved and report dismissed.' : 
-              action === 'suspend' ? 'User suspended temporarily.' : 'User banned successfully.';
-    
-    showToast(msg, action === 'approve' ? 'success' : 'danger');
-    
-    // Refresh both tables to show updated statuses
-    loadReports();
-    loadUsers();
+      let msg = action === 'approve' ? 'User approved and report dismissed.' :
+        action === 'suspend' ? 'User suspended temporarily.' : 'User banned successfully.';
+
+      showToast(msg, action === 'approve' ? 'success' : 'danger');
+
+      // Refresh both tables to show updated statuses
+      loadReports();
+      loadUsers();
+      loadAdminStats();
+    }
+
+    // 6. Assign Course
+    async function loadCourseAssignmentData() {
+      try {
+        const res = await fetch('http://localhost/elp_project/api/admin/get_all_courses.php');
+        const data = await res.json();
+        const courseSelect = document.getElementById('assignCourseId');
+        const instSelect = document.getElementById('assignInstructorId');
+        const createInstSelect = document.getElementById('createCourseInstructorId');
+
+        // Populate Courses
+        if (data.success && courseSelect) {
+          courseSelect.innerHTML = '<option value="">Select a course...</option>';
+          data.courses.forEach(c => {
+            courseSelect.innerHTML += `<option value="${c.CourseID}">${c.Title}</option>`;
+          });
+        }
+
+        // Populate Instructors (from allUsersData)
+        if (allUsersData && instSelect && createInstSelect) {
+          let instOptions = '<option value="">Select an instructor...</option>';
+          allUsersData.filter(u => u.Role === 'instructor').forEach(u => {
+            instOptions += `<option value="${u.UserID}">${u.FirstName} ${u.LastName} (${u.Email})</option>`;
+          });
+          instSelect.innerHTML = instOptions;
+          createInstSelect.innerHTML = instOptions;
+        }
+      } catch (err) {
+        console.error("Error loading assignment data", err);
+      }
+    }
+
+    async function adminCreateCourse() {
+      const title = document.getElementById('newCourseTitle').value.trim();
+      const category = document.getElementById('newCourseCategory').value;
+      const level = document.getElementById('newCourseLevel').value;
+      const thumbnailUrl = document.getElementById('newCourseThumbnail').value.trim();
+      const instructorId = document.getElementById('createCourseInstructorId').value;
+
+      if (!title || !instructorId) {
+        return showToast("Course Title and Target Instructor are required.", 'danger');
+      }
+
+      try {
+        const res = await fetch('http://localhost/elp_project/api/courses/create_course.php', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ instructorId: instructorId, title: title, category: category, level: level, thumbnailUrl: thumbnailUrl })
+        });
+        const data = await res.json();
+
+        if (data.success) {
+          showToast("Course created and assigned successfully!", 'success');
+          document.getElementById('newCourseTitle').value = '';
+          document.getElementById('newCourseThumbnail').value = '';
+          // Refresh courses list so the new course appears in the "Re-assign" dropdown
+          loadCourseAssignmentData();
+        } else {
+          showToast(data.error || 'Failed to create course', 'danger');
+        }
+      } catch (err) {
+        console.error("Error creating course:", err);
+      }
+    }
+
+    async function assignCourse() {
+      const courseId = document.getElementById('assignCourseId').value;
+      const instructorId = document.getElementById('assignInstructorId').value;
+
+      if (!courseId || !instructorId) return alert("Please enter both Course ID and Instructor ID");
+
+      try {
+        const res = await fetch('http://localhost/elp_project/api/admin/assign_course.php', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ courseId: courseId, instructorId: instructorId })
+        });
+        const data = await res.json();
+
+        if (data.success) {
+          showToast(data.message, 'success');
+          document.getElementById('assignCourseId').value = '';
+          document.getElementById('assignInstructorId').value = '';
+        } else {
+          showToast(data.error || 'Failed to assign course', 'danger');
+        }
+      } catch (err) {
+        showToast("Error assigning course", 'danger');
+      }
+    }
+
+    // 7. Course Repository Management
+    async function loadAllCoursesForManagement() {
+      try {
+        const res = await fetch('http://localhost/elp_project/api/admin/get_all_courses.php');
+        const data = await res.json();
+        const tbody = document.getElementById('managementCoursesTableBody');
+        tbody.innerHTML = '';
+
+        if (data.success && data.courses && data.courses.length > 0) {
+          data.courses.forEach(c => {
+            const tr = document.createElement('tr');
+            let statusBadge = c.Status === 'published' ? 'bg-success bg-opacity-10 text-success border-success' :
+              c.Status === 'draft' ? 'bg-warning bg-opacity-10 text-warning border-warning' : 'bg-secondary bg-opacity-10 text-secondary border-secondary';
+
+            tr.innerHTML = `
+                  <td>
+                    <div class="d-flex align-items-center">
+                      <img src="${c.ThumbnailURL}" class="rounded me-3 shadow-sm border" style="width: 50px; height: 35px; object-fit: cover;">
+                      <div>
+                        <h6 class="mb-0 fw-semibold" style="font-size: 0.9rem;">${c.Title}</h6>
+                        <small class="text-muted" style="font-size: 0.7rem;">ID: #${c.CourseID} • Joined: ${new Date(c.CreatedAt).toLocaleDateString()}</small>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="text-muted small">${c.InstructorFirst} ${c.InstructorLast || ''}</td>
+                  <td><span class="badge bg-light text-dark border fw-normal" style="font-size: 0.75rem;">${c.Category || 'General'}</span></td>
+                  <td><span class="badge rounded-pill ${statusBadge} px-3 py-2 text-capitalize border" style="font-size: 0.7rem;">${c.Status}</span></td>
+                  <td class="text-end">
+                    <button class="btn btn-sm btn-light text-primary rounded-circle shadow-sm me-2" onclick="toggleCourseStatus(${c.CourseID}, '${c.Status}')" title="Toggle Visibility">
+                      <i class="fas ${c.Status === 'published' ? 'fa-eye-slash' : 'fa-eye'}"></i>
+                    </button>
+                    <button class="btn btn-sm btn-light text-danger rounded-circle shadow-sm" onclick="deleteCourse(${c.CourseID})" title="Delete Course">
+                      <i class="fas fa-trash-alt"></i>
+                    </button>
+                  </td>
+                `;
+            tbody.appendChild(tr);
+          });
+        } else {
+          tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted py-4">No courses registered in repository.</td></tr>';
+        }
+      } catch (err) { console.error("Error loading management courses:", err); }
+    }
+
+    async function toggleCourseStatus(courseId, currentStatus) {
+      const newStatus = currentStatus === 'published' ? 'draft' : 'published';
+      try {
+        const res = await fetch('http://localhost/elp_project/api/admin/update_course_status.php', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ courseId: courseId, status: newStatus })
+        });
+        const data = await res.json();
+        if (data.success) {
+          showToast(`Course visibility updated to ${newStatus}.`, 'info');
+          loadAllCoursesForManagement();
+          loadAdminStats(); // Update dashboard count
+        }
+      } catch (err) { console.error("Toggle Status Error:", err); }
+    }
+
+    async function deleteCourse(courseId) {
+      if (!confirm("⚠️ CRITICAL WARNING: This will permanently delete the course, all associated lessons, modules, and remove all students enrolled in it. This action cannot be undone.\n\nProceed with deletion?")) return;
+
+      try {
+        const res = await fetch('http://localhost/elp_project/api/courses/delete_course.php', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ courseId: courseId })
+        });
+        const data = await res.json();
+        if (data.success) {
+          showToast("Course and all associated content cleared successfully.", 'danger');
+          loadAllCoursesForManagement();
+          loadCourseAssignmentData(); // Refresh assignments dropdown
+          loadAdminStats(); // Update dashboard count
+        } else {
+          showToast(data.error || "Failed to delete course.", 'danger');
+        }
+      } catch (err) { console.error("Delete Course Error:", err); }
+    }
+
+    // ────────────────────────────────────────────────
+    //  Dynamic Chart Rendering
+    // ────────────────────────────────────────────────
+    Chart.defaults.font.family = "'Segoe UI', system-ui, sans-serif";
+    Chart.defaults.color = "#64748b";
+
+    let regChart, catChart;
+
+    function renderAnalyticsCharts(regData, catData) {
+      const regCtx = document.getElementById('registrationChart')?.getContext('2d');
+      const catCtx = document.getElementById('categoryChart')?.getContext('2d');
+
+      if (regChart) regChart.destroy();
+      if (catChart) catChart.destroy();
+
+      if (regCtx && regData) {
+        regChart = new Chart(regCtx, {
+          type: 'line',
+          data: {
+            labels: regData.labels,
+            datasets: [{
+              label: 'New Users', data: regData.data,
+              borderColor: '#3b82f6', backgroundColor: 'rgba(59, 130, 246, 0.1)',
+              borderWidth: 3, tension: 0.4, fill: true
+            }]
+          },
+          options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+        });
+      }
+
+      if (catCtx && catData) {
+        const palette = ['#3b82f6', '#10b981', '#f59e0b', '#0ea5e9', '#64748b', '#8b5cf6'];
+        catChart = new Chart(catCtx, {
+          type: 'doughnut',
+          data: {
+            labels: catData.labels,
+            datasets: [{
+              data: catData.data,
+              backgroundColor: palette.slice(0, catData.labels.length), borderWidth: 0
+            }]
+          },
+          options: { responsive: true, maintainAspectRatio: false, cutout: '75%', plugins: { legend: { position: 'bottom' } } }
+        });
+      }
+    }
+
+    // ────────────────────────────────────────────────
+    //  Initial Render
+    // ────────────────────────────────────────────────
     loadAdminStats();
-}
+    loadUsers().then(() => loadCourseAssignmentData());
+    loadReports();
 
-// ────────────────────────────────────────────────
-//  Static Chart Rendering (Unchanged)
-// ────────────────────────────────────────────────
-Chart.defaults.font.family = "'Segoe UI', system-ui, sans-serif";
-Chart.defaults.color = "#64748b";
-
-new Chart(document.getElementById('registrationChart'), {
-  type: 'line',
-  data: {
-    labels: ['Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar'],
-    datasets: [{
-      label: 'New Users', data: [45, 78, 112, 89, 134, 156],
-      borderColor: '#3b82f6', backgroundColor: 'rgba(59, 130, 246, 0.1)',
-      borderWidth: 3, tension: 0.4, fill: true
-    }]
-  },
-  options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
-});
-
-new Chart(document.getElementById('categoryChart'), {
-  type: 'doughnut',
-  data: {
-    labels: ['Programming', 'Design', 'Business', 'Data Science', 'Others'],
-    datasets: [{
-      data: [35, 20, 15, 20, 10],
-      backgroundColor: ['#3b82f6', '#10b981', '#f59e0b', '#0ea5e9', '#64748b'], borderWidth: 0
-    }]
-  },
-  options: { responsive: true, maintainAspectRatio: false, cutout: '75%', plugins: { legend: { position: 'bottom' } } }
-});
-
-// ────────────────────────────────────────────────
-//  Initial Render
-// ────────────────────────────────────────────────
-loadAdminStats();
-loadUsers();
-loadReports();
-
-function logout() {
-  localStorage.clear();
-  window.location.href = 'index.html';
-}
-</script>
+    function logout() {
+      localStorage.clear();
+      window.location.href = '../index.html';
+    }
+  </script>
 
 </body>
+
 </html>

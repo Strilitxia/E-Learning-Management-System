@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Certificate of Completion - ELP</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Playfair+Display:ital,wght@0,700;1,700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-gold: #c5a059;
+            --dark-blue: #1e293b;
+        }
+        body {
+            margin: 0; padding: 0;
+            background-color: #f1f5f9;
+            font-family: 'Inter', sans-serif;
+            display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh;
+        }
+        
+        .certificate-container {
+            width: 1000px; height: 700px;
+            background: #fff;
+            position: relative;
+            padding: 40px;
+            box-sizing: border-box;
+            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04);
+            border: 20px solid var(--dark-blue);
+            outline: 5px solid var(--primary-gold);
+            outline-offset: -15px;
+            overflow: hidden;
+            background-image: radial-gradient(circle at 50% 50%, rgba(197, 160, 89, 0.05) 0%, transparent 80%);
+        }
+
+        /* Decorative patterns */
+        .certificate-container::before {
+            content: ''; position: absolute; top: -50px; right: -50px; width: 200px; height: 200px;
+            border: 2px solid var(--primary-gold); transform: rotate(45deg); opacity: 0.1;
+        }
+        .certificate-container::after {
+            content: ''; position: absolute; bottom: -50px; left: -50px; width: 200px; height: 200px;
+            border: 2px solid var(--primary-gold); transform: rotate(45deg); opacity: 0.1;
+        }
+
+        .header { text-align: center; margin-bottom: 40px; }
+        .logo { font-size: 2rem; font-weight: 800; color: var(--dark-blue); margin-bottom: 15px; }
+        .logo span { color: #3b82f6; }
+
+        .title {
+            font-family: 'Playfair Display', serif;
+            font-size: 3.5rem; color: var(--dark-blue); text-transform: uppercase;
+            letter-spacing: 2px; margin-bottom: 10px;
+        }
+        .subtitle { font-size: 1.25rem; color: #64748b; font-weight: 600; text-transform: uppercase; letter-spacing: 4px; }
+
+        .presented-to { margin: 40px 0 20px 0; font-style: italic; color: #64748b; font-size: 1.2rem; text-align: center; }
+        
+        .student-name {
+            font-family: 'Dancing Script', cursive;
+            font-size: 4.5rem; color: var(--primary-gold); text-align: center; border-bottom: 2px solid #e2e8f0;
+            width: 80%; margin: 0 auto 30px auto; padding-bottom: 10px;
+        }
+
+        .course-desc { text-align: center; color: #64748b; font-size: 1.1rem; line-height: 1.6; max-width: 800px; margin: 0 auto; }
+        .course-title { font-weight: 700; color: var(--dark-blue); font-size: 1.5rem; display: block; margin-top: 10px; }
+
+        .footer { margin-top: 60px; display: flex; justify-content: space-around; align-items: flex-end; width: 100%; position: absolute; bottom: 80px; left: 0; }
+        .signature-block { text-align: center; border-top: 1px solid #94a3b8; width: 200px; padding-top: 10px; }
+        .signature-name { font-weight: 700; color: var(--dark-blue); font-size: 1rem; }
+        .signature-label { font-size: 0.75rem; color: #64748b; text-transform: uppercase; letter-spacing: 2px; }
+
+        .seal { width: 120px; height: 120px; position: absolute; bottom: 100px; right: 100px; opacity: 0.9; }
+
+        .cert-id { position: absolute; bottom: 30px; left: 40px; font-size: 0.75rem; color: #94a3b8; font-family: monospace; }
+        .cert-date { position: absolute; bottom: 30px; right: 40px; font-size: 0.75rem; color: #94a3b8; font-weight: 600; }
+
+        .btn-container { margin-top: 40px; gap: 15px; display: flex; }
+        .btn-print {
+            padding: 12px 30px; background: var(--dark-blue); color: #fff;
+            border: none; border-radius: 50px; font-weight: 700; cursor: pointer;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); transition: all 0.2s;
+            display: flex; align-items: center; gap: 10px;
+        }
+        .btn-print:hover { transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); background: #0f172a; }
+
+        @media print {
+            body { background: #fff; }
+            .btn-container { display: none; }
+            .certificate-container { box-shadow: none; border: 15px solid var(--dark-blue); outline: 4px solid var(--primary-gold); outline-offset: -12px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="certificate-container" id="certFrame">
+        <div class="header">
+            <div class="logo">ELP <span>PLATFORM</span></div>
+            <div class="subtitle">Official Certification</div>
+        </div>
+
+        <div class="title">Certificate of Completion</div>
+        
+        <div class="presented-to">This is to certify that</div>
+        <div class="student-name" id="studentName">Loading...</div>
+
+        <div class="course-desc">
+            has successfully fulfilled the curriculum requirements and demonstrated proficient knowledge in the following course:
+            <span class="course-title" id="courseTitle">...</span>
+        </div>
+
+        <div class="footer">
+            <div class="signature-block">
+                <div class="signature-name" id="instructorName">...</div>
+                <div class="signature-label">Instructor</div>
+            </div>
+            <div class="signature-block">
+                <div class="signature-name">E-Learning Committee</div>
+                <div class="signature-label">Platform Admin</div>
+            </div>
+        </div>
+
+        <img src="https://www.pngkit.com/png/full/223-2234053_award-seal-png-golden-award-seal-vector.png" alt="Seal" class="seal" style="filter: hue-rotate(340deg) brightness(0.9);">
+        
+        <div class="cert-id" id="certId">Certificate ID: ...</div>
+        <div class="cert-date" id="certDate">Date Issued: ...</div>
+    </div>
+
+    <div class="btn-container">
+        <button class="btn-print" onclick="window.print()"><i class="fas fa-print"></i> Print Certificate</button>
+        <button class="btn-print" style="background: #64748b;" onclick="window.close()"><i class="fas fa-times"></i> Close</button>
+    </div>
+
+    <script>
+        const userId = localStorage.getItem('userId');
+        const urlParams = new URLSearchParams(window.location.search);
+        const courseId = urlParams.get('courseId');
+
+        if (!userId || !courseId) {
+            alert("Unauthorized or missing parameters.");
+            window.location.href = 'courses.html';
+        }
+
+        async function loadCertificate() {
+            try {
+                const response = await fetch(`../api/courses/get_certificate_data.php?userId=${userId}&courseId=${courseId}`);
+                const data = await response.json();
+
+                if (data.success) {
+                    document.getElementById('studentName').textContent = data.studentName;
+                    document.getElementById('courseTitle').textContent = data.courseTitle;
+                    document.getElementById('instructorName').textContent = data.instructorName;
+                    document.getElementById('certId').textContent = `Certificate ID: ${data.certId}`;
+                    document.getElementById('certDate').textContent = `Date Issued: ${data.date}`;
+                    document.title = `Certificate - ${data.courseTitle}`;
+                } else {
+                    alert(data.error || "Failed to load certificate.");
+                    window.location.href = 'courses.html';
+                }
+            } catch (err) {
+                console.error("Certificate Load Error:", err);
+            }
+        }
+
+        window.onload = loadCertificate;
+    </script>
+</body>
+</html>

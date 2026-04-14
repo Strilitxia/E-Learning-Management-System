@@ -383,7 +383,7 @@ if (role === 'student') {
 // ────────────────────────────────────────────────
 async function loadProfile() {
     try {
-        const response = await fetch(`http://localhost/elp_project/api/profile/get_profile.php?userId=${userId}`);
+        const response = await fetch(`../api/profile/get_profile.php?userId=${userId}`);
         const data = await response.json();
 
         if (data.error) return alert("Error loading profile: " + data.error);

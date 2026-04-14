@@ -138,8 +138,8 @@
       <!-- Left Column: Course Selector -->
       <div class="col-lg-4">
         <div class="card card-custom h-100 overflow-hidden">
-          <div class="card-header bg-white border-bottom p-3">
-            <h6 class="fw-bold mb-0 text-dark">My Assigned Courses</h6>
+          <div class="card-header bg-white border-bottom p-3 d-flex justify-content-between align-items-center">
+            <h6 class="fw-bold mb-0 text-dark">My Courses</h6>
           </div>
           <div class="list-group list-group-flush" id="courseList">
             <!-- Populated by JS -->
@@ -156,9 +156,12 @@
               <h5 class="fw-bold text-dark mb-1" id="selectedCourseTitle">Select a course to edit</h5>
               <p class="text-muted small mb-0" id="selectedCourseMeta">Choose from the list on the left.</p>
             </div>
-            <button class="btn btn-primary rounded-pill fw-medium px-4 d-none" id="addModuleBtn" data-bs-toggle="modal" data-bs-target="#moduleModal">
-              <i class="fas fa-plus me-1"></i> Add Module
-            </button>
+            <div>
+              <button class="btn btn-outline-danger rounded-pill fw-medium px-3 d-none me-2" id="deleteCourseBtn" onclick="deleteCourse()"><i class="fas fa-trash"></i></button>
+              <button class="btn btn-primary rounded-pill fw-medium px-4 d-none" id="addModuleBtn" data-bs-toggle="modal" data-bs-target="#moduleModal">
+                <i class="fas fa-plus me-1"></i> Add Module
+              </button>
+            </div>
           </div>
 
           <!-- Empty State when no course is selected -->
@@ -312,7 +315,7 @@ let selectedCourseId = null;
 // 1. Fetch & Render Left Course List
 async function loadCourseList() {
   try {
-    const res = await fetch(`http://localhost/elp_project/api/content/get_courses.php?instructorId=${userId}`);
+    const res = await fetch(`../api/content/get_courses.php?instructorId=${userId}`);
     instructorCourses = await res.json();
     
     const list = document.getElementById('courseList');
@@ -351,10 +354,11 @@ async function loadCourseContent(courseId, title, category) {
   
   document.getElementById('noCourseSelected').classList.add('d-none');
   document.getElementById('addModuleBtn').classList.remove('d-none');
+  document.getElementById('deleteCourseBtn').classList.remove('d-none');
   document.getElementById('modulesContainer').classList.remove('d-none');
 
   try {
-    const res = await fetch(`http://localhost/elp_project/api/content/get_course_content.php?courseId=${courseId}`);
+    const res = await fetch(`../api/content/get_course_content.php?courseId=${courseId}`);
     const modules = await res.json();
     renderModules(modules);
   } catch(err) {
@@ -423,6 +427,29 @@ function renderModules(modules) {
 // ────────────────────────────────────────────────
 // Form Handlers & Logic (POST/DELETE to API)
 // ────────────────────────────────────────────────
+
+// Delete Course
+async function deleteCourse() {
+  if(!selectedCourseId) return;
+  if(!confirm("Are you sure you want to delete this course and ALL its content? This cannot be undone.")) return;
+
+  await fetch('http://localhost/elp_project/api/courses/delete_course.php', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ courseId: selectedCourseId })
+  });
+
+  selectedCourseId = null;
+  document.getElementById('selectedCourseTitle').textContent = 'Select a course to edit';
+  document.getElementById('selectedCourseMeta').innerHTML = 'Choose from the list on the left.';
+  document.getElementById('noCourseSelected').classList.remove('d-none');
+  document.getElementById('addModuleBtn').classList.add('d-none');
+  document.getElementById('deleteCourseBtn').classList.add('d-none');
+  document.getElementById('modulesContainer').classList.add('d-none');
+
+  loadCourseList();
+  showToast("Course deleted.");
+}
 
 // Add Module
 async function saveModule() {

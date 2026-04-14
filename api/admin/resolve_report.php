@@ -11,13 +11,26 @@ if(isset($data->reportId) && isset($data->userId) && isset($data->action)) {
 
         $conn->beginTransaction(); // Start transaction
 
-        // Update User Status
+        // 1. Update Reported User Status
         $stmt = $conn->prepare("UPDATE Users SET Status = :status WHERE UserID = :id");
         $stmt->execute(['status' => $userStatus, 'id' => $data->userId]);
 
-        // Mark report as resolved
+        // 2. Fetch reporter and mark report as resolved
+        $stmtGetReporter = $conn->prepare("SELECT ReportedByUserID, Reason FROM Moderation_Report WHERE ReportID = ?");
+        $stmtGetReporter->execute([$data->reportId]);
+        $reportData = $stmtGetReporter->fetch(PDO::FETCH_ASSOC);
+
         $stmt2 = $conn->prepare("UPDATE Moderation_Report SET ResolutionStatus = 'resolved' WHERE ReportID = :rid");
         $stmt2->execute(['rid' => $data->reportId]);
+
+        // 3. Send Notification to Reporter (if course/student report)
+        if ($reportData && !empty($reportData['ReportedByUserID'])) {
+            $actionWord = $data->action === 'approve' ? 'dismissed (no violation)' : $data->action;
+            $msg = "Update on your report: The administrator has reviewed your report and the issue has been " . $actionWord . ".";
+            
+            $stmtNotif = $conn->prepare("INSERT INTO Notifications (UserID, Message, IsRead, CreatedAt) VALUES (?, ?, 0, NOW())");
+            $stmtNotif->execute([$reportData['ReportedByUserID'], $msg]);
+        }
 
         $conn->commit(); // Save changes
         echo json_encode(["success" => true]);

@@ -200,8 +200,23 @@
     </div>
 
     <div class="card-body p-4 p-md-5">
-      <div class="options" id="optionsContainer">
-        <!-- Options injected here via JS -->
+      <!-- MCQ Container -->
+      <div id="mcqContainer">
+        <div class="options" id="optionsContainer">
+          <!-- Options injected here via JS -->
+        </div>
+      </div>
+
+      <!-- Link Submission Container (Hidden by default) -->
+      <div id="linkContainer" class="d-none">
+        <label class="form-label fw-bold mb-3">Please provide the link to your work (e.g., Google Drive, GitHub, etc.)</label>
+        <div class="input-group input-group-lg shadow-sm">
+          <span class="input-group-text bg-white border-2 border-end-0"><i class="fas fa-link text-primary"></i></span>
+          <input type="url" class="form-control border-2 border-start-0 ps-0" id="submissionLink" placeholder="https://drive.google.com/..." required>
+        </div>
+        <div class="form-text mt-3 text-muted">
+          <i class="fas fa-info-circle me-1"></i> Ensure your link is public and accessible by the instructor.
+        </div>
       </div>
     </div>
   </div>
@@ -224,10 +239,10 @@
   <!-- Submit Area -->
   <div class="text-center mt-5 p-4 bg-white rounded-3 shadow-sm d-none" id="submitArea">
     <h5 class="mb-3">Ready to submit?</h5>
-    <button class="btn btn-lg btn-success px-5 py-3 shadow" onclick="submitQuiz()">
-      <i class="fas fa-check-circle me-2"></i> Submit Quiz
+    <button class="btn btn-lg btn-success px-5 py-3 shadow" id="mainSubmitBtn" onclick="submitAssessment()">
+      <i class="fas fa-check-circle me-2"></i> Submit Assessment
     </button>
-    <p class="text-muted mt-3 mb-0 small"><i class="fas fa-exclamation-triangle me-1"></i> Make sure you have answered all questions before submitting.</p>
+    <p class="text-muted mt-3 mb-0 small" id="submitAreaNote"><i class="fas fa-exclamation-triangle me-1"></i> Make sure you have checked your work before submitting.</p>
   </div>
 
 </div>
@@ -275,7 +290,7 @@ const questionDots = document.getElementById('questionDots');
 // ────────────────────────────────────────────────
 async function fetchQuiz() {
     try {
-        const response = await fetch(`http://localhost/elp_project/api/assessments/get_quiz_details.php?quizId=${quizId}`);
+        const response = await fetch(`../api/assessments/get_quiz_details.php?quizId=${quizId}`);
         quiz = await response.json();
 
         if(quiz.error) {
@@ -284,13 +299,36 @@ async function fetchQuiz() {
             return;
         }
 
-        // Setup Quiz
+        // Setup Assessment UI
         document.querySelector('h3.fw-bold').textContent = quiz.title;
-        answers = new Array(quiz.questions.length).fill(null);
-        timeLeft = quiz.duration;
+        const typeDisplay = quiz.type.charAt(0).toUpperCase() + quiz.type.slice(1);
+        document.querySelector('p.text-muted.mb-0').innerHTML = `<i class="fas fa-info-circle me-1"></i> ${typeDisplay}`;
 
-        renderQuestion();
-        startTimer();
+        if (quiz.type.toLowerCase() === 'quiz') {
+            answers = new Array(quiz.questions.length).fill(null);
+            timeLeft = quiz.duration;
+            renderQuestion();
+            startTimer();
+        } else {
+            // Assignment or Exam (Link-based)
+            document.getElementById('mcqContainer').classList.add('d-none');
+            document.getElementById('linkContainer').classList.remove('d-none');
+            document.getElementById('questionDots').classList.add('d-none');
+            document.getElementById('progressBar').parentElement.classList.add('d-none');
+            document.getElementById('prevBtn').classList.add('d-none');
+            document.getElementById('nextBtn').classList.add('d-none');
+            document.getElementById('submitArea').classList.remove('d-none');
+            document.getElementById('questionNumber').textContent = "Work Submission";
+            document.getElementById('questionText').textContent = "Please submit your file link below";
+
+            if (quiz.type.toLowerCase() === 'exam') {
+                timeLeft = quiz.duration;
+                startTimer();
+            } else {
+                // Assignment: No Timer
+                document.getElementById('timer').parentElement.parentElement.classList.add('d-none');
+            }
+        }
     } catch (err) {
         console.error("Error loading quiz:", err);
     }
@@ -318,11 +356,14 @@ function startTimer() {
 // Render Current Question
 // ────────────────────────────────────────────────
 function renderQuestion() {
+  if (quiz.type.toLowerCase() !== 'quiz') return;
+
   const q = quiz.questions[currentQuestion];
+  if (!q) return;
 
   questionNumberEl.textContent = `Question ${currentQuestion + 1} of ${quiz.questions.length}`;
   questionTextEl.textContent = q.text;
-
+  
   optionsContainer.innerHTML = '';
   q.options.forEach((opt, i) => {
     const label = document.createElement('label');
@@ -396,46 +437,61 @@ nextBtn.onclick = () => {
 // ────────────────────────────────────────────────
 // Submit Logic to Backend
 // ────────────────────────────────────────────────
-async function submitQuiz(auto = false) {
-  const unansweredCount = answers.filter(a => a === null).length;
-  if (!auto) {
-    if (unansweredCount > 0) {
-      if (!confirm(`You have ${unansweredCount} unanswered question(s). Submit anyway?`)) return;
-    } else {
-      if (!confirm("Are you sure you want to submit the quiz?")) return;
-    }
+async function submitAssessment(auto = false) {
+  let payload = {
+      assessmentId: quiz.id,
+      studentId: studentId,
+      type: quiz.type
+  };
+
+  if (quiz.type === 'quiz') {
+      const unansweredCount = answers.filter(a => a === null).length;
+      if (!auto) {
+          if (unansweredCount > 0) {
+              if (!confirm(`You have ${unansweredCount} unanswered question(s). Submit anyway?`)) return;
+          } else if (!confirm("Are you sure you want to submit the quiz?")) return;
+      }
+      
+      let correctCount = 0;
+      quiz.questions.forEach((q, i) => { if (answers[i] === q.correct) correctCount++; });
+      
+      // Proportional marking: (Correct / Total) * MaxScore
+      const totalQuestions = quiz.questions.length;
+      const proportionPerQuestion = quiz.maxScore / totalQuestions;
+      payload.score = Math.round(correctCount * proportionPerQuestion);
+      payload.answers = answers;
+  } else {
+      const link = document.getElementById('submissionLink').value.trim();
+      const urlPattern = /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/;
+      
+      if (!link) return alert("Please provide a submission link.");
+      if (!urlPattern.test(link)) return alert("Please provide a valid URL link.");
+      
+      if (!confirm("Are you sure you want to submit this link?")) return;
+      
+      // Ensure link is absolute
+      let finalLink = link;
+      if (!/^https?:\/\//i.test(finalLink)) finalLink = 'https://' + finalLink;
+      payload.submissionLink = finalLink;
   }
 
   clearInterval(timerInterval);
 
-  // Calculate score locally
-  let score = 0;
-  quiz.questions.forEach((q, i) => {
-    if (answers[i] === q.correct) score++;
-  });
-
-  // Send score to DB
   try {
-      const response = await fetch('http://localhost/elp_project/api/assessments/submit_quiz.php', {
+      const response = await fetch('../api/assessments/submit_quiz.php', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ 
-              assessmentId: quiz.id, 
-              studentId: studentId, 
-              score: score 
-          })
+          body: JSON.stringify(payload)
       });
 
       const result = await response.json();
       if(result.success) {
-          alert(`Quiz Submitted!\nYour Score: ${score} / ${quiz.questions.length}`);
+          alert(`Assessment Submitted successfully!`);
           window.location.href = 'assessment.html';
       } else {
-          alert("Error saving your quiz: " + result.error);
+          alert("Error: " + result.error);
       }
-  } catch (error) {
-      console.error("Submission error:", error);
-  }
+  } catch (error) { console.error("Error:", error); }
 }
 
 function logout() { localStorage.clear(); window.location.href = 'index.html'; }
