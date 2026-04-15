@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 14, 2026 at 08:30 PM
+-- Generation Time: Apr 15, 2026 at 06:37 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -49,7 +49,9 @@ INSERT INTO `assessment` (`AssessmentID`, `CourseID`, `Title`, `Type`, `DueDate`
 (12, 6, 'Machine Learning MID', 'exam', NULL, 60, 45, 'active', '2026-04-14 17:42:36'),
 (13, 8, 'Show baked cake', 'assignment', NULL, 180, 65, 'active', '2026-04-14 17:43:18'),
 (14, 8, 'QUZI', 'quiz', NULL, 30, 100, 'active', '2026-04-14 17:56:25'),
-(15, 9, 'FINAL', 'exam', NULL, 30, 100, 'active', '2026-04-14 18:13:54');
+(15, 9, 'FINAL', 'exam', NULL, 30, 100, 'active', '2026-04-14 18:13:54'),
+(17, 11, 'ARK QUZI', 'quiz', NULL, 30, 100, 'active', '2026-04-14 20:54:49'),
+(18, 11, 'assignment', 'assignment', NULL, 30, 100, 'active', '2026-04-14 20:55:54');
 
 -- --------------------------------------------------------
 
@@ -75,9 +77,12 @@ CREATE TABLE `assessment_submission` (
 
 INSERT INTO `assessment_submission` (`SubmissionID`, `AssessmentID`, `StudentID`, `SubmissionDate`, `ScoreEarned`, `GradingStatus`, `AnswersJSON`, `SubmissionLink`, `Feedback`) VALUES
 (6, 10, 3, '2026-04-14 23:45:00', 78, 'graded', '[0,0]', NULL, ''),
-(7, 13, 3, '2026-04-14 23:45:32', NULL, 'pending', NULL, 'https://drive.com/cake', NULL),
+(7, 13, 3, '2026-04-14 23:45:32', 65, 'graded', NULL, 'https://drive.com/cake', ''),
 (8, 12, 3, '2026-04-14 23:45:54', 45, 'graded', NULL, 'https://drive.com/machine', ''),
-(9, 11, 3, '2026-04-14 23:46:05', 100, 'graded', '[0,0]', NULL, NULL);
+(9, 11, 3, '2026-04-14 23:46:05', 100, 'graded', '[0,0]', NULL, NULL),
+(10, 14, 3, '2026-04-15 02:18:16', 0, 'graded', '[0]', NULL, NULL),
+(12, 17, 3, '2026-04-15 03:04:21', 100, 'graded', '[2]', NULL, NULL),
+(13, 15, 3, '2026-04-15 03:04:40', NULL, 'pending', NULL, 'https://drive.com/cake', NULL);
 
 -- --------------------------------------------------------
 
@@ -108,7 +113,8 @@ INSERT INTO `course` (`CourseID`, `InstructorID`, `Title`, `Category`, `Level`, 
 (6, 2, 'Machine Learning 101', 'Programming', 'Beginner', '0', 'https://www.masaischool.com/blog/content/images/size/w2000/2024/12/Artboard-1--2-.png', 0, 'published', '2026-04-14 22:49:26'),
 (7, 2, 'Introductory Guide to making memes', 'Business', 'Beginner', '0', 'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fi.kym-cdn.com%2Fentries%2Ficons%2Foriginal%2F000%2F046%2F895%2Fhuh_cat.jpg&f=1&nofb=1&ipt=3e12ede1646141f91c83ec356318147fe9d1594f19624ad6e715a3f7898618db', 0, 'published', '2026-04-14 22:50:44'),
 (8, 2, 'Agargaon Cake Business Roadmap - Broke to trillionaire', 'Business', 'Advanced', '0', 'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fcdn.bdnews24.com%2Fbdnews24%2Fmedia%2Fbangla%2FimgAll%2F2025October%2Ffootpath-cake-shop-agargaon-051025-048-1759676779.jpg&f=1&nofb=1&ipt=055492b18a6f219a95a805bb95f9bd2b0d81cf9c55c1d9b5fc10ab10', 0, 'published', '2026-04-14 22:53:41'),
-(9, 2, 'Learn PyTorch with Saul Goodman', 'Data Science', 'Advanced', '0', 'https://www.digibeatrix.com/python/wp-content/uploads/2024/12/80ae074c489d9507b186e75bb48f23b5-1024x585.webp', 0, 'published', '2026-04-14 23:10:01');
+(9, 2, 'Learn PyTorch with Saul Goodman', 'Data Science', 'Advanced', '0', 'https://www.digibeatrix.com/python/wp-content/uploads/2024/12/80ae074c489d9507b186e75bb48f23b5-1024x585.webp', 0, 'published', '2026-04-14 23:10:01'),
+(11, 2, 'Arknight Tutorial', 'Business', 'Advanced', '0', 'https://cdn2.unrealengine.com/arknights-endfield-key-3840x2160-58c8d21aa303.jpg', 0, 'published', '2026-04-15 02:50:32');
 
 -- --------------------------------------------------------
 
@@ -133,11 +139,12 @@ CREATE TABLE `enrollment` (
 INSERT INTO `enrollment` (`EnrollmentID`, `StudentID`, `CourseID`, `EnrollmentDate`, `ProgressPercentage`, `IsCompleted`, `CertificateIssued`) VALUES
 (3, 5, 3, '2026-04-14 01:35:17', 0, 0, 0),
 (4, 3, 3, '2026-04-14 01:46:30', 100, 1, 0),
-(5, 3, 9, '2026-04-14 23:44:09', 33.3333, 0, 0),
+(5, 3, 9, '2026-04-14 23:44:09', 100, 1, 0),
 (6, 3, 8, '2026-04-14 23:44:11', 100, 1, 0),
 (7, 3, 7, '2026-04-14 23:44:12', 66.6667, 0, 0),
-(8, 3, 6, '2026-04-14 23:44:13', 100, 1, 0),
-(9, 3, 5, '2026-04-14 23:44:14', 100, 1, 0);
+(8, 3, 6, '2026-04-14 23:44:13', 100, 1, 1),
+(9, 3, 5, '2026-04-14 23:44:14', 100, 1, 0),
+(11, 3, 11, '2026-04-15 02:57:52', 50, 0, 1);
 
 -- --------------------------------------------------------
 
@@ -180,7 +187,9 @@ INSERT INTO `lesson` (`LessonID`, `ModuleID`, `Title`, `ContentType`, `ContentUR
 (18, 17, '## Course Lesson: Launching a Cake Business in Agargaon', 'text', 'https://www.youtube.com/watch?v=EYXQmbZNhy8&t=236s', '\nAgargaon is a unique hub in Dhaka, blending government offices, residential pockets like Taltola and Monipuripara, and the busy tech market area. Starting a cake business here—whether it\'s a physical shop or a home-based kitchen—requires a mix of local visibility and digital savvy.\n\n---\n\n### I. Market Research: The Agargaon Landscape\n\nTo succeed in Agargaon, you need to understand your three primary customer segments:\n\n1.  **Office Professionals:** Government employees (Election Commission, IDB Bhaban, various Ministries) who need quick snacks, \"work anniversary\" cakes, or retirement celebration treats.\n2.  **Students & Families:** Residents in nearby Taltola, Shewrapara, and residential colonies looking for birthday and celebration cakes.\n3.  **The \"Viral\" Crowd:** Agargaon is becoming a \"street food\" hotspot. Recent trends like the \"Jakir Bhai Viral Cake\" (famous for affordable, quick-buy slices) show that high-volume, low-cost options can explode in popularity here.\n\n---\n\n### II. Choosing Your Business Model\n\n| Feature | **Home-Based (Online)** | **Commercial Shop/Bakery** |\n| :--- | :--- | :--- |\n| **Startup Cost** | Low (Kitchen equipment + Social media). | High (Rent, Interior, Trade license, Staff). |\n| **Focus** | Customized, premium, and artisanal cakes. | High-volume sales, pastries, and breads. |\n| **Visibility** | Relies on Facebook/Instagram/Pathao Food. | Foot traffic from Agargaon main roads/markets. |\n| **Example** | *Cakes By Chef* (Online model). | *Bread Basket* or *Mr. Baker*. |\n\n---\n\n### III. Menu & Pricing Strategy (Local Context)\n\nIn a market like Dhaka, your menu should cater to both the \"Sweet Tooth\" and the \"Gift Giver.\"\n\n* **The Signature Items:** Offer flavors that perform well in Bangladesh, such as **Red Velvet with Cream Cheese**, **Belgian Chocolate**, and **Vanilla with Fruit Filling**.\n* **The \"Pocket-Friendly\" Tier:** Small jars, cupcakes, or \"bento cakes\" (mini cakes) priced between **৳250 – ৳600** for students and casual buyers.\n* **The Premium Tier:** Tiered wedding or birthday cakes priced by weight (e.g., **৳1,200 – ৳2,500 per kg** depending on decoration).\n* **Customization:** Since Agargaon is a tech and office hub, offer \"Tech-themed\" cakes (e.g., Laptop or Code-themed cakes for IDB workers) or \"Official/Formal\" designs.\n\n---\n\n### IV. Marketing & Delivery in Agargaon\n\n1.  **Social Media Presence:** Focus on high-quality photos and videos (Reels/TikTok). In Dhaka, **Facebook Groups** (like Deshi Foodies) are powerful for initial traction.\n2.  **Hyper-Local SEO:** Register your business on **Google Maps**. When people in Agargaon search for \"cakes near me,\" you want your kitchen/shop to pop up first.\n3.  **Delivery Logistics:** Agargaon can have tricky traffic during office hours. \n    * Partner with **Pathao Food** and **Foodpanda** for wider reach.\n    * Offer \"Local Pickup\" points near well-known landmarks like the **National Archives** or **IDB Bhaban** to save on delivery costs for customers.\n\n---\n\n### V. Legal & Hygiene Checklist\n\n* **Trade License:** Essential if you open a physical shop; recommended for online businesses as they scale.\n* **BSTI Certification:** Necessary if you plan to sell packaged baked goods in retail stores.\n* **Packaging:** Invest in sturdy, branded boxes. In the humid Dhaka weather, moisture-resistant packaging is a must to keep the frosting intact.\n\n---\n\n**Summary:** Whether you aim to be the next viral street-side cake sensation or a high-end customized baker, the key in Agargaon is **consistency** and **local presence**. \n\nWould you like the next lesson to focus on the **cost breakdown (budgeting)** for a home-bakery or **digital marketing strategies** for Dhaka-based food businesses?', NULL, NULL, '2026-04-14 17:33:42'),
 (19, 18, '100s of pytorch', 'video', 'https://www.youtube.com/watch?v=ORMx45xqWkA', '\nAgargaon is a unique hub in Dhaka, blending government offices, residential pockets like Taltola and Monipuripara, and the busy tech market area. Starting a cake business here—whether it\'s a physical shop or a home-based kitchen—requires a mix of local visibility and digital savvy.\n\n---\n\n### I. Market Research: The Agargaon Landscape\n\nTo succeed in Agargaon, you need to understand your three primary customer segments:\n\n1.  **Office Professionals:** Government employees (Election Commission, IDB Bhaban, various Ministries) who need quick snacks, \"work anniversary\" cakes, or retirement celebration treats.\n2.  **Students & Families:** Residents in nearby Taltola, Shewrapara, and residential colonies looking for birthday and celebration cakes.\n3.  **The \"Viral\" Crowd:** Agargaon is becoming a \"street food\" hotspot. Recent trends like the \"Jakir Bhai Viral Cake\" (famous for affordable, quick-buy slices) show that high-volume, low-cost options can explode in popularity here.\n\n---\n\n### II. Choosing Your Business Model\n\n| Feature | **Home-Based (Online)** | **Commercial Shop/Bakery** |\n| :--- | :--- | :--- |\n| **Startup Cost** | Low (Kitchen equipment + Social media). | High (Rent, Interior, Trade license, Staff). |\n| **Focus** | Customized, premium, and artisanal cakes. | High-volume sales, pastries, and breads. |\n| **Visibility** | Relies on Facebook/Instagram/Pathao Food. | Foot traffic from Agargaon main roads/markets. |\n| **Example** | *Cakes By Chef* (Online model). | *Bread Basket* or *Mr. Baker*. |\n\n---\n\n### III. Menu & Pricing Strategy (Local Context)\n\nIn a market like Dhaka, your menu should cater to both the \"Sweet Tooth\" and the \"Gift Giver.\"\n\n* **The Signature Items:** Offer flavors that perform well in Bangladesh, such as **Red Velvet with Cream Cheese**, **Belgian Chocolate**, and **Vanilla with Fruit Filling**.\n* **The \"Pocket-Friendly\" Tier:** Small jars, cupcakes, or \"bento cakes\" (mini cakes) priced between **৳250 – ৳600** for students and casual buyers.\n* **The Premium Tier:** Tiered wedding or birthday cakes priced by weight (e.g., **৳1,200 – ৳2,500 per kg** depending on decoration).\n* **Customization:** Since Agargaon is a tech and office hub, offer \"Tech-themed\" cakes (e.g., Laptop or Code-themed cakes for IDB workers) or \"Official/Formal\" designs.\n\n---\n\n### IV. Marketing & Delivery in Agargaon\n\n1.  **Social Media Presence:** Focus on high-quality photos and videos (Reels/TikTok). In Dhaka, **Facebook Groups** (like Deshi Foodies) are powerful for initial traction.\n2.  **Hyper-Local SEO:** Register your business on **Google Maps**. When people in Agargaon search for \"cakes near me,\" you want your kitchen/shop to pop up first.\n3.  **Delivery Logistics:** Agargaon can have tricky traffic during office hours. \n    * Partner with **Pathao Food** and **Foodpanda** for wider reach.\n    * Offer \"Local Pickup\" points near well-known landmarks like the **National Archives** or **IDB Bhaban** to save on delivery costs for customers.\n\n---\n\n### V. Legal & Hygiene Checklist\n\n* **Trade License:** Essential if you open a physical shop; recommended for online businesses as they scale.\n* **BSTI Certification:** Necessary if you plan to sell packaged baked goods in retail stores.\n* **Packaging:** Invest in sturdy, branded boxes. In the humid Dhaka weather, moisture-resistant packaging is a must to keep the frosting intact.\n\n---\n\n**Summary:** Whether you aim to be the next viral street-side cake sensation or a high-end customized baker, the key in Agargaon is **consistency** and **local presence**. \n\nWould you like the next lesson to focus on the **cost breakdown (budgeting)** for a home-bakery or **digital marketing strategies** for Dhaka-based food businesses?', NULL, NULL, '2026-04-14 17:34:32'),
 (20, 19, 'ALL in ONE', 'video', 'https://www.youtube.com/watch?v=V_xro1bcAuA', '\nAgargaon is a unique hub in Dhaka, blending government offices, residential pockets like Taltola and Monipuripara, and the busy tech market area. Starting a cake business here—whether it\'s a physical shop or a home-based kitchen—requires a mix of local visibility and digital savvy.\n\n---\n\n### I. Market Research: The Agargaon Landscape\n\nTo succeed in Agargaon, you need to understand your three primary customer segments:\n\n1.  **Office Professionals:** Government employees (Election Commission, IDB Bhaban, various Ministries) who need quick snacks, \"work anniversary\" cakes, or retirement celebration treats.\n2.  **Students & Families:** Residents in nearby Taltola, Shewrapara, and residential colonies looking for birthday and celebration cakes.\n3.  **The \"Viral\" Crowd:** Agargaon is becoming a \"street food\" hotspot. Recent trends like the \"Jakir Bhai Viral Cake\" (famous for affordable, quick-buy slices) show that high-volume, low-cost options can explode in popularity here.\n\n---\n\n### II. Choosing Your Business Model\n\n| Feature | **Home-Based (Online)** | **Commercial Shop/Bakery** |\n| :--- | :--- | :--- |\n| **Startup Cost** | Low (Kitchen equipment + Social media). | High (Rent, Interior, Trade license, Staff). |\n| **Focus** | Customized, premium, and artisanal cakes. | High-volume sales, pastries, and breads. |\n| **Visibility** | Relies on Facebook/Instagram/Pathao Food. | Foot traffic from Agargaon main roads/markets. |\n| **Example** | *Cakes By Chef* (Online model). | *Bread Basket* or *Mr. Baker*. |\n\n---\n\n### III. Menu & Pricing Strategy (Local Context)\n\nIn a market like Dhaka, your menu should cater to both the \"Sweet Tooth\" and the \"Gift Giver.\"\n\n* **The Signature Items:** Offer flavors that perform well in Bangladesh, such as **Red Velvet with Cream Cheese**, **Belgian Chocolate**, and **Vanilla with Fruit Filling**.\n* **The \"Pocket-Friendly\" Tier:** Small jars, cupcakes, or \"bento cakes\" (mini cakes) priced between **৳250 – ৳600** for students and casual buyers.\n* **The Premium Tier:** Tiered wedding or birthday cakes priced by weight (e.g., **৳1,200 – ৳2,500 per kg** depending on decoration).\n* **Customization:** Since Agargaon is a tech and office hub, offer \"Tech-themed\" cakes (e.g., Laptop or Code-themed cakes for IDB workers) or \"Official/Formal\" designs.\n\n---\n\n### IV. Marketing & Delivery in Agargaon\n\n1.  **Social Media Presence:** Focus on high-quality photos and videos (Reels/TikTok). In Dhaka, **Facebook Groups** (like Deshi Foodies) are powerful for initial traction.\n2.  **Hyper-Local SEO:** Register your business on **Google Maps**. When people in Agargaon search for \"cakes near me,\" you want your kitchen/shop to pop up first.\n3.  **Delivery Logistics:** Agargaon can have tricky traffic during office hours. \n    * Partner with **Pathao Food** and **Foodpanda** for wider reach.\n    * Offer \"Local Pickup\" points near well-known landmarks like the **National Archives** or **IDB Bhaban** to save on delivery costs for customers.\n\n---\n\n### V. Legal & Hygiene Checklist\n\n* **Trade License:** Essential if you open a physical shop; recommended for online businesses as they scale.\n* **BSTI Certification:** Necessary if you plan to sell packaged baked goods in retail stores.\n* **Packaging:** Invest in sturdy, branded boxes. In the humid Dhaka weather, moisture-resistant packaging is a must to keep the frosting intact.\n\n---\n\n**Summary:** Whether you aim to be the next viral street-side cake sensation or a high-end customized baker, the key in Agargaon is **consistency** and **local presence**. \n\nWould you like the next lesson to focus on the **cost breakdown (budgeting)** for a home-bakery or **digital marketing strategies** for Dhaka-based food businesses?', NULL, NULL, '2026-04-14 17:35:35'),
-(21, 20, '## Course Lesson: Deep Learning with PyTorch', 'text', 'https://www.youtube.com/watch?v=V_xro1bcAuA', '\n\nPyTorch is a premier Python-based machine learning framework used by research labs and tech giants. Unlike other frameworks that use static graphs, PyTorch uses a **Dynamic Computational Graph**, meaning the network is built on-the-fly as code executes. This makes it incredibly intuitive and easy to debug.\n\n---\n\n### I. The Fundamental Unit: The Tensor\nAt its heart, PyTorch is a library for processing **Tensors**. Think of a tensor as a multi-dimensional array (like NumPy), but with two superpowers:\n1.  **GPU Acceleration:** Tensors can be moved to a GPU to perform math thousands of times faster than a CPU.\n2.  **Autograd:** They keep track of every operation performed on them to calculate gradients automatically.\n\n\n\n---\n\n### II. The \"Big Three\" Modules\nTo build any neural network in PyTorch, you will interact with these three main packages:\n\n* **`torch.nn`:** Contains the building blocks for neural networks (Layers, Activation functions, Loss functions).\n* **`torch.optim`:** Contains optimization algorithms like SGD (Stochastic Gradient Descent) or Adam that update your model\'s weights.\n* **`torch.autograd`:** The engine that powers the \"Backward Pass\" by calculating derivatives via the chain rule.\n\n---\n\n### III. The PyTorch Workflow (The 5-Step Loop)\nEvery training script follows this standard pattern:\n\n1.  **Define the Model:** Create a class that inherits from `nn.Module`.\n2.  **Forward Pass:** Pass your data through the model to get a prediction.\n3.  **Calculate Loss:** Compare the prediction to the actual target using a loss function (e.g., `MSELoss` for regression).\n4.  **Backward Pass:** Call `loss.backward()`. PyTorch travels back through your operations to find how much each weight contributed to the error.\n5.  **Update Weights:** Tell the optimizer to take a \"step\" (`optimizer.step()`) to slightly adjust the weights and reduce the error.\n\n\n\n---\n\n### IV. Code Anatomy: A Simple Model\nHere is what a basic PyTorch setup looks like in practice:\n\n```python\nimport torch\nimport torch.nn as nn\n\n# 1. Define Model\nclass SimpleNet(nn.Module):\n    def __init__(self):\n        super().__init__()\n        self.layer = nn.Linear(10, 1) # 10 inputs, 1 output\n\n    def forward(self, x):\n        return self.layer(x)\n\nmodel = SimpleNet()\noptimizer = torch.optim.SGD(model.parameters(), lr=0.01)\ncriterion = nn.MSELoss()\n\n# 2. Training Step (Simplified)\nprediction = model(torch.randn(1, 10))  # Forward\nloss = criterion(prediction, torch.tensor([1.0])) # Loss\noptimizer.zero_grad() # Clear old gradients\nloss.backward()       # Backward\noptimizer.step()      # Update\n```\n\n---\n\n### V. Why Use PyTorch in 2026?\n* **Research to Production:** With tools like `torch.compile`, models that are easy to write in Python can now be optimized for high-speed deployment without changing the code.\n* **Ecosystem:** Most modern Large Language Models (LLMs) and Generative AI research are released first in PyTorch.\n* **Readability:** It feels like native Python. If you can write a `for` loop, you can write a training loop.\n\n---\n\n**Quick Summary Checklist:**\n* **Tensors** are the data containers.\n* **`nn.Module`** is the blueprint for your network.\n* **`backward()`** is the magic that calculates how to improve.\n* **`optimizer`** is the tool that actually makes the changes.\n\nWould you like the next lesson to dive into **building your first Image Classifier** or an explanation of **how Autograd works** under the hood?', NULL, NULL, '2026-04-14 17:36:22');
+(21, 20, '## Course Lesson: Deep Learning with PyTorch', 'text', 'https://www.youtube.com/watch?v=V_xro1bcAuA', '\n\nPyTorch is a premier Python-based machine learning framework used by research labs and tech giants. Unlike other frameworks that use static graphs, PyTorch uses a **Dynamic Computational Graph**, meaning the network is built on-the-fly as code executes. This makes it incredibly intuitive and easy to debug.\n\n---\n\n### I. The Fundamental Unit: The Tensor\nAt its heart, PyTorch is a library for processing **Tensors**. Think of a tensor as a multi-dimensional array (like NumPy), but with two superpowers:\n1.  **GPU Acceleration:** Tensors can be moved to a GPU to perform math thousands of times faster than a CPU.\n2.  **Autograd:** They keep track of every operation performed on them to calculate gradients automatically.\n\n\n\n---\n\n### II. The \"Big Three\" Modules\nTo build any neural network in PyTorch, you will interact with these three main packages:\n\n* **`torch.nn`:** Contains the building blocks for neural networks (Layers, Activation functions, Loss functions).\n* **`torch.optim`:** Contains optimization algorithms like SGD (Stochastic Gradient Descent) or Adam that update your model\'s weights.\n* **`torch.autograd`:** The engine that powers the \"Backward Pass\" by calculating derivatives via the chain rule.\n\n---\n\n### III. The PyTorch Workflow (The 5-Step Loop)\nEvery training script follows this standard pattern:\n\n1.  **Define the Model:** Create a class that inherits from `nn.Module`.\n2.  **Forward Pass:** Pass your data through the model to get a prediction.\n3.  **Calculate Loss:** Compare the prediction to the actual target using a loss function (e.g., `MSELoss` for regression).\n4.  **Backward Pass:** Call `loss.backward()`. PyTorch travels back through your operations to find how much each weight contributed to the error.\n5.  **Update Weights:** Tell the optimizer to take a \"step\" (`optimizer.step()`) to slightly adjust the weights and reduce the error.\n\n\n\n---\n\n### IV. Code Anatomy: A Simple Model\nHere is what a basic PyTorch setup looks like in practice:\n\n```python\nimport torch\nimport torch.nn as nn\n\n# 1. Define Model\nclass SimpleNet(nn.Module):\n    def __init__(self):\n        super().__init__()\n        self.layer = nn.Linear(10, 1) # 10 inputs, 1 output\n\n    def forward(self, x):\n        return self.layer(x)\n\nmodel = SimpleNet()\noptimizer = torch.optim.SGD(model.parameters(), lr=0.01)\ncriterion = nn.MSELoss()\n\n# 2. Training Step (Simplified)\nprediction = model(torch.randn(1, 10))  # Forward\nloss = criterion(prediction, torch.tensor([1.0])) # Loss\noptimizer.zero_grad() # Clear old gradients\nloss.backward()       # Backward\noptimizer.step()      # Update\n```\n\n---\n\n### V. Why Use PyTorch in 2026?\n* **Research to Production:** With tools like `torch.compile`, models that are easy to write in Python can now be optimized for high-speed deployment without changing the code.\n* **Ecosystem:** Most modern Large Language Models (LLMs) and Generative AI research are released first in PyTorch.\n* **Readability:** It feels like native Python. If you can write a `for` loop, you can write a training loop.\n\n---\n\n**Quick Summary Checklist:**\n* **Tensors** are the data containers.\n* **`nn.Module`** is the blueprint for your network.\n* **`backward()`** is the magic that calculates how to improve.\n* **`optimizer`** is the tool that actually makes the changes.\n\nWould you like the next lesson to dive into **building your first Image Classifier** or an explanation of **how Autograd works** under the hood?', NULL, NULL, '2026-04-14 17:36:22'),
+(24, 23, 'Trailer - Must watch', 'video', 'https://www.youtube.com/watch?v=-KPYMrQmFhA', '', NULL, NULL, '2026-04-14 20:53:09'),
+(25, 24, 'Intro', 'text', 'https://www.youtube.com/watch?v=-KPYMrQmFhA', 'Arknights: Endfield guide: Master manufacturing and build a top team with these tips\n\n3.5.2026\nBy Diego Perez, Contributor\n\nArknights: Endfield may seem like other open-world gacha games at first glance, but several key mechanics set this action-RPG apart from the crowd.\n \nThere\'s a lot more to Arknights: Endfield than the flashy combat and cool characters, and your first day at Endfield Industries can be overwhelming. You\'ve got a whole factory to run, and your responsibilities will only grow as you add more outposts to your network. Keeping the operation running smoothly will keep your units in tip-top shape, but ignoring the logistics can cause you to fall behind.\n\nIt\'s a lot to take in, and while things will slowly start to click over the course of a few hours, we\'ve put together some tips to help you get started. Read on—our beginner\'s guide to Arknights: Endfield will help you find success on Talos-II.', NULL, NULL, '2026-04-14 20:53:41');
 
 -- --------------------------------------------------------
 
@@ -196,6 +205,13 @@ CREATE TABLE `moderation_report` (
   `ReportDate` datetime DEFAULT current_timestamp(),
   `ResolutionStatus` enum('pending','resolved','dismissed') DEFAULT 'pending'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `moderation_report`
+--
+
+INSERT INTO `moderation_report` (`ReportID`, `ReportedUserID`, `ReportedByUserID`, `Reason`, `ReportDate`, `ResolutionStatus`) VALUES
+(1, 5, 2, 'Policy Violation: Sleeps in class', '2026-04-15 02:44:19', 'pending');
 
 -- --------------------------------------------------------
 
@@ -233,7 +249,23 @@ INSERT INTO `module` (`ModuleID`, `CourseID`, `Title`, `Description`, `SequenceO
 (17, 8, 'Reading material', 'read it champ', NULL, '2026-04-14 17:33:11'),
 (18, 9, 'Intro', '', NULL, '2026-04-14 17:33:55'),
 (19, 9, 'all lesson', '', NULL, '2026-04-14 17:35:24'),
-(20, 9, 'READING', '', NULL, '2026-04-14 17:36:05');
+(20, 9, 'READING', '', NULL, '2026-04-14 17:36:05'),
+(23, 11, 'Week 1', '', NULL, '2026-04-14 20:52:48'),
+(24, 11, 'week 2', '', NULL, '2026-04-14 20:53:19');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `notification`
+--
+
+CREATE TABLE `notification` (
+  `NotificationID` int(11) NOT NULL,
+  `UserID` int(11) NOT NULL,
+  `Message` text NOT NULL,
+  `IsRead` tinyint(1) DEFAULT 0,
+  `CreatedAt` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -261,7 +293,8 @@ INSERT INTO `question` (`QuestionID`, `AssessmentID`, `QuestionText`, `OptionA`,
 (5, 10, 'Why is the &#039;Corrosaurus&#039; Echo specifically recommended for her?', 't provides a shield based on DEF.', 'It increases Glacio damage.', 'It buffs Fusion and Echo Skill damage.', 't reduces stamina consumption.', 2),
 (6, 11, 'What is the primary stat Catethieya uses for her damage scaling?', 'ATK', 'DEF', 'HP', 'Crit Rate', 0),
 (7, 11, 'How do you &#039;Recall&#039; Catethieya’s Sword Shadows to trigger an Aero burst?', 'Using a Resonance Liberation.', 'Performing a Plunging Attack.', 'Executing a Perfect Dodge.', 'Swapping to another character.', 0),
-(8, 14, 'check', 'a', 'b', 'e', 'e', 1);
+(8, 14, 'check', 'a', 'b', 'e', 'e', 1),
+(10, 17, 'What&#039;s reactor color?', 'red', 'green', 'yellow', 'blue', 2);
 
 -- --------------------------------------------------------
 
@@ -294,7 +327,8 @@ INSERT INTO `users` (`UserID`, `FirstName`, `LastName`, `Email`, `PasswordHash`,
 (4, 'mm', 'mk', 'mark.stu@example.com', '$2y$10$.e5Trrs5qeiAdFi6SjuG2eJCLMRsfDuo4vQyp3tnx8tGx06rbCHxW', 'student', 'active', NULL, NULL, NULL, '2026-04-14 01:04:12'),
 (5, 'Test', 'Student', 'teststudent@elp.com', '$2y$10$pqaP7Xj72t3Jek5Xi4XLZed8/JTP/9/a/3UgPk95ySt1tVaPwcTwi', 'student', 'active', NULL, NULL, NULL, '2026-04-14 01:34:34'),
 (6, 'Math Prof', 'LinnSyuu', 'math@mail.com', '$2y$10$T/2yCKNYbnOEssdQR.ZoDezlZZLfly8NklmuwWg.dxJjPljxzpeZu', 'instructor', 'active', NULL, NULL, NULL, '2026-04-14 22:39:44'),
-(7, 'Comp Sci ', 'Prof', 'comp@mail.com', '$2y$10$foEslRGQWJVpfc6FgzBQDeS556C63Fd0iHqzd9jJiMKIFL491W9ZW', 'instructor', 'active', NULL, NULL, NULL, '2026-04-14 22:44:41');
+(7, 'Comp Sci ', 'Prof', 'comp@mail.com', '$2y$10$foEslRGQWJVpfc6FgzBQDeS556C63Fd0iHqzd9jJiMKIFL491W9ZW', 'instructor', 'active', NULL, NULL, NULL, '2026-04-14 22:44:41'),
+(8, 'test1', 'r', 'test3@mail.com', '$2y$10$oEJOn1xlMq8A0gBaqy2Gl.yA/Q/vHOv0JHQxWv45yKHCsGEUStWMa', 'student', 'active', NULL, NULL, NULL, '2026-04-15 02:47:22');
 
 --
 -- Indexes for dumped tables
@@ -353,6 +387,13 @@ ALTER TABLE `module`
   ADD KEY `CourseID` (`CourseID`);
 
 --
+-- Indexes for table `notification`
+--
+ALTER TABLE `notification`
+  ADD PRIMARY KEY (`NotificationID`),
+  ADD KEY `fk_user_notification` (`UserID`);
+
+--
 -- Indexes for table `question`
 --
 ALTER TABLE `question`
@@ -374,55 +415,61 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `assessment`
 --
 ALTER TABLE `assessment`
-  MODIFY `AssessmentID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+  MODIFY `AssessmentID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
 
 --
 -- AUTO_INCREMENT for table `assessment_submission`
 --
 ALTER TABLE `assessment_submission`
-  MODIFY `SubmissionID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `SubmissionID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- AUTO_INCREMENT for table `course`
 --
 ALTER TABLE `course`
-  MODIFY `CourseID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `CourseID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT for table `enrollment`
 --
 ALTER TABLE `enrollment`
-  MODIFY `EnrollmentID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `EnrollmentID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT for table `lesson`
 --
 ALTER TABLE `lesson`
-  MODIFY `LessonID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
+  MODIFY `LessonID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
 
 --
 -- AUTO_INCREMENT for table `moderation_report`
 --
 ALTER TABLE `moderation_report`
-  MODIFY `ReportID` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `ReportID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `module`
 --
 ALTER TABLE `module`
-  MODIFY `ModuleID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
+  MODIFY `ModuleID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
+
+--
+-- AUTO_INCREMENT for table `notification`
+--
+ALTER TABLE `notification`
+  MODIFY `NotificationID` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `question`
 --
 ALTER TABLE `question`
-  MODIFY `QuestionID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `QuestionID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `UserID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `UserID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- Constraints for dumped tables
@@ -472,6 +519,12 @@ ALTER TABLE `moderation_report`
 --
 ALTER TABLE `module`
   ADD CONSTRAINT `module_ibfk_1` FOREIGN KEY (`CourseID`) REFERENCES `course` (`CourseID`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `notification`
+--
+ALTER TABLE `notification`
+  ADD CONSTRAINT `fk_user_notification` FOREIGN KEY (`UserID`) REFERENCES `users` (`UserID`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `question`
